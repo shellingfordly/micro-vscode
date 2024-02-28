@@ -77,13 +77,14 @@ pub fn commit(local_path: &str) {
     // 写入索引
     index.write().expect("Failed to write index");
 
-    let username = get_env("USER_NAME");
-    let email = get_env("USER_EMAIL");
-
     // 创建提交
     let head: git2::Object<'_> = repo.revparse_single("HEAD").expect("Failed to get HEAD");
     let tree_id: git2::Oid = index.write_tree().expect("Failed to write tree");
     let tree: git2::Tree<'_> = repo.find_tree(tree_id).expect("Failed to find tree");
+
+    let username = get_env("USER_NAME");
+    let email = get_env("USER_EMAIL");
+
     let signature: Signature<'_> =
         Signature::now(&username, &email).expect("Failed to create signature");
     let commit_id: git2::Oid = repo
@@ -114,6 +115,7 @@ pub fn push(local_path: &str) {
     callbacks.credentials(|_url, _username_from_url, _allowed_types| {
         let github_token = get_env("GITHUB_TOKEN");
         let username = get_env("USER_NAME");
+
         // 使用 Token 进行认证
         Cred::userpass_plaintext(&username, &github_token)
     });

@@ -14,6 +14,7 @@ export default defineConfig(async () => ({
     vue(),
     AutoImport({
       dts: "./src/auto-imports.d.ts",
+      dirs: ["./src/hooks"],
       imports: [
         "vue",
         "@vueuse/core",
