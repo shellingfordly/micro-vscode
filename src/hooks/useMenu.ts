@@ -39,23 +39,23 @@ function handleFileName(filePaths: string[], rootFileName: string) {
     children: [],
   };
 
-  const fileNames = filePaths.map((v) => {
+  const paths = filePaths.map((v) => {
     const index = v.match(rootFileName)?.index || 0;
     return v.slice(index + rootFileName.length + 1);
   });
 
-  fileNames.forEach((path) => {
+  paths.forEach((path) => {
     const parts = path.split("/");
     let currentNode = root;
 
-    parts.forEach((part) => {
+    parts.forEach((fileName) => {
       const existingChild = currentNode.children?.find(
-        (child) => child.label === part
+        (child) => child.label === fileName
       );
       if (!existingChild) {
         const newChild = {
-          label: part,
-          key: part,
+          label: fileName,
+          key: rootFileName + "/" + path,
         };
         if (currentNode.children) {
           currentNode.children?.push(newChild);
