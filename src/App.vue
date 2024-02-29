@@ -27,8 +27,9 @@ async function onClickFile(name: string) {
 <template>
   <n-config-provider :theme="theme" style="height: 100%">
     <n-layout style="height: 100%">
-      <n-layout-header>
+      <n-layout-header style="display: flex; justify-content: space-between">
         <Menu @change="onChangeProject" />
+        <Action />
       </n-layout-header>
       <n-layout has-sider style="height: calc(100% - 74px)">
         <n-split
