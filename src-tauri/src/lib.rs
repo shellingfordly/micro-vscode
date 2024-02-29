@@ -1,7 +1,7 @@
 mod file;
 mod git;
 mod utils;
-use file::{get_files_name, get_files_path_deep};
+use file::{get_files_name, get_files_path_deep, read_file_content};
 
 #[tauri::command]
 fn git_clone(url: &str) -> String {
@@ -35,6 +35,12 @@ fn get_files(name: String) -> Result<Vec<String>, String> {
     get_files_path_deep(dir_path.canonicalize().unwrap())
 }
 
+#[tauri::command]
+fn read_file(name: String) -> String {
+    let path = utils::get_path(&format!("../templates/{}", name));
+    read_file_content(path)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -44,7 +50,8 @@ pub fn run() {
             git_clone,
             git_pull,
             get_files,
-            get_projects
+            get_projects,
+            read_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

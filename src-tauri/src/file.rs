@@ -56,3 +56,14 @@ pub fn get_files_path_deep(dir_path: PathBuf) -> Result<Vec<String>, String> {
 
     Ok(file_path_list)
 }
+
+pub fn read_file_content(file_path: &str) -> String {
+    // 尝试读取文件内容
+    match fs::read_to_string(file_path) {
+        Ok(content) => {
+            // 读取成功，content 包含文件的内容
+            content
+        }
+        Err(err) => format!("Read filed [{}]", err),
+    }
+}
