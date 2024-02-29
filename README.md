@@ -2,6 +2,11 @@
 
 A lightweight code editing and submission tool. The micro-vscode integrated the basic function of git.
 
+This project is only used for learning.
+
+code is licensed under [MIT](https://github.com/shellingfordly/micro-vscode/blob/main/LICENSE),
+words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+
 ## Todolist
 
 - [ ] Git
