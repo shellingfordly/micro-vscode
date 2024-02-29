@@ -4,13 +4,13 @@ A lightweight code editing and submission tool. The micro-vscode integrated the 
 
 ## Todolist
 
-- [] Git
+- [ ] Git
   - [x] clone
-  - [] pull
-  - [] add
-  - [] commit
-  - [] push
-- [] Project
+  - [ ] pull
+  - [ ] add
+  - [ ] commit
+  - [ ] push
+- [ ] Project
   - [x] read
   - [ ] editor
   - [ ] write
@@ -52,10 +52,6 @@ pnpm tauri build
 
 ## Preview
 
-- git
+![git](./public/git_dark.png)
 
-![git](./public/git.png)
-
-- project
-
-![project](./public/project.png)
+![project](./public/project_light.png)
