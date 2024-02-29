@@ -14,6 +14,8 @@ dist-ssr
 
 src/auto-imports.d.ts
 src/components.d.ts
+data/**
+template/**
 
 # Editor directories and files
 .vscode/*
