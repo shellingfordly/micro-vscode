@@ -2,43 +2,41 @@ mod file;
 mod git;
 mod utils;
 use file::{get_files_name, get_files_path_deep, read_file_content};
+use utils::{get_name, get_path, get_path_str};
 
 #[tauri::command]
 fn git_clone(url: &str) -> String {
-    let name = utils::get_name(url);
-    let path = utils::get_path(&format!("../templates/ {}", name));
-    let success = git::clone(url, path);
+    let name = get_name(url);
+    let path = get_path_str(&format!("../templates/{}", name));
+    let success = git::clone(url, &path);
 
-    format!("clone {} is [{}]", name, success)
+    if success {
+        format!("ok")
+    } else {
+        format!("err")
+    }
 }
 
 #[tauri::command]
 fn git_pull(url: &str, name: &str) -> String {
-    let path: &str = utils::get_path(&format!("../templates/ {}", name));
-    git::pull(url, path);
-    format!("pull {}", name)
+    let path = get_path_str(&format!("../templates/{}", name));
+    git::pull(url, &path);
+    format!("ok")
 }
 
 #[tauri::command]
 fn get_projects() -> Result<Vec<String>, String> {
-    let base_dir: std::path::PathBuf = std::env::current_dir().unwrap();
-    let path: &str = utils::get_path(&format!("../templates/"));
-    let dir_path = base_dir.join(path);
-    get_files_name(dir_path.canonicalize().unwrap())
+    get_files_name(get_path("../templates/"))
 }
 
 #[tauri::command]
 fn get_files(name: String) -> Result<Vec<String>, String> {
-    let base_dir = std::env::current_dir().unwrap();
-    let path: &str = utils::get_path(&format!("../templates/{}", name));
-    let dir_path = base_dir.join(path);
-    get_files_path_deep(dir_path.canonicalize().unwrap())
+    get_files_path_deep(get_path(&format!("../templates/{}", name)))
 }
 
 #[tauri::command]
 fn read_file(name: String) -> String {
-    let path = utils::get_path(&format!("../templates/{}", name));
-    read_file_content(path)
+    read_file_content(get_path(&format!("../templates/{}", name)))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

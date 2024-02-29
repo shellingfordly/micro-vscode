@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
-import { darkTheme, lightTheme } from "naive-ui";
+import { type MenuOption, darkTheme, lightTheme } from "naive-ui";
 
 const isDark = useDark();
 const theme = computed(() => (isDark.value ? darkTheme : lightTheme));
-const { menuOptions, fileOptions, updateFiles } = useMenu();
+const { getProjectFiles, handleProjectFileToOptions } = useProjectFile();
+const fileOptions = ref<MenuOption[]>([]);
 const content = ref("");
 const filePath = ref("");
 
-async function onUpdateValue(name: string) {
-  updateFiles(name);
+async function onChangeProject(projectName: string) {
+  const data = await getProjectFiles(projectName);
+  fileOptions.value = handleProjectFileToOptions(data, projectName) as any[];
 }
 
 async function onClickFile(name: string) {
@@ -25,11 +27,7 @@ async function onClickFile(name: string) {
   <n-config-provider :theme="theme" style="height: 100%">
     <n-layout style="height: 100%">
       <n-layout-header>
-        <n-menu
-          mode="horizontal"
-          :options="menuOptions"
-          @update:value="onUpdateValue"
-        />
+        <Menu @change="onChangeProject" />
       </n-layout-header>
       <n-layout has-sider style="height: calc(100% - 74px)">
         <n-layout-sider
