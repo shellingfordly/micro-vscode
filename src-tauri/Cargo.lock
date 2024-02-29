@@ -1844,6 +1844,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "micro-vscode"
+version = "0.0.0"
+dependencies = [
+ "dotenv",
+ "git2",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-fs",
+ "tauri-plugin-shell",
+]
+
+[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3223,19 +3236,6 @@ dependencies = [
  "webview2-com",
  "window-vibrancy",
  "windows 0.52.0",
-]
-
-[[package]]
-name = "tauri-app"
-version = "0.0.0"
-dependencies = [
- "dotenv",
- "git2",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-fs",
- "tauri-plugin-shell",
 ]
 
 [[package]]

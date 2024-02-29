@@ -1,7 +1,7 @@
 [package]
-name = "tauri-app"
+name = "micro-vscode"
 version = "0.0.0"
-description = "A Tauri App"
+description = "A lightweight code editing and submission tool."
 authors = ["you"]
 edition = "2021"
 
