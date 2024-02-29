@@ -17,6 +17,7 @@ function handleProjectFileToOptions(filePaths: string[], rootFileName: string) {
     label: rootFileName,
     key: rootFileName,
     icon: handleIcon("dir"),
+    type: "dir",
     children: [],
   };
 
@@ -28,17 +29,16 @@ function handleProjectFileToOptions(filePaths: string[], rootFileName: string) {
   paths.forEach((path) => {
     const parts = path.split("/");
     let currentNode = root;
-
     parts.forEach((fileName) => {
       const existingChild = currentNode.children?.find(
         (child) => child.label === fileName
       );
       if (!existingChild) {
-        console.log("fileName: ", fileName, "  path: ", path);
-
+        const type = path.endsWith(fileName) ? "file" : "dir";
         const newChild = {
           label: fileName,
-          icon: handleIcon(path.endsWith(fileName) ? "file" : "dir", fileName),
+          icon: handleIcon(type, fileName),
+          type,
           key: rootFileName + "/" + path,
         };
         if (currentNode.children) {
@@ -52,5 +52,32 @@ function handleProjectFileToOptions(filePaths: string[], rootFileName: string) {
       }
     });
   });
-  return [root];
+  console.log(root);
+  return sortFile([root]);
+}
+
+export function sortFile(data: MenuOption[]): MenuOption[] {
+  const sort = (d: any[]) =>
+    d.sort((a, b) => {
+      if (a.type === "dir" && b.type === "file") {
+        return -1;
+      } else if (a.type === "file" && b.type === "dir") {
+        return 1;
+      }
+      return a.label.localeCompare(b.label);
+    });
+
+  const sort_recursion = (d: any[]) => {
+    sort(d);
+
+    d.forEach((item) => {
+      if (item.children?.length) {
+        sort_recursion(item.children);
+      }
+    });
+  };
+
+  sort_recursion(data);
+
+  return data;
 }
