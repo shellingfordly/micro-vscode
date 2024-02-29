@@ -27,11 +27,14 @@ async function onClickFile(name: string) {
 <template>
   <n-config-provider :theme="theme" style="height: 100%">
     <n-layout style="height: 100%">
-      <n-layout-header style="display: flex; justify-content: space-between">
+      <n-layout-header
+        bordered
+        style="display: flex; justify-content: space-between"
+      >
         <Menu @change="onChangeProject" />
         <Action />
       </n-layout-header>
-      <n-layout has-sider style="height: calc(100% - 74px)">
+      <n-layout has-sider style="height: calc(100% - 76px)">
         <n-split
           direction="horizontal"
           style="height: 100%"
@@ -67,7 +70,7 @@ async function onClickFile(name: string) {
           </template>
         </n-split>
       </n-layout>
-      <n-layout-footer style="padding: 5px 10px; text-align: right">
+      <n-layout-footer bordered style="padding: 5px 10px; text-align: right">
         CC BY-NC-SA 4.0 2024-PRESENT ©
         <a href="https://github.com/shellingfordly">shellingfordly</a>
       </n-layout-footer>
