@@ -16,6 +16,7 @@ function handleProjectFileToOptions(filePaths: string[], rootFileName: string) {
   const root: MenuOption = {
     label: rootFileName,
     key: rootFileName,
+    icon: handleIcon("dir"),
     children: [],
   };
 
@@ -33,8 +34,11 @@ function handleProjectFileToOptions(filePaths: string[], rootFileName: string) {
         (child) => child.label === fileName
       );
       if (!existingChild) {
+        console.log("fileName: ", fileName, "  path: ", path);
+
         const newChild = {
           label: fileName,
+          icon: handleIcon(path.endsWith(fileName) ? "file" : "dir", fileName),
           key: rootFileName + "/" + path,
         };
         if (currentNode.children) {

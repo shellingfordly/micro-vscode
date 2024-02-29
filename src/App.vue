@@ -18,6 +18,7 @@ async function onClickFile(name: string) {
   const data: string = await invoke("read_file", {
     name,
   });
+
   filePath.value = name;
   content.value = data;
 }
@@ -30,26 +31,40 @@ async function onClickFile(name: string) {
         <Menu @change="onChangeProject" />
       </n-layout-header>
       <n-layout has-sider style="height: calc(100% - 74px)">
-        <n-layout-sider
-          collapse-mode="width"
-          :collapsed-width="64"
-          :width="240"
-          :native-scrollbar="false"
+        <n-split
+          direction="horizontal"
+          style="height: 100%"
+          :resize-trigger-size="2"
+          :max="0.75"
+          :min="0.25"
         >
-          <n-menu
-            :collapsed-width="64"
-            :collapsed-icon-size="22"
-            :options="fileOptions"
-            @update:value="onClickFile"
-          />
-        </n-layout-sider>
-        <n-layout>
-          <Editor
-            v-if="content && filePath"
-            v-model="content"
-            :filepath="filePath"
-          />
-        </n-layout>
+          <template #1>
+            <n-layout-sider
+              collapse-mode="width"
+              :collapsed-width="64"
+              width="100%"
+              style="height: 100%"
+              :native-scrollbar="false"
+            >
+              <n-menu
+                :collapsed-width="0"
+                :collapsed-icon-size="22"
+                :options="fileOptions"
+                style="height: 100%"
+                @update:value="onClickFile"
+              />
+            </n-layout-sider>
+          </template>
+          <template #2>
+            <n-layout style="height: 100%">
+              <Editor
+                v-if="content && filePath"
+                v-model="content"
+                :filepath="filePath"
+              />
+            </n-layout>
+          </template>
+        </n-split>
       </n-layout>
       <n-layout-footer style="padding: 5px 10px; text-align: right">
         CC BY-NC-SA 4.0 2024-PRESENT ©
