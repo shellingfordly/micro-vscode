@@ -2,7 +2,36 @@ mod file;
 mod git;
 mod utils;
 use file::{get_files_name, get_files_path_deep, read_file_content};
+use std::fs;
 use utils::{get_name, get_path, get_path_str};
+
+#[tauri::command]
+fn git_set_user(data: &str) -> bool {
+    let path = get_path_str("../data/user.json");
+    let result = fs::write(path, data);
+    if result.is_ok() {
+        println!("[git_set_user] Write successful!");
+        return true;
+    } else {
+        println!("[git_set_user] Write failed: {:?}", result);
+        return false;
+    }
+}
+
+#[tauri::command]
+fn git_get_user() -> String {
+    let path = get_path_str("../data/user.json");
+
+    match fs::read_to_string(path) {
+        Ok(content) => {
+            return content;
+        }
+        Err(err) => {
+            eprintln!("[git_get_user] Error reading file: {:?}", err);
+            return String::new();
+        }
+    }
+}
 
 #[tauri::command]
 fn git_clone(url: &str) -> String {
@@ -11,8 +40,10 @@ fn git_clone(url: &str) -> String {
     let success = git::clone(url, &path);
 
     if success {
+        println!("[git_clone] successful!");
         format!("ok")
     } else {
+        println!("[git_clone] failed!");
         format!("err")
     }
 }
@@ -49,7 +80,9 @@ pub fn run() {
             git_pull,
             get_files,
             get_projects,
-            read_file
+            read_file,
+            git_set_user,
+            git_get_user
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

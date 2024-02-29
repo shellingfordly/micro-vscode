@@ -5,7 +5,7 @@ import { invoke } from "@tauri-apps/api/core";
 const emit = defineEmits(["change", "clone"]);
 const { menuOptions } = useMenu();
 const showModal = ref(false);
-const url = ref("https://github.com/shellingfordly/learn.nuxt.com.git");
+const url = ref("");
 const loading = ref(false);
 // const message = useNotification();
 

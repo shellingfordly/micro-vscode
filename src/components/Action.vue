@@ -1,12 +1,52 @@
 <script setup lang="ts">
+import { invoke } from "@tauri-apps/api/core";
+
 const isDark = useDark();
 
 function onChangeTheme() {
   isDark.value = !isDark.value;
 }
+
+const showModal = ref(false);
+const form = ref({
+  user: "",
+  email: "",
+  token: "",
+});
+
+onMounted(async () => {
+  const data: string = await invoke("git_get_user");
+  if (data) {
+    form.value = JSON.parse(data);
+  }
+});
+
+async function onSetGitUser() {
+  const data = await invoke("git_set_user", {
+    data: JSON.stringify(form.value),
+  });
+  if (data) {
+    showModal.value = false;
+  }
+
+  console.log("data:", data);
+}
 </script>
 <template>
   <div class="action">
+    <div class="icon" @click="showModal = true">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
+        />
+      </svg>
+    </div>
     <div class="icon" @click="onChangeTheme">
       <template v-if="isDark">
         <svg
@@ -35,19 +75,52 @@ function onChangeTheme() {
         </svg>
       </template>
     </div>
+
+    <n-modal
+      v-model:show="showModal"
+      class="custom-card"
+      preset="card"
+      style="width: 500px"
+      title="Git User"
+      size="huge"
+      :bordered="false"
+    >
+      <n-form :model="form" :label-width="60" label-placement="left">
+        <n-form-item label="user" path="user">
+          <n-input v-model:value="form.user" placeholder="enter in user" />
+        </n-form-item>
+        <n-form-item label="email" path="email">
+          <n-input v-model:value="form.email" placeholder="enter in email" />
+        </n-form-item>
+        <n-form-item label="token" path="token">
+          <n-input
+            v-model:value="form.token"
+            type="password"
+            placeholder="enter in token"
+          />
+        </n-form-item>
+        <n-form-item style="display: flex; justify-content: flex-end">
+          <n-button attr-type="button" @click="onSetGitUser"> Set </n-button>
+        </n-form-item>
+      </n-form>
+    </n-modal>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .action {
   display: flex;
   align-items: center;
   margin-right: 20px;
 
   .icon {
-    width: 20px;
-    height: 20px;
+    padding: 5px;
     cursor: pointer;
+    margin-right: 10px;
+    opacity: 0.7;
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 </style>
