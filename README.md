@@ -1,5 +1,7 @@
 # micro-vscode
 
+A lightweight code editing and submission tool. The micro-vscode integrated the basic function of git.
+
 ## Todolist
 
 - [] Git
@@ -47,3 +49,13 @@ pnpm tauri dev
 ```bash
 pnpm tauri build
 ```
+
+## Preview
+
+- git
+
+![git](./public/git.png)
+
+- project
+
+![project](./public/project.png)
