@@ -9,7 +9,7 @@ function onChangeTheme() {
 
 const showModal = ref(false);
 const form = ref({
-  user: "",
+  username: "",
   email: "",
   token: "",
 });
@@ -28,8 +28,6 @@ async function onSetGitUser() {
   if (data) {
     showModal.value = false;
   }
-
-  console.log("data:", data);
 }
 </script>
 <template>
@@ -86,17 +84,20 @@ async function onSetGitUser() {
       :bordered="false"
     >
       <n-form :model="form" :label-width="60" label-placement="left">
-        <n-form-item label="user" path="user">
-          <n-input v-model:value="form.user" placeholder="enter in user" />
+        <n-form-item label="Username" path="username">
+          <n-input
+            v-model:value="form.username"
+            placeholder="Enter in username"
+          />
         </n-form-item>
-        <n-form-item label="email" path="email">
-          <n-input v-model:value="form.email" placeholder="enter in email" />
+        <n-form-item label="Email" path="email">
+          <n-input v-model:value="form.email" placeholder="Enter in email" />
         </n-form-item>
-        <n-form-item label="token" path="token">
+        <n-form-item label="Github Token" path="token">
           <n-input
             v-model:value="form.token"
             type="password"
-            placeholder="enter in token"
+            placeholder="Enter in github token"
           />
         </n-form-item>
         <n-form-item style="display: flex; justify-content: flex-end">

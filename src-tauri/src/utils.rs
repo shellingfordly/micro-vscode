@@ -1,27 +1,57 @@
-use std::{env, path::PathBuf};
+use crate::path::get_path_str;
+use serde::{Deserialize, Serialize};
+use std::fs;
 
-pub fn get_path_str(path: &str) -> String {
-    let path_buf = get_path(path);
-    let path_ref = &path_buf;
-    if let Some(path_str) = path_ref.to_str() {
-        return path_str.to_string();
+pub fn get_url_name(url: &str) -> String {
+    let url = url.trim_end_matches(".git");
+    if let Some(last_part) = url.split('/').last() {
+        return last_part.replace(" ", "");
     } else {
         return String::new();
     }
 }
 
-pub fn get_path(path: &str) -> PathBuf {
-    let base_dir: std::path::PathBuf = env::current_dir().unwrap();
-    let dir_path = base_dir.join(path);
-
-    return dir_path;
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UserInfo {
+    pub username: String,
+    pub email: String,
+    pub token: String,
 }
 
-pub fn get_name(url: &str) -> String {
-    let url = url.trim_end_matches(".git");
-    if let Some(last_part) = url.split('/').last() {
-        return last_part.replace(" ", "");
+impl UserInfo {
+    pub fn get_field(&self, key: &str) -> Option<String> {
+        match key {
+            "username" => Some(self.username.clone()),
+            "email" => Some(self.email.clone()),
+            "token" => Some(self.token.clone()),
+            _ => None,
+        }
+    }
+}
+
+pub fn get_user() -> Result<UserInfo, String> {
+    let path = get_path_str("../data/user.json");
+
+    let content = fs::read_to_string(&path)
+        .map_err(|err| format!("[get_user] Error reading file: {:?}", err))?;
+
+    serde_json::from_str::<UserInfo>(&content)
+        .map_err(|err| format!("[get_user] Error deserializing JSON: {:?}", err))
+}
+
+pub fn get_user_value(key: &str) -> String {
+    let user = match get_user() {
+        Ok(user_info) => user_info,
+        Err(err) => {
+            eprintln!("[get_user_value] Error get_user: {}", err);
+            return String::new();
+        }
+    };
+
+    if let Some(value) = user.get_field(key) {
+        return value;
     } else {
+        eprintln!("[get_user_value] Error user is not found {}", key);
         return String::new();
     }
 }

@@ -1,43 +1,32 @@
-use dotenv::dotenv;
+use crate::utils::get_user_value;
 use git2::{Cred, FetchOptions, PushOptions, RemoteCallbacks, Repository, Signature, Status};
-use std::env;
 use std::path::Path;
-
-pub fn get_env(key: &str) -> String {
-    dotenv().ok();
-
-    let env_str = env::var(key).unwrap_or_else(|_| {
-        eprintln!("GitHub Token not set");
-        std::process::exit(1);
-    });
-
-    return env_str;
-}
 
 pub fn clone(repo_url: &str, local_path: &str) -> bool {
     match Repository::clone(repo_url, local_path) {
         Ok(_repo) => {
-            println!("Repository cloned successfully");
+            println!("[git_clone] Repository cloned successfully");
             return true;
         }
         Err(err) => {
-            eprintln!("Error cloning repository: {}", err);
+            eprintln!("[git_clone] Error cloning repository: {}", err);
             return false;
         }
     }
 }
 
-pub fn pull(repo_url: &str, local_path: &str) {
+pub fn pull(local_path: &str) {
     let repo: Repository = match Repository::open(local_path) {
         Ok(repo) => repo,
-        Err(_) => {
-            git2::Repository::clone(repo_url, local_path).expect("Failed to clone from remote")
+        Err(err) => {
+            eprintln!("[git_pull] Error: {}", err);
+            return;
         }
     };
     let remote_name: &str = "origin";
     let mut remote: git2::Remote = repo
         .find_remote(remote_name)
-        .expect("Failed to find remote");
+        .expect("[git_pull] Failed to find remote");
 
     let callbacks: RemoteCallbacks<'_> = RemoteCallbacks::new();
 
@@ -46,20 +35,23 @@ pub fn pull(repo_url: &str, local_path: &str) {
 
     remote
         .fetch::<&str>(&[], Some(&mut fetch_options), None)
-        .expect("Failed to fetch from remote");
+        .expect("[git_pull] Failed to fetch from remote");
 }
 
-pub fn commit(local_path: &str) {
+pub fn commit(local_path: &str, message: &str) {
     // 打开本地仓库
-    let repo: Repository = Repository::open(local_path).expect("Failed to open repository");
+    let repo: Repository =
+        Repository::open(local_path).expect("[git_commit] Failed to open repository");
     // 获取索引
-    let mut index: git2::Index = repo.index().expect("Failed to open index");
+    let mut index: git2::Index = repo.index().expect("[git_commit] Failed to open index");
 
     // 获取仓库状态
-    let statuses: git2::Statuses<'_> = repo.statuses(None).expect("Failed to get statuses");
+    let statuses: git2::Statuses<'_> = repo
+        .statuses(None)
+        .expect("[git_commit] Failed to get statuses");
 
     for entry in statuses.iter() {
-        let entry_path = entry.path().expect("Failed to get entry path");
+        let entry_path = entry.path().expect("[git_commit] Failed to get entry path");
         match entry.status() {
             Status::WT_NEW
             | Status::WT_MODIFIED
@@ -68,56 +60,63 @@ pub fn commit(local_path: &str) {
             | Status::WT_TYPECHANGE => {
                 index
                     .add_path(Path::new(entry_path))
-                    .expect("Failed to add file to index");
+                    .expect("[git_commit] Failed to add file to index");
             }
             _ => {}
         }
     }
 
     // 写入索引
-    index.write().expect("Failed to write index");
+    index.write().expect("[git_commit] Failed to write index");
 
     // 创建提交
-    let head: git2::Object<'_> = repo.revparse_single("HEAD").expect("Failed to get HEAD");
-    let tree_id: git2::Oid = index.write_tree().expect("Failed to write tree");
-    let tree: git2::Tree<'_> = repo.find_tree(tree_id).expect("Failed to find tree");
+    let head: git2::Object<'_> = repo
+        .revparse_single("HEAD")
+        .expect("[git_commit] Failed to get HEAD");
+    let tree_id: git2::Oid = index
+        .write_tree()
+        .expect("[git_commit] Failed to write tree");
+    let tree: git2::Tree<'_> = repo
+        .find_tree(tree_id)
+        .expect("[git_commit] Failed to find tree");
 
-    let username = get_env("USER_NAME");
-    let email = get_env("USER_EMAIL");
+    let username = get_user_value("username");
+    let email = get_user_value("email");
 
     let signature: Signature<'_> =
-        Signature::now(&username, &email).expect("Failed to create signature");
+        Signature::now(&username, &email).expect("[git_commit] Failed to create signature");
     let commit_id: git2::Oid = repo
         .commit(
-            Some("HEAD"),                                        // 更新 HEAD
-            &signature,                                          // 提交者信息
-            &signature,                                          // 提交者信息
-            "rust commit test",                                  // 提交信息
-            &tree,                                               // 树对象
-            &[&head.as_commit().expect("HEAD is not a commit")], // 父提交对象
+            Some("HEAD"),                                                     // 更新 HEAD
+            &signature,                                                       // 提交者信息
+            &signature,                                                       // 提交者信息
+            message,                                                          // 提交信息
+            &tree,                                                            // 树对象
+            &[&head.as_commit().expect("[git_commit] HEAD is not a commit")], // 父提交对象
         )
-        .expect("Failed to create commit");
+        .expect("[git_commit] Failed to create commit");
 
-    println!("New commit created: {}", commit_id);
+    println!("[git_commit] New commit created: {}", commit_id);
 }
 
 pub fn push(local_path: &str) {
-    let repo: Repository = Repository::open(local_path).expect("Failed to open repository");
+    let repo: Repository =
+        Repository::open(local_path).expect("[git_push] Failed to open repository");
     let remote_name: &str = "origin"; // 远程仓库的名称
 
     let mut remote: git2::Remote<'_> = repo
         .find_remote(remote_name)
-        .expect("Failed to find remote");
+        .expect("[git_push] Failed to find remote");
 
     let mut push_options: PushOptions<'_> = PushOptions::new();
 
     let mut callbacks = RemoteCallbacks::new();
     callbacks.credentials(|_url, _username_from_url, _allowed_types| {
-        let github_token = get_env("GITHUB_TOKEN");
-        let username = get_env("USER_NAME");
+        let username = get_user_value("username");
+        let token = get_user_value("token");
 
         // 使用 Token 进行认证
-        Cred::userpass_plaintext(&username, &github_token)
+        Cred::userpass_plaintext(&username, &token)
     });
 
     push_options.remote_callbacks(callbacks);
@@ -126,9 +125,9 @@ pub fn push(local_path: &str) {
     remote
         .push(&["refs/heads/main"], Some(&mut push_options))
         .map_err(|err| {
-            eprintln!("Failed to push to remote: {}", err);
+            eprintln!("[git_push] Failed to push to remote: {}", err);
             err
         })
         .ok()
-        .map(|_| println!("Push successful!"));
+        .map(|_| println!("[git_push] Push successful!"));
 }

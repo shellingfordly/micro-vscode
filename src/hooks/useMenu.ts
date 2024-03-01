@@ -17,10 +17,6 @@ export function useMenu() {
           key: "pull",
         },
         {
-          label: "add",
-          key: "add",
-        },
-        {
           label: "commit",
           key: "commit",
         },
@@ -41,9 +37,7 @@ export function useMenu() {
   ]);
 
   onMounted(async () => {
-    const data = await invoke("get_projects", {
-      name: "rust-git",
-    });
+    const data = await invoke("get_projects");
     projects.value = data as string[];
   });
 

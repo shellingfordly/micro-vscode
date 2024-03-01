@@ -1,15 +1,17 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { MenuOption } from "naive-ui";
 
+const selectedProjectName = ref("");
+
 export function useProjectFile() {
   async function getProjectFiles(projectName: string) {
-    const data: string[] = await invoke("get_files", {
+    const data: string[] = await invoke("get_project_files", {
       name: projectName,
     });
     return data;
   }
 
-  return { getProjectFiles, handleProjectFileToOptions };
+  return { getProjectFiles, handleProjectFileToOptions, selectedProjectName };
 }
 
 function handleProjectFileToOptions(filePaths: string[], rootFileName: string) {

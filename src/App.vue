@@ -4,12 +4,15 @@ import { type MenuOption, darkTheme, lightTheme } from "naive-ui";
 
 const isDark = useDark();
 const theme = computed(() => (isDark.value ? darkTheme : lightTheme));
-const { getProjectFiles, handleProjectFileToOptions } = useProjectFile();
+const { getProjectFiles, handleProjectFileToOptions, selectedProjectName } =
+  useProjectFile();
 const fileOptions = ref<MenuOption[]>([]);
 const content = ref("");
 const filePath = ref("");
 
 async function onChangeProject(projectName: string) {
+  selectedProjectName.value = projectName;
+
   const data = await getProjectFiles(projectName);
   fileOptions.value = handleProjectFileToOptions(data, projectName) as any[];
 }
@@ -26,54 +29,56 @@ async function onClickFile(name: string) {
 
 <template>
   <n-config-provider :theme="theme" style="height: 100%">
-    <n-layout style="height: 100%">
-      <n-layout-header
-        bordered
-        style="display: flex; justify-content: space-between"
-      >
-        <Menu @change="onChangeProject" />
-        <Action />
-      </n-layout-header>
-      <n-layout has-sider style="height: calc(100% - 76px)">
-        <n-split
-          direction="horizontal"
-          style="height: 100%"
-          :resize-trigger-size="2"
-          :max="0.75"
-          :min="0.25"
+    <n-message-provider>
+      <n-layout style="height: 100%">
+        <n-layout-header
+          bordered
+          style="display: flex; justify-content: space-between"
         >
-          <template #1>
-            <n-layout-sider
-              collapse-mode="width"
-              :collapsed-width="64"
-              width="100%"
-              style="height: 100%"
-              :native-scrollbar="false"
-            >
-              <n-menu
-                :collapsed-width="0"
-                :collapsed-icon-size="22"
-                :options="fileOptions"
+          <Menu @change="onChangeProject" />
+          <Action />
+        </n-layout-header>
+        <n-layout has-sider style="height: calc(100% - 76px)">
+          <n-split
+            direction="horizontal"
+            style="height: 100%"
+            :resize-trigger-size="2"
+            :max="0.75"
+            :min="0.25"
+          >
+            <template #1>
+              <n-layout-sider
+                collapse-mode="width"
+                :collapsed-width="64"
+                width="100%"
                 style="height: 100%"
-                @update:value="onClickFile"
-              />
-            </n-layout-sider>
-          </template>
-          <template #2>
-            <n-layout style="height: 100%">
-              <Editor
-                v-if="content && filePath"
-                v-model="content"
-                :filepath="filePath"
-              />
-            </n-layout>
-          </template>
-        </n-split>
+                :native-scrollbar="false"
+              >
+                <n-menu
+                  :collapsed-width="0"
+                  :collapsed-icon-size="22"
+                  :options="fileOptions"
+                  style="height: 100%"
+                  @update:value="onClickFile"
+                />
+              </n-layout-sider>
+            </template>
+            <template #2>
+              <n-layout style="height: 100%">
+                <Editor
+                  v-if="content && filePath"
+                  v-model="content"
+                  :filepath="filePath"
+                />
+              </n-layout>
+            </template>
+          </n-split>
+        </n-layout>
+        <n-layout-footer bordered style="padding: 5px 10px; text-align: right">
+          CC BY-NC-SA 4.0 2024-PRESENT ©
+          <a href="https://github.com/shellingfordly">shellingfordly</a>
+        </n-layout-footer>
       </n-layout>
-      <n-layout-footer bordered style="padding: 5px 10px; text-align: right">
-        CC BY-NC-SA 4.0 2024-PRESENT ©
-        <a href="https://github.com/shellingfordly">shellingfordly</a>
-      </n-layout-footer>
-    </n-layout>
+    </n-message-provider>
   </n-config-provider>
 </template>

@@ -1,9 +1,13 @@
 mod file;
 mod git;
+mod path;
+mod project;
 mod utils;
-use file::{get_files_name, get_files_path_deep, read_file_content};
+use file::read_file_content;
+use path::{get_path, get_path_str};
+use project::{get_project_files_deep, get_project_name};
 use std::fs;
-use utils::{get_name, get_path, get_path_str};
+use utils::get_url_name;
 
 #[tauri::command]
 fn git_set_user(data: &str) -> bool {
@@ -35,8 +39,9 @@ fn git_get_user() -> String {
 
 #[tauri::command]
 fn git_clone(url: &str) -> String {
-    let name = get_name(url);
+    let name = get_url_name(url);
     let path = get_path_str(&format!("../templates/{}", name));
+
     let success = git::clone(url, &path);
 
     if success {
@@ -49,20 +54,36 @@ fn git_clone(url: &str) -> String {
 }
 
 #[tauri::command]
-fn git_pull(url: &str, name: &str) -> String {
+fn git_pull(name: &str) -> String {
     let path = get_path_str(&format!("../templates/{}", name));
-    git::pull(url, &path);
+    git::pull(&path);
+    format!("ok")
+}
+
+#[tauri::command]
+fn git_commit(name: &str, message: &str) -> String {
+    let path = get_path_str(&format!("../templates/{}", name));
+
+    git::commit(&path, message);
+    format!("ok")
+}
+
+#[tauri::command]
+fn git_push(name: &str) -> String {
+    let path = get_path_str(&format!("../templates/{}", name));
+
+    git::push(&path);
     format!("ok")
 }
 
 #[tauri::command]
 fn get_projects() -> Result<Vec<String>, String> {
-    get_files_name(get_path("../templates/"))
+    get_project_name(get_path("../templates/"))
 }
 
 #[tauri::command]
-fn get_files(name: String) -> Result<Vec<String>, String> {
-    get_files_path_deep(get_path(&format!("../templates/{}", name)))
+fn get_project_files(name: String) -> Result<Vec<String>, String> {
+    get_project_files_deep(get_path(&format!("../templates/{}", name)))
 }
 
 #[tauri::command]
@@ -78,9 +99,11 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             git_clone,
             git_pull,
-            get_files,
-            get_projects,
+            git_commit,
+            git_push,
             read_file,
+            get_projects,
+            get_project_files,
             git_set_user,
             git_get_user
         ])
