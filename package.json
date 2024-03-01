@@ -21,6 +21,7 @@
     "monaco-editor-core": "^0.46.0",
     "monaco-editor-textmate": "^4.0.0",
     "monaco-textmate": "^3.0.1",
+    "pinia": "^2.1.7",
     "shiki": "^1.1.7",
     "vue": "^3.3.4"
   },

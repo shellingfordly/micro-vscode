@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
+import { useProjectStore } from "../stores/project";
 
 const emit = defineEmits(["change", "clone", "commit"]);
-const { menuOptions } = useMenu();
 const showModal = reactive({
   clone: false,
   commit: false,
@@ -10,8 +10,8 @@ const showModal = reactive({
 const url = ref("");
 const loading = ref(false);
 const message = useMessage();
-const { selectedProjectName } = useProjectFile();
 const commitMsg = ref("");
+const projectStore = useProjectStore();
 
 async function onUpdateValue(key: string) {
   if (key === "clone") {
@@ -28,8 +28,10 @@ async function onUpdateValue(key: string) {
 }
 
 async function onPull() {
-  if (selectedProjectName.value) {
-    const data = await invoke("git_pull", { name: selectedProjectName.value });
+  if (projectStore.selectProjectName) {
+    const data = await invoke("git_pull", {
+      name: projectStore.selectProjectName,
+    });
     if (data === "ok") {
       message.success(`git pull successful!`);
     }
@@ -37,8 +39,10 @@ async function onPull() {
 }
 
 async function onPush() {
-  if (selectedProjectName.value) {
-    const data = await invoke("git_push", { name: selectedProjectName.value });
+  if (projectStore.selectProjectName) {
+    const data = await invoke("git_push", {
+      name: projectStore.selectProjectName,
+    });
     if (data === "ok") {
       message.success(`git push successful!`);
     }
@@ -58,11 +62,11 @@ async function onClone() {
 }
 
 async function onCommit() {
-  if (!selectedProjectName.value || !commitMsg.value) return;
+  if (!projectStore.selectProjectName || !commitMsg.value) return;
 
   loading.value = true;
   const data = await invoke("git_commit", {
-    name: selectedProjectName.value,
+    name: projectStore.selectProjectName,
     message: commitMsg.value,
   });
 
@@ -79,7 +83,7 @@ async function onCommit() {
 <template>
   <n-menu
     mode="horizontal"
-    :options="menuOptions"
+    :options="projectStore.projectMenuOptions"
     @update:value="onUpdateValue"
   />
   <n-modal

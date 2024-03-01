@@ -11,7 +11,7 @@ import CodeIcon from "../components/icons/code.vue";
 import MdIcon from "../components/icons/md.vue";
 import RsIcon from "../components/icons/rust.vue";
 
-export function handleIcon(type: string, fileName?: string) {
+export function handleFileIcon(type: string, fileName?: string) {
   const hh = (Icon: any) => () => h(NIcon, null, { default: () => h(Icon) });
 
   if (type === "file") {
@@ -41,4 +41,39 @@ export function handleIcon(type: string, fileName?: string) {
   } else if (type === "dir") {
     return hh(FolderIcon);
   }
+}
+
+export function handleProjectMenu(projects: string[]) {
+  return [
+    {
+      label: "Git",
+      key: "git",
+      children: [
+        {
+          label: "clone",
+          key: "clone",
+        },
+        {
+          label: "pull",
+          key: "pull",
+        },
+        {
+          label: "commit",
+          key: "commit",
+        },
+        {
+          label: "push",
+          key: "push",
+        },
+      ],
+    },
+    {
+      label: "Project",
+      key: "project",
+      children: projects.map((label) => ({
+        label,
+        key: label,
+      })),
+    },
+  ];
 }

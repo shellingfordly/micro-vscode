@@ -1,37 +1,26 @@
 <script setup lang="ts">
-import { invoke } from "@tauri-apps/api/core";
-import { type MenuOption, darkTheme, lightTheme } from "naive-ui";
+import { darkTheme, lightTheme } from "naive-ui";
+import { useProjectStore } from "./stores/project";
 
 const isDark = useDark();
 const theme = computed(() => (isDark.value ? darkTheme : lightTheme));
-const { getProjectFiles, handleProjectFileToOptions, selectedProjectName } =
-  useProjectFile();
-const fileOptions = ref<MenuOption[]>([]);
-const content = ref("");
-const filePath = ref("");
+const projectStore = useProjectStore();
+const isShowEditor = computed(
+  () => projectStore.fileInfo.content && projectStore.fileInfo.path
+);
+
+onMounted(projectStore.getProjectList);
 
 async function onChangeProject(projectName: string) {
-  selectedProjectName.value = projectName;
-
-  const data = await getProjectFiles(projectName);
-  fileOptions.value = handleProjectFileToOptions(data, projectName) as any[];
+  projectStore.selectProjectName = projectName;
 }
 
 async function onClickFile(path: string) {
-  const data: string = await invoke("read_file", {
-    path,
-  });
-
-  filePath.value = path;
-  content.value = data;
+  projectStore.getFileContent(path);
 }
 
 async function onSaveFile() {
-  const data = await invoke("write_file", {
-    path: filePath.value,
-    content: content.value,
-  });
-  console.log("onSaveFile: ", data);
+  projectStore.saveFileContent();
 }
 </script>
 
@@ -65,7 +54,7 @@ async function onSaveFile() {
                 <n-menu
                   :collapsed-width="0"
                   :collapsed-icon-size="22"
-                  :options="fileOptions"
+                  :options="projectStore.fileMenuOptions"
                   style="height: 100%"
                   @update:value="onClickFile"
                 />
@@ -74,9 +63,9 @@ async function onSaveFile() {
             <template #2>
               <n-layout style="height: 100%">
                 <Editor
-                  v-if="content && filePath"
-                  v-model="content"
-                  :filepath="filePath"
+                  v-if="isShowEditor"
+                  v-model="projectStore.fileInfo.content"
+                  :filepath="projectStore.fileInfo.path"
                   @save="onSaveFile"
                 />
               </n-layout>
