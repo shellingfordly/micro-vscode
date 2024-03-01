@@ -48,6 +48,7 @@ function onClickFileTab(path: string) {
           <n-split
             direction="horizontal"
             style="height: 100%"
+            :default-size="0.25"
             :resize-trigger-size="2"
             :max="0.75"
             :min="0.25"
@@ -81,9 +82,29 @@ function onClickFileTab(path: string) {
                 <n-tab-pane
                   v-for="tab in projectStore.fileTabs"
                   :key="tab.value"
-                  :tab="tab.label"
                   :name="tab.value"
-                />
+                >
+                  <template #tab>
+                    <div style="display: flex; align-items: center">
+                      <span style="margin-right: 5px">{{ tab.label }}</span>
+                      <template
+                        v-if="projectStore.modifiedFiles.has(tab.value)"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill="currentColor"
+                            d="M12 7a5 5 0 1 1-4.995 5.217L7 12l.005-.217A5 5 0 0 1 12 7"
+                          />
+                        </svg>
+                      </template>
+                    </div>
+                  </template>
+                </n-tab-pane>
               </n-tabs>
               <n-layout style="height: 100%">
                 <Editor

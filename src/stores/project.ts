@@ -21,6 +21,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
   });
   const fileTabs = ref<{ label: string; value: string }[]>([]);
   const selectFileTab = ref("");
+  const modifiedFiles = ref<Set<string>>(new Set());
 
   watch(selectProjectName, async (name) => {
     const data = await getProjectFiles(name);
@@ -31,6 +32,19 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     fileTabs.value = [];
     clearFileContent();
   });
+
+  watch(
+    () => fileInfo.content,
+    (newValue) => {
+      if (FileContentMap.has(fileInfo.path)) {
+        const oldValue = FileContentMap.get(fileInfo.path);
+        if (oldValue !== newValue) {
+          modifiedFiles.value.add(fileInfo.path);
+        }
+      }
+    },
+    { immediate: true, deep: true }
+  );
 
   async function getProjectFiles(projectName: string) {
     const data: string[] = await invoke("get_project_files", {
@@ -71,6 +85,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
       path: fileInfo.path,
       content: fileInfo.content,
     });
+    FileContentMap.set(fileInfo.path, fileInfo.content);
     return data;
   }
 
@@ -112,6 +127,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     fileInfo,
     fileTabs,
     selectFileTab,
+    modifiedFiles,
     getProjectFiles,
     getProjectList,
     getFileContent,
