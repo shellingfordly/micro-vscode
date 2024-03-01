@@ -7,6 +7,7 @@ import {
 } from "../utils/projectHandle";
 
 const FileContentMap = new Map<string, string>();
+const FileContentChangeMap = new Map<string, string>();
 
 export const useProjectStore = defineStore("useProjectStore", () => {
   const selectProjectName = ref("");
@@ -42,6 +43,8 @@ export const useProjectStore = defineStore("useProjectStore", () => {
           modifiedFiles.value.add(fileInfo.path);
         }
       }
+
+      if (fileInfo.path) FileContentChangeMap.set(fileInfo.path, newValue);
     },
     { immediate: true, deep: true }
   );
@@ -65,15 +68,15 @@ export const useProjectStore = defineStore("useProjectStore", () => {
 
   async function getFileContent(path: string) {
     let data = "";
-
-    if (!FileContentMap.has(path)) {
+    if (!FileContentMap.has(path) && !FileContentChangeMap.has(path)) {
       data = await invoke("read_file", {
         path,
       });
 
       FileContentMap.set(path, data);
+      FileContentChangeMap.set(path, data);
     } else {
-      data = FileContentMap.get(path) || "";
+      data = FileContentChangeMap.get(path) || FileContentMap.get(path) || "";
     }
 
     fileInfo.content = data;
@@ -81,12 +84,36 @@ export const useProjectStore = defineStore("useProjectStore", () => {
   }
 
   async function saveFileContent() {
-    const data = await invoke("write_file", {
+    // 没有修改过的文件直接返回
+    if (!modifiedFiles.value.has(fileInfo.path)) return;
+
+    await invoke("write_file", {
       path: fileInfo.path,
       content: fileInfo.content,
     });
     FileContentMap.set(fileInfo.path, fileInfo.content);
-    return data;
+
+    // 清除已修改文件
+    modifiedFiles.value.delete(fileInfo.path);
+  }
+
+  function saveAllFileContent() {
+    const list = [...modifiedFiles.value]
+      .filter((path) => FileContentChangeMap.has(path))
+      .map((path) => {
+        return invoke("write_file", {
+          path: path,
+          content: FileContentChangeMap.get(path),
+        });
+      });
+
+    Promise.all(list).then(() => {
+      modifiedFiles.value.forEach((path) => {
+        if (FileContentChangeMap.has(path))
+          FileContentMap.set(path, FileContentChangeMap.get(path)!);
+      });
+      modifiedFiles.value.clear();
+    });
   }
 
   function addFileTab(value: string) {
@@ -132,6 +159,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     getProjectList,
     getFileContent,
     saveFileContent,
+    saveAllFileContent,
     addFileTab,
     closeFileTab,
   };

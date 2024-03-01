@@ -61,11 +61,14 @@ function onClickFileTab(path: string) {
                 style="height: 100%"
                 :native-scrollbar="false"
               >
+                <n-layout-header bordered>
+                  <Tools />
+                </n-layout-header>
                 <n-menu
                   :collapsed-width="0"
                   :collapsed-icon-size="22"
                   :options="projectStore.fileMenuOptions"
-                  style="height: 100%"
+                  style="height: calc(100% - 50px)"
                   @update:value="onClickFile"
                 />
               </n-layout-sider>
@@ -108,7 +111,7 @@ function onClickFileTab(path: string) {
               </n-tabs>
               <n-layout style="height: 100%">
                 <Editor
-                  v-if="isShowEditor"
+                  v-show="isShowEditor"
                   v-model="projectStore.fileInfo.content"
                   :filepath="projectStore.fileInfo.path"
                   @save="onSaveFile"
