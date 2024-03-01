@@ -11,10 +11,9 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
 
 - [ ] Git
   - [x] clone
-  - [ ] pull
-  - [ ] add
-  - [ ] commit
-  - [ ] push
+  - [x] pull
+  - [x] commit
+  - [x] push
 - [ ] Project
   - [x] read
   - [ ] editor
@@ -25,7 +24,6 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
 - Integrated the basic function of git
   - git clone
   - git pull
-  - git add
   - git commit
   - git push
 - about project
