@@ -1,7 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import { defineStore } from "pinia";
 import type { MenuOption } from "naive-ui";
-import { handleProjectMenu, handleFileIcon } from "../utils/projectHandle";
+import {
+  handleProjectMenu,
+  handleFileMenuOptions,
+} from "../utils/projectHandle";
+
+const FileContentMap = new Map<string, string>();
 
 export const useProjectStore = defineStore("useProjectStore", () => {
   const selectProjectName = ref("");
@@ -14,11 +19,17 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     content: "",
     path: "",
   });
+  const fileTabs = ref<{ label: string; value: string }[]>([]);
+  const selectFileTab = ref("");
 
   watch(selectProjectName, async (name) => {
     const data = await getProjectFiles(name);
 
-    fileMenuOptions.value = handleProjectFiles(data, name) as any[];
+    fileMenuOptions.value = handleFileMenuOptions(data, name) as any[];
+
+    // 清除旧文件
+    fileTabs.value = [];
+    clearFileContent();
   });
 
   async function getProjectFiles(projectName: string) {
@@ -33,10 +44,24 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     projectNameList.value = data as string[];
   }
 
+  function clearFileContent() {
+    fileInfo.content = "";
+    fileInfo.path = "";
+  }
+
   async function getFileContent(path: string) {
-    const data: string = await invoke("read_file", {
-      path,
-    });
+    let data = "";
+
+    if (!FileContentMap.has(path)) {
+      data = await invoke("read_file", {
+        path,
+      });
+
+      FileContentMap.set(path, data);
+    } else {
+      data = FileContentMap.get(path) || "";
+    }
+
     fileInfo.content = data;
     fileInfo.path = path;
   }
@@ -49,88 +74,49 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     return data;
   }
 
+  function addFileTab(value: string) {
+    if (
+      value &&
+      fileTabs.value.findIndex((item) => item.value === value) === -1
+    ) {
+      const label = value.split("/").pop() || value;
+      fileTabs.value.push({ label, value: value });
+    }
+    selectFileTab.value = value;
+  }
+
+  function closeFileTab(value: string) {
+    const index = fileTabs.value.findIndex((item) => item.value === value);
+    if (index === -1) return;
+
+    // 关闭tab
+    fileTabs.value.splice(index, 1);
+
+    // 当前显示的tab
+    const i =
+      fileTabs.value.length === 1 ? 0 : index > 0 ? index - 1 : index + 1;
+    const tab = fileTabs.value[i];
+    if (tab) {
+      selectFileTab.value = tab.value;
+      getFileContent(tab.value);
+    } else {
+      clearFileContent();
+    }
+  }
+
   return {
     selectProjectName,
     projectNameList,
     fileMenuOptions,
     projectMenuOptions,
     fileInfo,
+    fileTabs,
+    selectFileTab,
     getProjectFiles,
     getProjectList,
     getFileContent,
     saveFileContent,
+    addFileTab,
+    closeFileTab,
   };
 });
-
-function handleProjectFiles(
-  filePaths: string[],
-  rootFileName: string
-): MenuOption[] {
-  const root: MenuOption = {
-    label: rootFileName,
-    key: rootFileName,
-    icon: handleFileIcon("dir"),
-    type: "dir",
-    children: [],
-  };
-
-  const paths = filePaths.map((v) => {
-    const index = v.match(rootFileName)?.index || 0;
-    return v.slice(index + rootFileName.length + 1);
-  });
-
-  paths.forEach((path) => {
-    const parts = path.split("/");
-    let currentNode = root;
-    parts.forEach((fileName) => {
-      const existingChild = currentNode.children?.find(
-        (child) => child.label === fileName
-      );
-      if (!existingChild) {
-        const type = path.endsWith(fileName) ? "file" : "dir";
-        const newChild = {
-          label: fileName,
-          icon: handleFileIcon(type, fileName),
-          type,
-          key: rootFileName + "/" + path,
-        };
-        if (currentNode.children) {
-          currentNode.children?.push(newChild);
-        } else {
-          currentNode.children = [newChild];
-        }
-        currentNode = newChild;
-      } else {
-        currentNode = existingChild;
-      }
-    });
-  });
-
-  function sortFile(data: MenuOption[]): MenuOption[] {
-    const sort = (d: any[]) =>
-      d.sort((a, b) => {
-        if (a.type === "dir" && b.type === "file") {
-          return -1;
-        } else if (a.type === "file" && b.type === "dir") {
-          return 1;
-        }
-        return a.label.localeCompare(b.label);
-      });
-
-    const sort_recursion = (d: any[]) => {
-      sort(d);
-
-      d.forEach((item) => {
-        if (item.children?.length) {
-          sort_recursion(item.children);
-        }
-      });
-    };
-
-    sort_recursion(data);
-
-    return data;
-  }
-
-  return sortFile([root]);
-}

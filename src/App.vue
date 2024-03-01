@@ -17,10 +17,19 @@ async function onChangeProject(projectName: string) {
 
 async function onClickFile(path: string) {
   projectStore.getFileContent(path);
+  projectStore.addFileTab(path);
 }
 
 async function onSaveFile() {
   projectStore.saveFileContent();
+}
+
+function onCloseFileTab(value: string) {
+  projectStore.closeFileTab(value);
+}
+
+function onClickFileTab(path: string) {
+  projectStore.getFileContent(path);
 }
 </script>
 
@@ -61,6 +70,21 @@ async function onSaveFile() {
               </n-layout-sider>
             </template>
             <template #2>
+              <n-tabs
+                v-model:value="projectStore.selectFileTab"
+                type="card"
+                closable
+                size="small"
+                @update-value="onClickFileTab"
+                @close="onCloseFileTab"
+              >
+                <n-tab-pane
+                  v-for="tab in projectStore.fileTabs"
+                  :key="tab.value"
+                  :tab="tab.label"
+                  :name="tab.value"
+                />
+              </n-tabs>
               <n-layout style="height: 100%">
                 <Editor
                   v-if="isShowEditor"
