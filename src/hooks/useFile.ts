@@ -54,7 +54,6 @@ function handleProjectFileToOptions(filePaths: string[], rootFileName: string) {
       }
     });
   });
-  console.log(root);
   return sortFile([root]);
 }
 

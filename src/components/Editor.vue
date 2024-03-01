@@ -12,6 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: "update:modelValue", value: string): void;
   (event: "change", value: string): void;
+  (event: "save", value: string): void;
 }>();
 
 initMonaco();
@@ -97,7 +98,10 @@ watch(
       emit("change", value);
     });
 
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {});
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+      const value = editor.getValue();
+      emit("save", value);
+    });
 
     watch(
       () => props.filepath,

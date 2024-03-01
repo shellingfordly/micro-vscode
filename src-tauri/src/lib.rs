@@ -87,8 +87,18 @@ fn get_project_files(name: String) -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
-fn read_file(name: String) -> String {
-    read_file_content(get_path(&format!("../templates/{}", name)))
+fn read_file(path: String) -> String {
+    read_file_content(get_path(&format!("../templates/{}", path)))
+}
+
+#[tauri::command]
+fn write_file(path: &str, content: &str) -> String {
+    match fs::write(get_path(&format!("../templates/{}", path)), content) {
+        Ok(_) => {
+            format!("ok")
+        }
+        Err(err) => format!("Read filed [{}]", err),
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -102,6 +112,7 @@ pub fn run() {
             git_commit,
             git_push,
             read_file,
+            write_file,
             get_projects,
             get_project_files,
             git_set_user,

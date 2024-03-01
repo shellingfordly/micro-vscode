@@ -17,13 +17,21 @@ async function onChangeProject(projectName: string) {
   fileOptions.value = handleProjectFileToOptions(data, projectName) as any[];
 }
 
-async function onClickFile(name: string) {
+async function onClickFile(path: string) {
   const data: string = await invoke("read_file", {
-    name,
+    path,
   });
 
-  filePath.value = name;
+  filePath.value = path;
   content.value = data;
+}
+
+async function onSaveFile() {
+  const data = await invoke("write_file", {
+    path: filePath.value,
+    content: content.value,
+  });
+  console.log("onSaveFile: ", data);
 }
 </script>
 
@@ -69,6 +77,7 @@ async function onClickFile(name: string) {
                   v-if="content && filePath"
                   v-model="content"
                   :filepath="filePath"
+                  @save="onSaveFile"
                 />
               </n-layout>
             </template>
