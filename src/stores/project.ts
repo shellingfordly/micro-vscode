@@ -37,8 +37,10 @@ export const useProjectStore = defineStore("useProjectStore", () => {
   watch(
     () => fileInfo.content,
     (newValue) => {
+      if (!fileInfo.path) return;
       if (FileContentMap.has(fileInfo.path)) {
         const oldValue = FileContentMap.get(fileInfo.path);
+
         if (oldValue !== newValue) {
           modifiedFiles.value.add(fileInfo.path);
         }
@@ -83,21 +85,27 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     fileInfo.path = path;
   }
 
-  async function saveFileContent() {
-    // 没有修改过的文件直接返回
-    if (!modifiedFiles.value.has(fileInfo.path)) return;
+  async function saveCurrentFile() {
+    if (modifiedFiles.value.has(fileInfo.path)) {
+      await invoke("write_file", {
+        path: fileInfo.path,
+        content: fileInfo.content,
+      });
 
-    await invoke("write_file", {
-      path: fileInfo.path,
-      content: fileInfo.content,
-    });
-    FileContentMap.set(fileInfo.path, fileInfo.content);
-
-    // 清除已修改文件
-    modifiedFiles.value.delete(fileInfo.path);
+      FileContentMap.set(fileInfo.path, fileInfo.content);
+      modifiedFiles.value.delete(fileInfo.path);
+    }
   }
 
-  function saveAllFileContent() {
+  function notSaveCurrentFile() {
+    modifiedFiles.value.delete(fileInfo.path);
+
+    if (FileContentChangeMap.has(fileInfo.path)) {
+      FileContentChangeMap.delete(fileInfo.path);
+    }
+  }
+
+  function saveAllFile() {
     const list = [...modifiedFiles.value]
       .filter((path) => FileContentChangeMap.has(path))
       .map((path) => {
@@ -158,8 +166,9 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     getProjectFiles,
     getProjectList,
     getFileContent,
-    saveFileContent,
-    saveAllFileContent,
+    saveCurrentFile,
+    notSaveCurrentFile,
+    saveAllFile,
     addFileTab,
     closeFileTab,
   };

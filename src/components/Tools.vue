@@ -4,8 +4,9 @@ import { useProjectStore } from "../stores/project";
 const projectStore = useProjectStore();
 
 function onSaveFileAll() {
-  if (projectStore.modifiedFiles.values.length)
-    projectStore.saveAllFileContent();
+  if (projectStore.modifiedFiles.size) {
+    projectStore.saveAllFile();
+  }
 }
 
 function onSaveFile() {
@@ -14,7 +15,7 @@ function onSaveFile() {
     projectStore.modifiedFiles.has(projectStore.selectFileTab);
 
   if (filepath) {
-    projectStore.saveFileContent();
+    projectStore.saveCurrentFile();
   }
 }
 </script>
