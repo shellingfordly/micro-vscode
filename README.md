@@ -7,9 +7,15 @@ This project is only used for learning.
 code is licensed under [MIT](https://github.com/shellingfordly/micro-vscode/blob/main/LICENSE),
 words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
+## Preview
+
+![project_light](./public/project_light.png)
+
 ## Todo List
 
 - [ ] read file system
+- [ ] new file
+- [ ] new folder
 - [ ] update git operation same width vscode
 - [ ] search
   - [ ] search content
@@ -50,16 +56,20 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
-## Preview
+## Usage
 
-- git actions
+- git clone
 
-![git](./public/git_dark.png)
+![git_clone](./public/git_clone.png)
 
-- dark mode
+- git commit
 
-![project_dark](./public/project_dark.png)
+![git_commit](./public/git_commit.png)
 
-- light mode
+- set git user
 
-![project_light](./public/project_light.png)
+![git_user](./public/git_user.png)
+
+- editor file
+
+![editor_file](./public/editor_file.png)
