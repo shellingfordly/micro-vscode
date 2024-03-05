@@ -62,7 +62,7 @@ async function onSetGitUser() {
       size="huge"
       :bordered="false"
     >
-      <n-form :model="form" :label-width="60" label-placement="left">
+      <n-form :model="form" :label-width="100" label-placement="left">
         <n-form-item label="Username" path="username">
           <n-input
             v-model:value="form.username"
