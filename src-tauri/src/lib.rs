@@ -4,7 +4,7 @@ mod path;
 mod project;
 mod utils;
 use file::read_file_content;
-use path::{get_path, get_path_str};
+use path::{check_path_and_create, get_path, get_path_str};
 use project::{get_project_files_deep, get_project_name};
 use std::fs;
 use utils::get_url_name;
@@ -41,6 +41,8 @@ fn git_get_user() -> String {
 fn git_clone(url: &str) -> String {
     let name = get_url_name(url);
     let path = get_path_str(&format!("../templates/{}", name));
+
+    check_path_and_create(&path);
 
     let success = git::clone(url, &path);
 
