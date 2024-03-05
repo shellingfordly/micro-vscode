@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { internalIpV4 } from "internal-ip";
@@ -5,11 +6,13 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 
-// @ts-expect-error process is a nodejs global
 const mobile = !!/android|ios/.exec(process.env.TAURI_ENV_PLATFORM);
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
+  resolve: {
+    alias: [{ find: "~/", replacement: `${resolve(__dirname, "src")}/` }],
+  },
   plugins: [
     vue(),
     AutoImport({

@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.0.0-beta.0",
+    "@types/node": "^20.11.24",
     "@vitejs/plugin-vue": "^5.0.4",
     "internal-ip": "^7.0.0",
     "less": "^4.2.0",
