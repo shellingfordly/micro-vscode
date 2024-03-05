@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
-import { useProjectStore } from "../stores/project";
+import { useProjectStore } from "~/stores/project";
 
 const emit = defineEmits(["change", "clone", "commit"]);
 const showModal = reactive({

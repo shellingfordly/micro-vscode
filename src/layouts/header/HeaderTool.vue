@@ -31,7 +31,7 @@ async function onSetGitUser() {
 }
 </script>
 <template>
-  <div class="action">
+  <div class="header-tool">
     <div class="icon" @click="showModal = true">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +109,7 @@ async function onSetGitUser() {
 </template>
 
 <style scoped lang="less">
-.action {
+.header-tool {
   display: flex;
   align-items: center;
   margin-right: 20px;

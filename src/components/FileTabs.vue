@@ -87,4 +87,9 @@ function onClickNotSaveFile() {
     </template>
   </n-modal>
 </template>
-<style scoped></style>
+
+<style scoped lang="less">
+.n-tabs .n-tab-pane {
+  padding: 0 !important;
+}
+</style>
