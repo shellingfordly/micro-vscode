@@ -13,6 +13,8 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
 
 ## Todo List
 
+### Functions
+
 - [ ] read file system
 - [ ] new file
 - [ ] new folder
@@ -20,6 +22,10 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
 - [ ] search
   - [ ] search content
   - [ ] search file by name
+
+### Bug
+
+- [ ] build error
 
 ## Features
 
