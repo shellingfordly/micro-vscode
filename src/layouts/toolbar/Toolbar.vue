@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import FileIcon from "~/components/icons/file.vue";
-import GitIcon from "~/components/icons/git.vue";
+const tabs = reactive([
+  {
+    icon: "material-symbols:file-copy-outline-rounded",
+    name: "file",
+  },
+  {
+    icon: "ion:ios-git-branch",
+    name: "git",
+  },
+]);
 </script>
 
 <template>
@@ -11,11 +19,10 @@ import GitIcon from "~/components/icons/git.vue";
     placement="left"
     style="height: 100%"
   >
-    <n-tab name="file">
-      <FileIcon width="16px" height="16px" />
-    </n-tab>
-    <n-tab name="tab">
-      <GitIcon width="16px" height="16px" />
+    <n-tab v-for="tab in tabs" :name="tab.name">
+      <div style="padding: 2px">
+        <Icon :size="18" :icon="tab.icon" />
+      </div>
     </n-tab>
   </n-tabs>
 </template>

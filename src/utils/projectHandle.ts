@@ -1,46 +1,57 @@
-import { NIcon } from "naive-ui";
-import FolderIcon from "../components/icons/folder.vue";
-import JsIcon from "../components/icons/js.vue";
-import TsIcon from "../components/icons/ts.vue";
-import VueIcon from "../components/icons/vue.vue";
-import CssIcon from "../components/icons/css.vue";
-import LessIcon from "../components/icons/less.vue";
-import SassIcon from "../components/icons/sass.vue";
-import JsonIcon from "../components/icons/json.vue";
-import CodeIcon from "../components/icons/code.vue";
-import MdIcon from "../components/icons/md.vue";
-import RsIcon from "../components/icons/rust.vue";
 import type { MenuOption } from "naive-ui";
 
 export function handleFileIcon(type: string, fileName?: string) {
-  const hh = (Icon: any) => () => h(NIcon, null, { default: () => h(Icon) });
+  const hh = (icon: string) => () => h("iconify-icon", { icon });
 
   if (type === "file") {
-    const t = fileName?.split(".").pop();
-    switch (t) {
+    const list = (fileName?.split(".") || [])
+      .filter((v) => v)
+      .map((v) => v.toLocaleLowerCase());
+    // 前缀
+    const prefix = list.shift();
+
+    switch (prefix) {
+      case "cargo":
+        return hh("vscode-icons:file-type-cargo");
+      case "pnpm-lock":
+        return hh("vscode-icons:file-type-pnpm");
+      case "license":
+        return hh("vscode-icons:file-type-license");
+      case "vercel":
+        return hh("vscode-icons:file-type-vercel");
+      case "tsconfig":
+        return hh("vscode-icons:file-type-tsconfig");
+      case "unocss":
+        return hh("vscode-icons:file-type-unocss");
+      case "package":
+        return hh("vscode-icons:file-type-npm");
+    }
+
+    const suffix = list.pop();
+    switch (suffix) {
       case "js":
-        return hh(JsIcon);
+        return hh("vscode-icons:file-type-js");
       case "ts":
-        return hh(TsIcon);
+        return hh("vscode-icons:file-type-typescript");
       case "vue":
-        return hh(VueIcon);
+        return hh("vscode-icons:file-type-vue");
       case "css":
-        return hh(CssIcon);
+        return hh("vscode-icons:file-type-postcss");
       case "less":
-        return hh(LessIcon);
+        return hh("vscode-icons:file-type-less");
       case "sass":
-        return hh(SassIcon);
+        return hh("vscode-icons:file-type-sass");
       case "json":
-        return hh(JsonIcon);
+        return hh("vscode-icons:file-type-json");
       case "md":
-        return hh(MdIcon);
+        return hh("vscode-icons:file-type-markdown");
       case "rs":
-        return hh(RsIcon);
+        return hh("vscode-icons:file-type-rust");
       default:
-        return hh(CodeIcon);
+        return hh("vscode-icons:file-type-codekit");
     }
   } else if (type === "dir") {
-    return hh(FolderIcon);
+    return hh("vscode-icons:default-folder");
   }
 }
 

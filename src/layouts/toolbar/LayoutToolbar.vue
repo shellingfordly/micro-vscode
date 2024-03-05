@@ -15,20 +15,11 @@ async function onClickFile(path: string) {
 
 <template>
   <n-layout has-sider style="display: flex; height: 100%">
+    <Toolbar />
     <n-layout-sider
       collapse-mode="width"
       :collapsed-width="64"
-      width="48px"
-      style="height: 100%"
-      :native-scrollbar="false"
-      bordered
-    >
-      <Toolbar />
-    </n-layout-sider>
-    <n-layout-sider
-      collapse-mode="width"
-      :collapsed-width="64"
-      width="calc(100% - 48px)"
+      width="calc(100% - 51px)"
       style="height: 100%"
       :native-scrollbar="false"
     >

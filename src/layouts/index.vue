@@ -22,10 +22,10 @@ onMounted(projectStore.getProjectList);
           <n-split
             direction="horizontal"
             style="height: 100%"
-            :default-size="0.25"
+            :default-size="0.28"
             :resize-trigger-size="2"
             :max="0.75"
-            :min="0.25"
+            :min="0.28"
           >
             <template #1>
               <LayoutToolbar />
