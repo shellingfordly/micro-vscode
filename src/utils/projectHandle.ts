@@ -1,7 +1,7 @@
 import type { MenuOption } from "naive-ui";
 
 export function handleFileIcon(type: string, fileName?: string) {
-  const hh = (icon: string) => () => h("iconify-icon", { icon });
+  const _h = (icon: string) => () => h("iconify-icon", { icon });
 
   if (type === "file") {
     const list = (fileName?.split(".") || [])
@@ -12,46 +12,72 @@ export function handleFileIcon(type: string, fileName?: string) {
 
     switch (prefix) {
       case "cargo":
-        return hh("vscode-icons:file-type-cargo");
+        return _h("vscode-icons:file-type-cargo");
       case "pnpm-lock":
-        return hh("vscode-icons:file-type-pnpm");
+        return _h("vscode-icons:file-type-pnpm");
       case "license":
-        return hh("vscode-icons:file-type-license");
+        return _h("vscode-icons:file-type-license");
       case "vercel":
-        return hh("vscode-icons:file-type-vercel");
+        return _h("vscode-icons:file-type-vercel");
       case "tsconfig":
-        return hh("vscode-icons:file-type-tsconfig");
+        return _h("vscode-icons:file-type-tsconfig");
+      case "uno":
       case "unocss":
-        return hh("vscode-icons:file-type-unocss");
+        return _h("vscode-icons:file-type-unocss");
+      case "nuxt":
+        return _h("vscode-icons:file-type-nuxt");
+      case "vite":
+        return _h("vscode-icons:file-type-vite");
+      case "windi":
+        return _h("vscode-icons:file-type-windi");
+      case "tailwind":
+        return _h("vscode-icons:file-type-tailwind");
+      case "eslint":
+        return _h("vscode-icons:file-type-eslint");
       case "package":
-        return hh("vscode-icons:file-type-npm");
+        return _h("vscode-icons:file-type-npm");
+      case "gitignore":
+        return _h("vscode-icons:file-type-git");
+      case "favicon":
+        return _h("vscode-icons:file-type-favicon");
     }
 
     const suffix = list.pop();
     switch (suffix) {
       case "js":
-        return hh("vscode-icons:file-type-js");
+        return _h("vscode-icons:file-type-js");
       case "ts":
-        return hh("vscode-icons:file-type-typescript");
+        return _h("vscode-icons:file-type-typescript");
       case "vue":
-        return hh("vscode-icons:file-type-vue");
+        return _h("vscode-icons:file-type-vue");
+      case "html":
+        return _h("vscode-icons:file-type-html");
       case "css":
-        return hh("vscode-icons:file-type-postcss");
+        return _h("vscode-icons:file-type-postcss");
       case "less":
-        return hh("vscode-icons:file-type-less");
+        return _h("vscode-icons:file-type-less");
       case "sass":
-        return hh("vscode-icons:file-type-sass");
+        return _h("vscode-icons:file-type-sass");
       case "json":
-        return hh("vscode-icons:file-type-json");
+        return _h("vscode-icons:file-type-json");
       case "md":
-        return hh("vscode-icons:file-type-markdown");
+        return _h("vscode-icons:file-type-markdown");
       case "rs":
-        return hh("vscode-icons:file-type-rust");
+        return _h("vscode-icons:file-type-rust");
+      case "yml":
+        return _h("vscode-icons:file-type-light-yaml");
+      case "svg":
+        return _h("vscode-icons:file-type-svg");
+      case "png":
+      case "jpg":
+      case "gif":
+      case "webp":
+        return _h("vscode-icons:file-type-image");
       default:
-        return hh("vscode-icons:file-type-codekit");
+        return _h("vscode-icons:file-type-codekit");
     }
   } else if (type === "dir") {
-    return hh("vscode-icons:default-folder");
+    return _h("vscode-icons:default-folder");
   }
 }
 
