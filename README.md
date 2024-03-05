@@ -7,6 +7,14 @@ This project is only used for learning.
 code is licensed under [MIT](https://github.com/shellingfordly/micro-vscode/blob/main/LICENSE),
 words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
+## Todo List
+
+- [ ] read file system
+- [ ] update git operation same width vscode
+- [ ] search
+  - [ ] search content
+  - [ ] search file by name
+
 ## Features
 
 - Integrated the basic function of git
@@ -15,10 +23,10 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
   - git commit
   - git push
   - set git config username, email and token
-- about project
-  - read project
-  - editor project
-  - write project
+- about file
+  - view project file
+  - editor project file
+  - write project file
 
 ## Development
 
