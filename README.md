@@ -1,6 +1,6 @@
 # micro-vscode
 
-A lightweight code editing and submission tool. The micro-vscode integrated the basic function of git.
+The micro-vscode is a lightweight code editing and submission tool build by [tauri](https://github.com/tauri-apps/tauri). It integrated the basic function of git.
 
 This project is only used for learning.
 
