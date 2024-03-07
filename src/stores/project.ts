@@ -1,10 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { defineStore } from "pinia";
+import type { MenuItem } from "~/types";
 import type { MenuOption } from "naive-ui";
-import {
-  handleProjectMenu,
-  handleFileMenuOptions,
-} from "../utils/projectHandle";
+import { handleProjectMenu, handleFileMenu } from "../utils/projectHandle";
 
 const FileContentMap = new Map<string, string>();
 const FileContentChangeMap = new Map<string, string>();
@@ -12,7 +10,7 @@ const FileContentChangeMap = new Map<string, string>();
 export const useProjectStore = defineStore("useProjectStore", () => {
   const selectProjectName = ref("");
   const projectNameList = ref<string[]>([]);
-  const fileMenuOptions = ref<MenuOption[]>([]);
+  const fileMenuOptions = ref<MenuItem[]>([]);
   const projectMenuOptions = computed<MenuOption[]>(() =>
     handleProjectMenu(projectNameList.value)
   );
@@ -27,7 +25,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
   watch(selectProjectName, async (name) => {
     const data = await getProjectFiles(name);
 
-    fileMenuOptions.value = handleFileMenuOptions(data, name) as any[];
+    fileMenuOptions.value = handleFileMenu(data, name) as any[];
 
     // 清除旧文件
     fileTabs.value = [];

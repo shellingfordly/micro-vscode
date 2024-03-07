@@ -1,5 +1,5 @@
-import type { MenuOption } from "naive-ui";
-import { handleFileIcon } from "./iconHandle";
+import { handleIcon } from "./iconHandle";
+import { MenuItem, MenuType } from "~/types";
 
 export function handleProjectMenu(projects: string[]) {
   return [
@@ -36,38 +36,50 @@ export function handleProjectMenu(projects: string[]) {
   ];
 }
 
-export function handleFileMenuOptions(
-  filePaths: string[],
-  rootFileName: string
-): MenuOption[] {
-  const root: MenuOption = {
-    label: rootFileName,
-    key: rootFileName,
-    icon: handleFileIcon("dir"),
-    type: "dir",
-    children: [],
+export function createMenuItem({
+  name,
+  path,
+  key,
+}: {
+  name: string;
+  path: string;
+  key: string;
+}): MenuItem {
+  const type: MenuType = path.endsWith(name) ? "file" : "dir";
+  return {
+    label: name,
+    key,
+    type,
+    open: false,
+    icon: handleIcon(type, name),
   };
+}
 
-  const paths = filePaths.map((v) => {
-    const index = v.match(rootFileName)?.index || 0;
-    return v.slice(index + rootFileName.length + 1);
+export function handleFileMenu(_paths: string[], rootName: string): MenuItem[] {
+  const root: MenuItem = createMenuItem({
+    path: rootName + "/",
+    name: rootName,
+    key: rootName,
+  });
+
+  const paths = _paths.map((v) => {
+    const index = v.match(rootName)?.index || 0;
+    return v.slice(index + rootName.length + 1);
   });
 
   paths.forEach((path) => {
     const parts = path.split("/");
     let currentNode = root;
-    parts.forEach((fileName) => {
+
+    let key = rootName;
+    parts.forEach((name) => {
       const existingChild = currentNode.children?.find(
-        (child) => child.label === fileName
-      );
+        (child) => child.label === name
+      ) as MenuItem;
       if (!existingChild) {
-        const type = path.endsWith(fileName) ? "file" : "dir";
-        const newChild = {
-          label: fileName,
-          icon: handleFileIcon(type, fileName),
-          type,
-          key: rootFileName + "/" + path,
-        };
+        key += "/" + name;
+        const newChild = createMenuItem({ path, name, key });
+
         if (currentNode.children) {
           currentNode.children?.push(newChild);
         } else {
@@ -80,7 +92,7 @@ export function handleFileMenuOptions(
     });
   });
 
-  function sortFile(data: MenuOption[]): MenuOption[] {
+  function sortMenu(data: MenuItem[]): MenuItem[] {
     const sort = (d: any[]) =>
       d.sort((a, b) => {
         if (a.type === "dir" && b.type === "file") {
@@ -106,5 +118,5 @@ export function handleFileMenuOptions(
     return data;
   }
 
-  return sortFile([root]);
+  return sortMenu([root]);
 }
