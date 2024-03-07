@@ -56,7 +56,7 @@ export function createMenuItem({
 }
 
 export function handleFileMenu(_paths: string[], rootName: string): MenuItem[] {
-  const root: MenuItem = createMenuItem({
+  const rootNode: MenuItem = createMenuItem({
     path: rootName + "/",
     name: rootName,
     key: rootName,
@@ -69,17 +69,18 @@ export function handleFileMenu(_paths: string[], rootName: string): MenuItem[] {
 
   paths.forEach((path) => {
     const parts = path.split("/");
-    let currentNode = root;
+    let currentNode = rootNode;
 
     let key = rootName;
     parts.forEach((name) => {
       const existingChild = currentNode.children?.find(
         (child) => child.label === name
       ) as MenuItem;
-      if (!existingChild) {
-        key += "/" + name;
-        const newChild = createMenuItem({ path, name, key });
 
+      // key：拼接当前路径
+      key += "/" + name;
+      if (!existingChild) {
+        const newChild = createMenuItem({ path, name, key });
         if (currentNode.children) {
           currentNode.children?.push(newChild);
         } else {
@@ -118,5 +119,5 @@ export function handleFileMenu(_paths: string[], rootName: string): MenuItem[] {
     return data;
   }
 
-  return sortMenu([root]);
+  return sortMenu([rootNode]);
 }
