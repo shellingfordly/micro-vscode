@@ -1,18 +1,7 @@
 <script setup lang="ts">
-import { invoke } from "@tauri-apps/api/core";
-import { useProjectStore } from "~/stores/project";
+import { useGitStore } from "~/stores/git";
 
-const projectStore = useProjectStore();
-
-onMounted(async () => {
-  console.log(projectStore.selectProjectName);
-  if (projectStore.selectProjectName) {
-    const data: string[] = await invoke("git_status", {
-      name: projectStore.selectProjectName,
-    });
-    console.log(data);
-  }
-});
+const gitStore = useGitStore();
 </script>
 <template>
   <n-layout-sider
@@ -31,11 +20,11 @@ onMounted(async () => {
       <n-collapse default-expanded-names="1">
         <n-collapse-item title="更改" name="1">
           <ul>
-            <li v-for="i in 3">
+            <li v-for="file in gitStore.changedFiles">
               <div class="info">
                 <Icon icon="vscode-icons:file-type-vue" />
-                <span class="name">GitTool.vue</span>
-                <span class="path">src/layouts/toolbar/GitTool.vue</span>
+                <span class="name">{{ file.name }}</span>
+                <span class="path">{{ file.path }}</span>
               </div>
               <div class="tools">
                 <Icon

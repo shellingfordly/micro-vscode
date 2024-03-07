@@ -3,10 +3,10 @@ mod git;
 mod path;
 mod project;
 mod utils;
-use file::read_file_content;
-use path::{check_path_and_create, get_path, get_path_str};
-use project::{get_project_files_deep, get_project_name};
 use std::fs;
+use file::read_file_content;
+use path::{ check_path_and_create, get_path, get_path_str };
+use project::{ get_project_files_deep, get_project_name };
 use utils::get_url_name;
 
 #[tauri::command]
@@ -102,31 +102,32 @@ fn read_file(path: String) -> String {
 #[tauri::command]
 fn write_file(path: &str, content: &str) -> String {
     match fs::write(get_path(&format!("../templates/{}", path)), content) {
-        Ok(_) => {
-            format!("ok")
-        }
+        Ok(_) => { format!("ok") }
         Err(err) => format!("Read filed [{}]", err),
     }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    tauri::Builder
+        ::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![
-            git_clone,
-            git_pull,
-            git_status,
-            git_commit,
-            git_push,
-            read_file,
-            write_file,
-            get_projects,
-            get_project_files,
-            git_set_user,
-            git_get_user,
-        ])
+        .invoke_handler(
+            tauri::generate_handler![
+                git_clone,
+                git_pull,
+                git_status,
+                git_commit,
+                git_push,
+                read_file,
+                write_file,
+                get_projects,
+                get_project_files,
+                git_set_user,
+                git_get_user
+            ]
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

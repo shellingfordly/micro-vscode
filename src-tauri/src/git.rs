@@ -1,6 +1,13 @@
 use crate::utils::get_user_value;
 use git2::{
-    Cred, FetchOptions, PushOptions, RemoteCallbacks, Repository, Signature, Status, StatusOptions,
+    Cred,
+    FetchOptions,
+    PushOptions,
+    RemoteCallbacks,
+    Repository,
+    Signature,
+    Status,
+    StatusOptions,
 };
 use std::path::Path;
 
@@ -42,8 +49,9 @@ pub fn pull(local_path: &str) {
 
 pub fn commit(local_path: &str, message: &str) {
     // 打开本地仓库
-    let repo: Repository =
-        Repository::open(local_path).expect("[git_commit] Failed to open repository");
+    let repo: Repository = Repository::open(local_path).expect(
+        "[git_commit] Failed to open repository"
+    );
     // 获取索引
     let mut index: git2::Index = repo.index().expect("[git_commit] Failed to open index");
 
@@ -55,7 +63,7 @@ pub fn commit(local_path: &str, message: &str) {
     for entry in statuses.iter() {
         let entry_path = entry.path().expect("[git_commit] Failed to get entry path");
         match entry.status() {
-            Status::WT_NEW
+            | Status::WT_NEW
             | Status::WT_MODIFIED
             | Status::WT_DELETED
             | Status::WT_RENAMED
@@ -75,26 +83,23 @@ pub fn commit(local_path: &str, message: &str) {
     let head: git2::Object<'_> = repo
         .revparse_single("HEAD")
         .expect("[git_commit] Failed to get HEAD");
-    let tree_id: git2::Oid = index
-        .write_tree()
-        .expect("[git_commit] Failed to write tree");
-    let tree: git2::Tree<'_> = repo
-        .find_tree(tree_id)
-        .expect("[git_commit] Failed to find tree");
+    let tree_id: git2::Oid = index.write_tree().expect("[git_commit] Failed to write tree");
+    let tree: git2::Tree<'_> = repo.find_tree(tree_id).expect("[git_commit] Failed to find tree");
 
     let username = get_user_value("username");
     let email = get_user_value("email");
 
-    let signature: Signature<'_> =
-        Signature::now(&username, &email).expect("[git_commit] Failed to create signature");
+    let signature: Signature<'_> = Signature::now(&username, &email).expect(
+        "[git_commit] Failed to create signature"
+    );
     let commit_id: git2::Oid = repo
         .commit(
-            Some("HEAD"),                                                     // 更新 HEAD
-            &signature,                                                       // 提交者信息
-            &signature,                                                       // 提交者信息
-            message,                                                          // 提交信息
-            &tree,                                                            // 树对象
-            &[&head.as_commit().expect("[git_commit] HEAD is not a commit")], // 父提交对象
+            Some("HEAD"), // 更新 HEAD
+            &signature, // 提交者信息
+            &signature, // 提交者信息
+            message, // 提交信息
+            &tree, // 树对象
+            &[&head.as_commit().expect("[git_commit] HEAD is not a commit")] // 父提交对象
         )
         .expect("[git_commit] Failed to create commit");
 
@@ -102,8 +107,9 @@ pub fn commit(local_path: &str, message: &str) {
 }
 
 pub fn push(local_path: &str) {
-    let repo: Repository =
-        Repository::open(local_path).expect("[git_push] Failed to open repository");
+    let repo: Repository = Repository::open(local_path).expect(
+        "[git_push] Failed to open repository"
+    );
     let remote_name: &str = "origin"; // 远程仓库的名称
 
     let mut remote: git2::Remote<'_> = repo
@@ -134,12 +140,6 @@ pub fn push(local_path: &str) {
         .map(|_| println!("[git_push] Push successful!"));
 }
 
-#[derive(Debug)]
-pub struct ChangedFile {
-    status: Status,
-    path: String,
-}
-
 pub fn git_status(local_path: &str) -> Vec<String> {
     // 打开当前工作目录下的 Git 仓库
     let repo = Repository::open(local_path).expect("[git_status] Failed to open repository");
@@ -161,16 +161,16 @@ pub fn git_status(local_path: &str) -> Vec<String> {
         if let Some(file_path) = entry.path() {
             match entry.status() {
                 Status::WT_NEW | Status::INDEX_NEW | Status::CONFLICTED => {
-                    changed_files.push(format!("U-{}", file_path));
+                    changed_files.push(format!("untracked###{}", file_path));
                 }
                 Status::WT_MODIFIED | Status::INDEX_MODIFIED => {
-                    changed_files.push(format!("M-{}", file_path));
+                    changed_files.push(format!("modify###{}", file_path));
                 }
                 Status::WT_DELETED | Status::INDEX_DELETED => {
-                    changed_files.push(format!("D-{}", file_path));
+                    changed_files.push(format!("delete###{}", file_path));
                 }
                 _ => {
-                    changed_files.push(format!("N-{}", file_path));
+                    changed_files.push(format!("none###{}", file_path));
                 }
             }
         }
