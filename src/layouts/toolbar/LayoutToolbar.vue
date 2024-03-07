@@ -1,78 +1,55 @@
 <script setup lang="ts">
-import { useProjectStore } from "~/stores/project";
-import FileTool from "./FileTool.vue";
-import Toolbar from "./Toolbar.vue";
-import { CreateIconVNode, getFolderIconName } from "~/utils/iconHandle";
+import FileMenu from "./FileMenu.vue";
 
-const projectStore = useProjectStore();
-const expandedKeys = ref<string[]>([]);
-
-watch(
-  () => projectStore.selectProjectName,
-  () => {
-    expandedKeys.value = [];
-  }
-);
-
-onMounted(projectStore.getProjectList);
-
-async function onClickFile(path: string) {
-  console.log(path);
-  projectStore.getFileContent(path);
-  projectStore.addFileTab(path);
-}
-
-let lastExpandedKeys = new Set<string>();
-function onClickFolder(keys: string[]) {
-  expandedKeys.value = [...keys];
-
-  const key = [...keys].pop();
-  if (key) lastExpandedKeys.add(key);
-
-  const root = projectStore.fileMenuOptions[0];
-  for (const key of lastExpandedKeys) {
-    let item: any = root;
-    if (!item) continue;
-
-    const l = key.split("/");
-    l.shift();
-    l.forEach((s) => {
-      item = item?.children?.find((item: any) => item.label === s);
-    });
-    if (!item) continue;
-
-    let iconName = getFolderIconName(item.label);
-    if (keys.includes(key) && !item.open) {
-      iconName += "-opened";
-      item.open = false;
-    }
-    item.icon = CreateIconVNode(iconName);
-  }
-}
+const selectedTab = ref("file");
 </script>
 
 <template>
   <n-layout has-sider style="display: flex; height: 100%">
-    <Toolbar />
-    <n-layout-sider
-      collapse-mode="width"
-      :collapsed-width="64"
-      width="calc(100% - 51px)"
+    <n-tabs
+      v-model:value="selectedTab"
+      key="card-left"
+      type="line"
+      animated
+      placement="left"
       style="height: 100%"
-      :native-scrollbar="false"
     >
-      <n-layout-header bordered>
-        <FileTool />
-      </n-layout-header>
-      <n-menu
-        :collapsed-width="0"
-        :collapsed-icon-size="22"
-        :options="projectStore.fileMenuOptions"
-        style="height: calc(100% - 50px)"
-        :expanded-keys="expandedKeys"
-        @update:expanded-keys="onClickFolder"
-        @update:value="onClickFile"
-      />
-    </n-layout-sider>
+      <n-tab-pane name="file">
+        <template #tab>
+          <Icon :size="18" icon="material-symbols:file-copy-outline-rounded" />
+        </template>
+        <FileMenu />
+      </n-tab-pane>
+      <n-tab-pane name="search">
+        <template #tab>
+          <Icon :size="18" icon="material-symbols:search" />
+        </template>
+        <n-layout-sider
+          width="100%"
+          style="height: 100%"
+          :native-scrollbar="false"
+        >
+          search content
+        </n-layout-sider>
+      </n-tab-pane>
+      <n-tab-pane name="git">
+        <template #tab>
+          <Icon :size="18" icon="ion:ios-git-branch" />
+        </template>
+        <n-layout-sider
+          width="100%"
+          style="height: 100%"
+          :native-scrollbar="false"
+        >
+          git content
+        </n-layout-sider>
+      </n-tab-pane>
+    </n-tabs>
   </n-layout>
 </template>
+
+<style scoped>
+:deep(.n-tab-pane) {
+  padding-left: 0 !important;
+}
+</style>
