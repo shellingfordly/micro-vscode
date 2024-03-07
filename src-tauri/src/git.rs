@@ -1,5 +1,7 @@
 use crate::utils::get_user_value;
-use git2::{Cred, FetchOptions, PushOptions, RemoteCallbacks, Repository, Signature, Status};
+use git2::{
+    Cred, FetchOptions, PushOptions, RemoteCallbacks, Repository, Signature, Status, StatusOptions,
+};
 use std::path::Path;
 
 pub fn clone(repo_url: &str, local_path: &str) -> bool {
@@ -130,4 +132,50 @@ pub fn push(local_path: &str) {
         })
         .ok()
         .map(|_| println!("[git_push] Push successful!"));
+}
+
+#[derive(Debug)]
+pub struct ChangedFile {
+    status: Status,
+    path: String,
+}
+
+pub fn git_status(local_path: &str) -> Vec<String> {
+    // 打开当前工作目录下的 Git 仓库
+    let repo = Repository::open(local_path).expect("[git_status] Failed to open repository");
+
+    // 设置状态选项，用于获取工作目录中的文件状态
+    let mut status_opts = StatusOptions::new();
+    status_opts.include_ignored(false);
+
+    // 获取工作目录中的文件状态
+    let statuses = repo
+        .statuses(Some(&mut status_opts))
+        .expect("[git_status] Failed to get statuses");
+
+    // 创建一个 Vec 以存储改动的文件路径和状态信息的元组
+    let mut changed_files = Vec::new();
+
+    // 遍历并将改动的文件路径和状态信息添加到 Vec 中
+    for entry in statuses.iter() {
+        if let Some(file_path) = entry.path() {
+            match entry.status() {
+                Status::WT_NEW | Status::INDEX_NEW | Status::CONFLICTED => {
+                    changed_files.push(format!("U-{}", file_path));
+                }
+                Status::WT_MODIFIED | Status::INDEX_MODIFIED => {
+                    changed_files.push(format!("M-{}", file_path));
+                }
+                Status::WT_DELETED | Status::INDEX_DELETED => {
+                    changed_files.push(format!("D-{}", file_path));
+                }
+                _ => {
+                    changed_files.push(format!("N-{}", file_path));
+                }
+            }
+        }
+    }
+
+    // 返回包含改动文件路径和状态信息的 Vec
+    changed_files
 }

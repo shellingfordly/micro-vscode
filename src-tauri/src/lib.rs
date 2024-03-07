@@ -79,6 +79,12 @@ fn git_push(name: &str) -> String {
 }
 
 #[tauri::command]
+fn git_status(name: &str) -> Vec<String> {
+    let path = get_path_str(&format!("../templates/{}", name));
+    git::git_status(&path)
+}
+
+#[tauri::command]
 fn get_projects() -> Result<Vec<String>, String> {
     get_project_name(get_path("../templates/"))
 }
@@ -111,6 +117,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             git_clone,
             git_pull,
+            git_status,
             git_commit,
             git_push,
             read_file,
@@ -118,7 +125,7 @@ pub fn run() {
             get_projects,
             get_project_files,
             git_set_user,
-            git_get_user
+            git_get_user,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

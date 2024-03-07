@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import FileMenu from "./FileMenu.vue";
+import FileMenuTool from "./FileMenuTool.vue";
+import SearchTool from "./SearchTool.vue";
+import GitTool from "./GitTool.vue";
 
 const selectedTab = ref("file");
 </script>
@@ -18,31 +20,19 @@ const selectedTab = ref("file");
         <template #tab>
           <Icon :size="18" icon="material-symbols:file-copy-outline-rounded" />
         </template>
-        <FileMenu />
+        <FileMenuTool />
       </n-tab-pane>
       <n-tab-pane name="search">
         <template #tab>
           <Icon :size="18" icon="material-symbols:search" />
         </template>
-        <n-layout-sider
-          width="100%"
-          style="height: 100%"
-          :native-scrollbar="false"
-        >
-          search content
-        </n-layout-sider>
+        <SearchTool />
       </n-tab-pane>
       <n-tab-pane name="git">
         <template #tab>
           <Icon :size="18" icon="ion:ios-git-branch" />
         </template>
-        <n-layout-sider
-          width="100%"
-          style="height: 100%"
-          :native-scrollbar="false"
-        >
-          git content
-        </n-layout-sider>
+        <GitTool />
       </n-tab-pane>
     </n-tabs>
   </n-layout>
