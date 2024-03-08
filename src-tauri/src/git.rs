@@ -144,9 +144,13 @@ pub fn git_status(local_path: &str) -> Vec<String> {
     // 打开当前工作目录下的 Git 仓库
     let repo = Repository::open(local_path).expect("[git_status] Failed to open repository");
 
+    // 更新仓库状态
+    repo.statuses(None).expect("[git_status] Failed to update repository status");
+
     // 设置状态选项，用于获取工作目录中的文件状态
     let mut status_opts = StatusOptions::new();
     status_opts.include_ignored(false);
+    status_opts.include_untracked(true);
 
     // 获取工作目录中的文件状态
     let statuses = repo
@@ -159,20 +163,17 @@ pub fn git_status(local_path: &str) -> Vec<String> {
     // 遍历并将改动的文件路径和状态信息添加到 Vec 中
     for entry in statuses.iter() {
         if let Some(file_path) = entry.path() {
-            match entry.status() {
-                Status::WT_NEW | Status::INDEX_NEW | Status::CONFLICTED => {
-                    changed_files.push(format!("untracked###{}", file_path));
-                }
-                Status::WT_MODIFIED | Status::INDEX_MODIFIED => {
-                    changed_files.push(format!("modify###{}", file_path));
-                }
-                Status::WT_DELETED | Status::INDEX_DELETED => {
-                    changed_files.push(format!("delete###{}", file_path));
-                }
-                _ => {
-                    changed_files.push(format!("none###{}", file_path));
-                }
-            }
+            println!("File: {}, Status: {:?}", file_path, entry.status());
+            let status_str = match entry.status() {
+                Status::WT_NEW | Status::INDEX_NEW => "Untracked",
+                Status::CONFLICTED => "Conflicted",
+                Status::WT_MODIFIED | Status::INDEX_MODIFIED => "Modified",
+                Status::WT_RENAMED | Status::INDEX_RENAMED => "Rename",
+                Status::WT_DELETED | Status::INDEX_DELETED => "Deleted",
+                Status::WT_TYPECHANGE | Status::INDEX_TYPECHANGE => "Typechange",
+                _ => "Unknown",
+            };
+            changed_files.push(format!("{}###{}", status_str, file_path));
         }
     }
 

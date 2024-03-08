@@ -14,7 +14,7 @@ const selectedTab = ref("file");
       type="line"
       animated
       placement="left"
-      style="height: 100%"
+      style="width: 100%; height: 100%"
     >
       <n-tab-pane name="file">
         <template #tab>
@@ -28,7 +28,7 @@ const selectedTab = ref("file");
         </template>
         <SearchTool />
       </n-tab-pane>
-      <n-tab-pane name="git">
+      <n-tab-pane name="git" style="width: calc(100% - 51px)">
         <template #tab>
           <Icon :size="18" icon="ion:ios-git-branch" />
         </template>

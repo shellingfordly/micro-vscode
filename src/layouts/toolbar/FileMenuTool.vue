@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useProjectStore } from "~/stores/project";
-import FileTool from "./FileTool.vue";
 import { CreateIconVNode, getFolderIconName } from "~/utils/iconHandle";
 
 const projectStore = useProjectStore();
@@ -15,14 +14,13 @@ watch(
 
 onMounted(projectStore.getProjectList);
 
-async function onClickFile(path: string) {
-  console.log(path);
+async function onOpenFile(path: string) {
   projectStore.getFileContent(path);
   projectStore.addFileTab(path);
 }
 
 let lastExpandedKeys = new Set<string>();
-function onClickFolder(keys: string[]) {
+function onOpenFolder(keys: string[]) {
   expandedKeys.value = [...keys];
 
   const key = [...keys].pop();
@@ -84,8 +82,8 @@ function onSaveFile() {
       :options="projectStore.fileMenuOptions"
       style="height: calc(100% - 50px)"
       :expanded-keys="expandedKeys"
-      @update:expanded-keys="onClickFolder"
-      @update:value="onClickFile"
+      @update:expanded-keys="onOpenFolder"
+      @update:value="onOpenFile"
     />
   </n-layout-sider>
 </template>

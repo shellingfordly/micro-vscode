@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import { useGitStore } from "~/stores/git";
+import { useProjectStore } from "~/stores/project";
 
 const gitStore = useGitStore();
+const projectStore = useProjectStore();
+
+function onOpenFile(path: string) {
+  projectStore.getFileContent(path);
+  projectStore.addFileTab(path);
+}
+
+function onDiscardChanges(path: string) {}
 </script>
 <template>
   <n-layout-sider
     width="100%"
-    style="height: 100%; padding: 15px"
+    style="height: 100%; padding: 10px"
     :native-scrollbar="false"
   >
     <n-space vertical>
@@ -30,9 +39,17 @@ const gitStore = useGitStore();
                 <Icon
                   class="icon"
                   icon="material-symbols-light:file-open-outline"
+                  title="open file"
+                  @click="onOpenFile(file.rootPath)"
                 />
-                <Icon class="icon" icon="carbon:reset" />
-                <Icon class="icon" icon="carbon:add" />
+                <Icon
+                  class="icon"
+                  icon="codicon:discard"
+                  title="Discard changes"
+                  @click="onDiscardChanges(file.rootPath)"
+                />
+                <Icon class="icon" icon="carbon:add" title="Stage Changes" />
+                <span :title="file.status">{{ file.status.charAt(0) }}</span>
               </div>
             </li>
           </ul>
@@ -68,13 +85,18 @@ ul {
       span {
         margin-left: 5px;
       }
+
       .path {
-        font-size: 12px;
+        margin-left: 10px;
+        font-size: 10px;
+        opacity: 0.6;
       }
     }
 
     .tools {
-      width: 70px;
+      display: flex;
+      align-items: center;
+      width: 90px;
 
       .icon {
         cursor: pointer;
@@ -84,6 +106,11 @@ ul {
         &:hover {
           background-color: rgba(255, 255, 255, 0.6);
         }
+      }
+
+      span {
+        cursor: pointer;
+        margin-left: 5px;
       }
     }
   }
