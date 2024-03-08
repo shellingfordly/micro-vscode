@@ -71,6 +71,7 @@ function onClickNotSaveFile() {
   <n-modal
     v-model:show="showModal"
     preset="dialog"
+    type="warning"
     title="Dialog"
     :close-on-esc="false"
   >
