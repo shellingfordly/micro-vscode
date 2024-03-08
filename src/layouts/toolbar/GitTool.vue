@@ -1,16 +1,38 @@
 <script setup lang="ts">
+import { useModal } from "naive-ui";
+import { GitStatus } from "~/constants/enums";
 import { useGitStore } from "~/stores/git";
 import { useProjectStore } from "~/stores/project";
+import { ChangedFile } from "~/types";
 
 const gitStore = useGitStore();
 const projectStore = useProjectStore();
+const modal = useModal();
 
-function onOpenFile(path: string) {
-  projectStore.getFileContent(path);
-  projectStore.addFileTab(path);
+function onOpenFile(file: ChangedFile) {
+  if (file.status == GitStatus.Deleted) return;
+
+  projectStore.getFileContent(file.path);
+  projectStore.addFileTab(file.path);
 }
 
-function onDiscardChanges(path: string) {}
+async function onDiscardChanges(path: string) {
+  modal.create({
+    title: "Discard Changes",
+    content: "Are you sure you want to discard changes in " + path,
+    preset: "dialog",
+    maskClosable: false,
+    closable: false,
+    positiveText: "Discard Changes",
+    negativeText: "Cancel",
+    async onPositiveClick() {
+      const success = await gitStore.discardChanges(path);
+      if (success) {
+        gitStore.updateChangedFiles();
+      }
+    },
+  });
+}
 </script>
 <template>
   <n-layout-sider
@@ -29,7 +51,10 @@ function onDiscardChanges(path: string) {}
       <n-collapse default-expanded-names="1">
         <n-collapse-item title="更改" name="1">
           <ul>
-            <li v-for="file in gitStore.changedFiles">
+            <li
+              v-for="file in gitStore.changedFiles"
+              :class="[file.status.toLocaleLowerCase()]"
+            >
               <div class="info">
                 <Icon icon="vscode-icons:file-type-vue" />
                 <span class="name">{{ file.name }}</span>
@@ -40,16 +65,18 @@ function onDiscardChanges(path: string) {}
                   class="icon"
                   icon="material-symbols-light:file-open-outline"
                   title="open file"
-                  @click="onOpenFile(file.rootPath)"
+                  @click="onOpenFile(file)"
                 />
                 <Icon
                   class="icon"
                   icon="codicon:discard"
                   title="Discard changes"
-                  @click="onDiscardChanges(file.rootPath)"
+                  @click="onDiscardChanges(file.path)"
                 />
                 <Icon class="icon" icon="carbon:add" title="Stage Changes" />
-                <span :title="file.status">{{ file.status.charAt(0) }}</span>
+                <span :title="file.status">
+                  {{ file.status.charAt(0) }}
+                </span>
               </div>
             </li>
           </ul>
@@ -70,10 +97,31 @@ ul {
     margin-bottom: 5px;
     width: 100%;
 
+    &.modified {
+      .tools > span {
+        color: rgb(32, 82, 107);
+      }
+    }
+
+    &.deleted {
+      .info > span {
+        text-decoration: line-through;
+      }
+      .tools > span {
+        color: rgb(123, 63, 63);
+      }
+    }
+
+    &.untracked {
+      .tools > span {
+        color: rgb(210, 185, 23);
+      }
+    }
+
     .info {
       width: calc(100% - 70px);
       cursor: pointer;
-      opacity: 0.7;
+      opacity: 0.8;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -89,7 +137,7 @@ ul {
       .path {
         margin-left: 10px;
         font-size: 10px;
-        opacity: 0.6;
+        opacity: 0.8;
       }
     }
 

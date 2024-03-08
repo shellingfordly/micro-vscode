@@ -8,6 +8,7 @@ use git2::{
     Signature,
     Status,
     StatusOptions,
+    build::CheckoutBuilder,
 };
 use std::path::Path;
 
@@ -179,4 +180,21 @@ pub fn git_status(local_path: &str) -> Vec<String> {
 
     // 返回包含改动文件路径和状态信息的 Vec
     changed_files
+}
+
+pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<(), git2::Error> {
+    // 打开仓库
+    let repo = Repository::open(repo_path).expect(
+        "[git_discard_changes] Failed to open repository"
+    );
+
+    let mut checkout_builder = CheckoutBuilder::new();
+    checkout_builder.force();
+    checkout_builder.path(file_path);
+
+    repo.checkout_index(None, Some(&mut checkout_builder))?;
+
+    println!("[git_discard_changes] Discarded changes for {} successfully.", file_path);
+
+    Ok(())
 }

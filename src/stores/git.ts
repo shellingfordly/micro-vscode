@@ -7,27 +7,27 @@ export const useGitStore = defineStore("useGitStore", () => {
   const projectStore = useProjectStore();
   const changedFiles = ref<ChangedFile[]>([]);
 
-  watch(
-    () => projectStore.selectProjectName,
-    async (name) => {
-      if (name) {
-        const data = await getChangedFiles(name);
-        changedFiles.value = handleChangeFiles(data, name);
-      }
-    },
-    {
-      immediate: true,
-    }
-  );
+  watch(() => projectStore.selectProjectName, updateChangedFiles, {
+    immediate: true,
+  });
 
-  async function getChangedFiles(name: string) {
-    const data: string[] = await invoke("git_status", {
-      name,
-    });
-    return data;
+  async function updateChangedFiles() {
+    const name = projectStore.selectProjectName;
+    if (!name) return;
+
+    const data: string[] = await invoke("git_status", { name });
+    changedFiles.value = handleChangeFiles(data, name);
   }
 
-  return { changedFiles };
+  async function discardChanges(path: string) {
+    const name = projectStore.selectProjectName;
+    if (!name || !path) return false;
+
+    const data = await invoke("git_discard_changes", { name, path });
+    return data === "OK";
+  }
+
+  return { changedFiles, updateChangedFiles, discardChanges };
 });
 
 export function handleChangeFiles(
