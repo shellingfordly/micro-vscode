@@ -87,6 +87,10 @@ const FOLDER_ICON: Record<string, string> = {
   bin: "folder-type-binary",
   ts: "folder-type-typescript",
   typescript: "folder-type-typescript",
+  build: "folder-type-dist",
+  builds: "folder-type-dist",
+  release: "folder-type-dist",
+  releases: "folder-type-dist",
 };
 
 export function CreateIconVNode(name: string) {
