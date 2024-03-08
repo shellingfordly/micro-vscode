@@ -30,12 +30,10 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
 ## Features
 
 - Integrated the basic function of git
-  - git clone
-  - git pull
-  - git commit
-  - git push
+  - git clone/pull/commit/push
   - set git config username, email and token
-- about file
+  - view changed files, open file, and discard changes
+- about project files
   - view project file
   - editor project file
   - write project file
@@ -75,6 +73,10 @@ pnpm tauri build
 - set git user
 
 ![git_user](./public/git_user.png)
+
+- discard changes
+
+![discard_changes](./public/discard_changes.png)
 
 - editor file
 
