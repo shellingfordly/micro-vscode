@@ -64,20 +64,21 @@ pnpm tauri build
 
 - git clone
 
-![git_clone](./public/git_clone.png)
+![git_clone](./public/readme/git_clone.png)
 
 - git commit
 
-![git_commit](./public/git_commit.png)
+![git_commit](./public/readme/git_commit.png)
 
 - set git user
 
-![git_user](./public/git_user.png)
+![git_user](./public/readme/git_user.png)
 
 - discard changes
 
-![discard_changes](./public/discard_changes.png)
+![discard_changes](./public/readme/discard_changes.png)
+![discard_all_changes](./public/readme/discard_all_changes.png)
 
 - editor file
 
-![editor_file](./public/editor_file.png)
+![editor_file](./public/readme/editor_file.png)
