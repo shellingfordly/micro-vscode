@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useModal } from "naive-ui";
 import { GitStatus } from "~/constants/enums";
 import { useGitStore } from "~/stores/git";
 import { useProjectStore } from "~/stores/project";
@@ -7,8 +6,8 @@ import { ChangedFile } from "~/types";
 
 const gitStore = useGitStore();
 const projectStore = useProjectStore();
-const modal = useModal();
 const message = useMessage();
+const dialog = useDialog();
 
 function onOpenFile(file: ChangedFile) {
   if (file.status == GitStatus.Deleted) {
@@ -21,12 +20,10 @@ function onOpenFile(file: ChangedFile) {
 }
 
 async function onDiscardChanges(path: string) {
-  modal.create({
+  dialog.warning({
     title: "Discard Changes",
     content: "Are you sure you want to discard changes in " + path,
-    preset: "dialog",
     maskClosable: false,
-    closable: false,
     positiveText: "Discard Changes",
     negativeText: "Cancel",
     async onPositiveClick() {
@@ -37,6 +34,27 @@ async function onDiscardChanges(path: string) {
     },
   });
 }
+
+async function onDiscardAllChanges(event: Event) {
+  event.stopPropagation();
+
+  dialog.warning({
+    title: "Discard Changes",
+    content:
+      "This is IRREVERSIBLE, your current working set will be FOREVER LOST.",
+    positiveText: "Discard All Files",
+    negativeText: "Cancel",
+    maskClosable: false,
+    onPositiveClick: async () => {
+      const success = await gitStore.discardChanges("");
+      if (success) {
+        gitStore.updateChangedFiles();
+      }
+    },
+  });
+}
+
+async function onStageAllChanges() {}
 </script>
 <template>
   <n-layout-sider
@@ -53,7 +71,28 @@ async function onDiscardChanges(path: string) {
         </n-space>
       </n-button>
       <n-collapse default-expanded-names="1">
-        <n-collapse-item title="Changes" name="1">
+        <n-collapse-item name="1">
+          <template #header>
+            <div
+              style="width: 100%; display: flex; justify-content: space-between"
+            >
+              <div>Changes</div>
+              <div class="tools">
+                <Icon
+                  class="icon"
+                  icon="codicon:discard"
+                  title="Discard All changes"
+                  @click="onDiscardAllChanges"
+                />
+                <Icon
+                  class="icon"
+                  icon="carbon:add"
+                  title="Stage All Changes"
+                  @click="onStageAllChanges"
+                />
+              </div>
+            </div>
+          </template>
           <ul>
             <li
               v-for="file in gitStore.changedFiles"
@@ -146,24 +185,26 @@ ul {
     }
 
     .tools {
-      display: flex;
-      align-items: center;
-      width: 90px;
-
-      .icon {
-        cursor: pointer;
-        border-radius: 2px;
-        margin-left: 5px;
-
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.6);
-        }
-      }
-
       span {
         cursor: pointer;
         margin-left: 5px;
       }
+    }
+  }
+}
+.tools {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 90px;
+
+  .icon {
+    cursor: pointer;
+    border-radius: 2px;
+    margin-left: 5px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.6);
     }
   }
 }

@@ -21,7 +21,7 @@ export const useGitStore = defineStore("useGitStore", () => {
 
   async function discardChanges(path: string) {
     const name = projectStore.selectProjectName;
-    if (!name || !path) return false;
+    if (!name) return false;
 
     const data = await invoke("git_discard_changes", { name, path });
     return data === "OK";

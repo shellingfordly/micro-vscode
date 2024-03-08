@@ -164,7 +164,6 @@ pub fn git_status(local_path: &str) -> Vec<String> {
     // 遍历并将改动的文件路径和状态信息添加到 Vec 中
     for entry in statuses.iter() {
         if let Some(file_path) = entry.path() {
-            println!("File: {}, Status: {:?}", file_path, entry.status());
             let status_str = match entry.status() {
                 Status::WT_NEW | Status::INDEX_NEW => "Untracked",
                 Status::CONFLICTED => "Conflicted",
@@ -190,11 +189,16 @@ pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<(), git2:
 
     let mut checkout_builder = CheckoutBuilder::new();
     checkout_builder.force();
-    checkout_builder.path(file_path);
+
+    let mut message = "all files";
+    if !file_path.is_empty() {
+        message = file_path;
+        checkout_builder.path(file_path);
+    }
 
     repo.checkout_index(None, Some(&mut checkout_builder))?;
 
-    println!("[git_discard_changes] Discarded changes for {} successfully.", file_path);
+    println!("[git_discard_changes] Discarded changes for {} successfully.", message);
 
     Ok(())
 }
