@@ -8,12 +8,16 @@ import { ChangedFile } from "~/types";
 const gitStore = useGitStore();
 const projectStore = useProjectStore();
 const modal = useModal();
+const message = useMessage();
 
 function onOpenFile(file: ChangedFile) {
-  if (file.status == GitStatus.Deleted) return;
+  if (file.status == GitStatus.Deleted) {
+    message.warning("文件已删除！");
+    return;
+  }
 
-  projectStore.getFileContent(file.path);
-  projectStore.addFileTab(file.path);
+  projectStore.getFileContent(file.rootPath);
+  projectStore.addFileTab(file.rootPath);
 }
 
 async function onDiscardChanges(path: string) {
@@ -49,7 +53,7 @@ async function onDiscardChanges(path: string) {
         </n-space>
       </n-button>
       <n-collapse default-expanded-names="1">
-        <n-collapse-item title="更改" name="1">
+        <n-collapse-item title="Changes" name="1">
           <ul>
             <li
               v-for="file in gitStore.changedFiles"
