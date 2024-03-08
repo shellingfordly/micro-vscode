@@ -9,7 +9,7 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
 
 ## Preview
 
-![project_light](./public/project_light.png)
+![project_light](./public/readme/project_light.png)
 
 ## Todo List
 
@@ -22,6 +22,8 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
 - [ ] search
   - [ ] search content
   - [ ] search file by name
+- [ ] add i18n support
+- [ ] add more themes
 
 ### Bug
 
