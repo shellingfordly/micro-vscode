@@ -16,6 +16,7 @@ src/auto-imports.d.ts
 src/components.d.ts
 data/**
 template/**
+src-tauri/gen
 
 # Editor directories and files
 .vscode/*

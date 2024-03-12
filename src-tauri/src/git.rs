@@ -9,6 +9,7 @@ use git2::{
     Status,
     StatusOptions,
     build::CheckoutBuilder,
+    Error,
 };
 use std::path::Path;
 
@@ -201,4 +202,43 @@ pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<(), git2:
     println!("[git_discard_changes] Discarded changes for {} successfully.", message);
 
     Ok(())
+}
+
+#[derive(Debug)]
+struct CommitItem {
+    id: String,
+    name: String,
+    email: String,
+    message: String,
+    time: String,
+}
+
+pub fn git_log(repo_path: &str) -> Result<Vec<String>, Error> {
+    // 打开 Git 仓库
+    let repo = Repository::open(repo_path).expect("[git_log] Failed to open repository");
+    let mut commits = Vec::new();
+
+    // 获取提交历史
+    // let head = repo.head()?;
+    let mut revwalk = repo.revwalk()?;
+    revwalk.push_head()?;
+
+    for commit_id in revwalk {
+        let commit_id = commit_id?;
+        let commit = repo.find_commit(commit_id)?;
+        let author = commit.author();
+        let message = commit.message().unwrap_or("");
+        let commit_time = commit.time().seconds();
+
+        let commit_info = &(CommitItem {
+            id: commit_id.to_string(),
+            name: author.name().unwrap_or("").to_string(),
+            email: author.email().unwrap_or("").to_string(),
+            message: message.to_string(),
+            time: commit_time.to_string(),
+        });
+        commits.push(format!("{:?}", commit_info));
+    }
+
+    Ok(commits)
 }

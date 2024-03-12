@@ -9,6 +9,10 @@ const projectStore = useProjectStore();
 const message = useMessage();
 const dialog = useDialog();
 
+onMounted(() => {
+  gitStore.gitLog();
+});
+
 function onOpenFile(file: ChangedFile) {
   if (file.status == GitStatus.Deleted) {
     message.warning("文件已删除！");
@@ -55,6 +59,14 @@ async function onDiscardAllChanges(event: Event) {
 }
 
 async function onStageAllChanges() {}
+
+async function onClickGit() {
+  const success = await gitStore.gitCommit();
+
+  if (success) {
+    message.success(`git commit successful!`);
+  }
+}
 </script>
 <template>
   <n-layout-sider
@@ -63,8 +75,8 @@ async function onStageAllChanges() {}
     :native-scrollbar="false"
   >
     <n-space vertical>
-      <n-input placeholder="search" />
-      <n-button secondary block>
+      <n-input v-model:value="gitStore.commitMessage" placeholder="search" />
+      <n-button secondary block :loading="gitStore.loading" @click="onClickGit">
         <n-space>
           <Icon icon="charm:tick" />
           <span>提交</span>
@@ -121,6 +133,13 @@ async function onStageAllChanges() {}
                   {{ file.status.charAt(0) }}
                 </span>
               </div>
+            </li>
+          </ul>
+        </n-collapse-item>
+        <n-collapse-item name="2" title="Commits">
+          <ul>
+            <li v-for="log in gitStore.logList">
+              {{ log }}
             </li>
           </ul>
         </n-collapse-item>

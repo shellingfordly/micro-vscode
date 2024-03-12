@@ -95,6 +95,16 @@ fn git_discard_changes(name: &str, path: &str) -> String {
 }
 
 #[tauri::command]
+fn git_log(name: &str) -> Vec<String> {
+    let repo_path = get_path_str(&format!("../templates/{}", name));
+
+    match git::git_log(&repo_path) {
+        Ok(commits) => commits,
+        Err(e) => Vec::new(),
+    }
+}
+
+#[tauri::command]
 fn get_projects() -> Result<Vec<String>, String> {
     get_project_name(get_path("../templates/"))
 }
@@ -130,6 +140,7 @@ pub fn run() {
                 git_status,
                 git_commit,
                 git_push,
+                git_log,
                 git_discard_changes,
                 read_file,
                 write_file,
