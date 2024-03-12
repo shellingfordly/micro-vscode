@@ -5,7 +5,8 @@ import { createInvoke } from "~/utils/api";
 
 export const useGitStore = defineStore("useGitStore", () => {
   const projectStore = useProjectStore();
-  const changedFiles = ref<ChangedFile[]>([]);
+  const changedFileMap = reactive<Map<string, ChangedFile>>(new Map());
+  const addChangeFileMap = reactive<Map<string, ChangedFile>>(new Map());
   const commitMessage = ref("");
   const loading = ref(false);
   const logList = ref<GitLogInfo[]>([]);
@@ -20,7 +21,7 @@ export const useGitStore = defineStore("useGitStore", () => {
 
     const result = await createInvoke("git_status", { name });
     if (result.status == "ok") {
-      changedFiles.value = handleChangeFiles(result.data, name);
+      setChangeFileMap(changedFileMap, result.data, name);
     }
   }
 
@@ -33,6 +34,13 @@ export const useGitStore = defineStore("useGitStore", () => {
       path,
     });
     return status === "ok";
+  }
+
+  function gitAdd(files: ChangedFile[]) {
+    files.forEach((file) => {
+      addChangeFileMap.set(file.path, file);
+      changedFileMap.delete(file.path);
+    });
   }
 
   async function gitCommit() {
@@ -58,10 +66,12 @@ export const useGitStore = defineStore("useGitStore", () => {
   }
 
   return {
-    changedFiles,
+    changedFiles: changedFileMap,
+    addChangeFileMap,
     commitMessage,
     loading,
     logList,
+    gitAdd,
     gitLog,
     gitCommit,
     discardChanges,
@@ -69,18 +79,20 @@ export const useGitStore = defineStore("useGitStore", () => {
   };
 });
 
-export function handleChangeFiles(
+export function setChangeFileMap(
+  map: Map<string, ChangedFile>,
   data: string[],
   rootName: string
-): ChangedFile[] {
-  return data.map((str) => {
+) {
+  data.forEach((str) => {
     const [status, path] = str.split("###");
     const name = path.split("/").pop();
-    return {
+    const file = {
       status,
       path,
       rootPath: rootName + "/" + path,
       name,
     } as ChangedFile;
+    map.set(path, file);
   });
 }

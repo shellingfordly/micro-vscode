@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import "./styles.css";
+import "./styles.less";
 import App from "./App.vue";
 import { createPinia } from "pinia";
 
