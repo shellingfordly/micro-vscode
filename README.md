@@ -72,6 +72,10 @@ pnpm tauri build
 
 ![git_commit](./public/readme/git_commit.png)
 
+- git log
+
+![git_log](./public/readme/git_log.png)
+
 - set git user
 
 ![git_user](./public/readme/git_user.png)
