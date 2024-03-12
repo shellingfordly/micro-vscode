@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { invoke } from "@tauri-apps/api/core";
+import { createInvoke } from "~/utils/api";
+import JSON5 from "json5";
 
 const isDark = useDark();
 
@@ -21,17 +22,17 @@ const form = ref({
 });
 
 onMounted(async () => {
-  const data: string = await invoke("git_get_user");
-  if (data) {
-    form.value = JSON.parse(data);
+  const { status, data } = await createInvoke("git_get_user");
+  if (status === "ok") {
+    form.value = JSON5.parse(data);
   }
 });
 
 async function onSetGitUser() {
-  const data = await invoke("git_set_user", {
-    data: JSON.stringify(form.value),
+  const { status } = await createInvoke("git_set_user", {
+    data: JSON5.stringify(form.value),
   });
-  if (data) {
+  if (status === "ok") {
     showModal.value = false;
   }
 }

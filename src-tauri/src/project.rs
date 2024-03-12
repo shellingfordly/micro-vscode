@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-pub fn get_project_name(dir_path: PathBuf) -> Result<Vec<String>, String> {
+pub fn get_project_list(dir_path: PathBuf) -> Result<Vec<String>, String> {
     let mut file_name_list = Vec::new();
 
     if dir_path.is_dir() {
@@ -26,7 +26,7 @@ pub fn get_project_name(dir_path: PathBuf) -> Result<Vec<String>, String> {
     Ok(file_name_list)
 }
 
-pub fn get_project_files_deep(dir_path: PathBuf) -> Result<Vec<String>, String> {
+pub fn get_project_all_files(dir_path: PathBuf) -> Result<Vec<String>, String> {
     let mut file_path_list = Vec::new();
 
     if dir_path.is_dir() {
@@ -37,7 +37,7 @@ pub fn get_project_files_deep(dir_path: PathBuf) -> Result<Vec<String>, String> 
                     if let Some(file_name) = path.file_name().and_then(|name| name.to_str()) {
                         if !file_name.starts_with('.') {
                             if path.is_dir() {
-                                if let Ok(files) = get_project_files_deep(path) {
+                                if let Ok(files) = get_project_all_files(path) {
                                     file_path_list.extend(files);
                                 }
                             } else {

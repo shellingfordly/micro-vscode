@@ -1,8 +1,9 @@
-import { invoke } from "@tauri-apps/api/core";
+import JSON5 from "json5";
 import { defineStore } from "pinia";
 import type { MenuItem } from "~/types";
 import type { MenuOption } from "naive-ui";
 import { handleProjectMenu, handleFileMenu } from "../utils/projectHandle";
+import { createInvoke } from "~/utils/api";
 
 const FileContentMap = new Map<string, string>();
 const FileContentChangeMap = new Map<string, string>();
@@ -50,15 +51,20 @@ export const useProjectStore = defineStore("useProjectStore", () => {
   );
 
   async function getProjectFiles(projectName: string) {
-    const data: string[] = await invoke("get_project_files", {
+    const { status, data } = await createInvoke<string[]>("get_project_files", {
       name: projectName,
     });
-    return data;
+
+    if (status === "ok") return data;
+    else return [];
   }
 
   async function getProjectList() {
-    const data = await invoke("get_projects");
-    projectNameList.value = data as string[];
+    const { status, data } = await createInvoke<string[]>("get_projects");
+
+    if (status === "ok") {
+      projectNameList.value = data;
+    }
   }
 
   function clearFileContent() {
@@ -69,12 +75,15 @@ export const useProjectStore = defineStore("useProjectStore", () => {
   async function getFileContent(path: string) {
     let data = "";
     if (!FileContentMap.has(path) && !FileContentChangeMap.has(path)) {
-      data = await invoke("read_file", {
+      const result = await createInvoke<string>("read_file", {
         path,
       });
 
-      FileContentMap.set(path, data);
-      FileContentChangeMap.set(path, data);
+      data = result.data;
+      if (result.status === "ok") {
+        FileContentMap.set(path, result.data);
+        FileContentChangeMap.set(path, result.data);
+      }
     } else {
       data = FileContentChangeMap.get(path) || FileContentMap.get(path) || "";
     }
@@ -85,13 +94,15 @@ export const useProjectStore = defineStore("useProjectStore", () => {
 
   async function saveCurrentFile() {
     if (modifiedFiles.value.has(fileInfo.path)) {
-      await invoke("write_file", {
+      const { status } = await createInvoke("write_file", {
         path: fileInfo.path,
         content: fileInfo.content,
       });
 
-      FileContentMap.set(fileInfo.path, fileInfo.content);
-      modifiedFiles.value.delete(fileInfo.path);
+      if (status === "ok") {
+        FileContentMap.set(fileInfo.path, fileInfo.content);
+        modifiedFiles.value.delete(fileInfo.path);
+      }
     }
   }
 
@@ -107,7 +118,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     const list = [...modifiedFiles.value]
       .filter((path) => FileContentChangeMap.has(path))
       .map((path) => {
-        return invoke("write_file", {
+        return createInvoke("write_file", {
           path: path,
           content: FileContentChangeMap.get(path),
         });

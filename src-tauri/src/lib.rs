@@ -4,126 +4,131 @@ mod path;
 mod project;
 mod utils;
 use std::fs;
+use git::CommitItem;
 use file::read_file_content;
 use path::{ check_path_and_create, get_path, get_path_str };
-use project::{ get_project_files_deep, get_project_name };
-use utils::get_url_name;
+use project::{ get_project_all_files, get_project_list };
+use utils::{ Response, get_url_name, create_data, create_error };
 
 #[tauri::command]
-fn git_set_user(data: &str) -> bool {
-    let path = get_path_str("../data/user.json");
-    let result = fs::write(path, data);
-    if result.is_ok() {
-        println!("[git_set_user] Write successful!");
-        return true;
-    } else {
-        println!("[git_set_user] Write failed: {:?}", result);
-        return false;
+fn git_set_user(data: &str) -> Response<String> {
+    let path: String = get_path_str("../data/user.json");
+
+    match fs::write(path, data) {
+        Ok(_) => create_data("Write successful!".to_string()),
+        Err(err) => create_error(format!("Write failed: [{:?}].", err)),
     }
 }
 
 #[tauri::command]
-fn git_get_user() -> String {
+fn git_get_user() -> Response<String> {
     let path = get_path_str("../data/user.json");
 
     match fs::read_to_string(path) {
-        Ok(content) => {
-            return content;
-        }
-        Err(err) => {
-            eprintln!("[git_get_user] Error reading file: {:?}", err);
-            return String::new();
-        }
+        Ok(content) => create_data(content),
+        Err(err) => create_error(format!("Get user info failed: [{:?}].", err)),
     }
 }
 
 #[tauri::command]
-fn git_clone(url: &str) -> String {
+fn git_clone(url: &str) -> Response<String> {
     let name = get_url_name(url);
     let path = get_path_str(&format!("../templates/{}", name));
 
     check_path_and_create(&path);
 
-    let success = git::clone(url, &path);
-
-    if success {
-        println!("[git_clone] successful!");
-        format!("ok")
-    } else {
-        println!("[git_clone] failed!");
-        format!("err")
+    match git::clone(url, &path) {
+        Ok(data) => create_data(data),
+        Err(err) => create_error(format!("Git clone failed: [{:?}].", err)),
     }
 }
 
 #[tauri::command]
-fn git_pull(name: &str) -> String {
+fn git_pull(name: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
-    git::pull(&path);
-    format!("ok")
+    match git::pull(&path) {
+        Ok(data) => create_data(data),
+        Err(err) => create_error(format!("Git pull failed: [{:?}].", err)),
+    }
 }
 
 #[tauri::command]
-fn git_commit(name: &str, message: &str) -> String {
+fn git_commit(name: &str, message: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
 
-    git::commit(&path, message);
-    format!("ok")
+    match git::commit(&path, message) {
+        Ok(data) => create_data(data),
+        Err(err) => create_error(format!("Git commit failed: [{:?}].", err)),
+    }
 }
 
 #[tauri::command]
-fn git_push(name: &str) -> String {
+fn git_push(name: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
 
-    git::push(&path);
-    format!("ok")
+    match git::push(&path) {
+        Ok(data) => create_data(data),
+        Err(err) => create_error(format!("Git push failed: [{:?}].", err)),
+    }
 }
 
 #[tauri::command]
-fn git_status(name: &str) -> Vec<String> {
-    let path = get_path_str(&format!("../templates/{}", name));
-    git::git_status(&path)
-}
-
-#[tauri::command]
-fn git_discard_changes(name: &str, path: &str) -> String {
+fn git_discard_changes(name: &str, path: &str) -> Response<String> {
     let repo_path = get_path_str(&format!("../templates/{}", name));
 
     match git::git_discard_changes(&repo_path, path) {
-        Ok(()) => format!("OK"),
-        Err(e) => format!("Error:{}", e),
+        Ok(data) => create_data(data),
+        Err(err) => create_error(format!("Git discard changes failed: [{:?}].", err)),
     }
 }
 
 #[tauri::command]
-fn git_log(name: &str) -> Vec<String> {
+fn git_status(name: &str) -> Response<Vec<String>> {
+    let path = get_path_str(&format!("../templates/{}", name));
+    match git::git_status(&path) {
+        Ok(data) => create_data(data),
+        Err(err) => create_data(vec![]),
+    }
+}
+
+#[tauri::command]
+fn git_log(name: &str) -> Response<Vec<CommitItem>> {
     let repo_path = get_path_str(&format!("../templates/{}", name));
-
     match git::git_log(&repo_path) {
-        Ok(commits) => commits,
-        Err(e) => Vec::new(),
+        Ok(data) => create_data(data),
+        Err(err) => create_data(vec![]),
     }
 }
 
 #[tauri::command]
-fn get_projects() -> Result<Vec<String>, String> {
-    get_project_name(get_path("../templates/"))
+fn get_projects() -> Response<Vec<String>> {
+    match get_project_list(get_path("../templates/")) {
+        Ok(data) => create_data(data),
+        Err(err) => create_data(vec![]),
+    }
 }
 
 #[tauri::command]
-fn get_project_files(name: String) -> Result<Vec<String>, String> {
-    get_project_files_deep(get_path(&format!("../templates/{}", name)))
+fn get_project_files(name: String) -> Response<Vec<String>> {
+    match get_project_all_files(get_path(&format!("../templates/{}", name))) {
+        Ok(data) => create_data(data),
+        Err(err) => create_data(vec![]),
+    }
 }
 
 #[tauri::command]
-fn read_file(path: String) -> String {
-    read_file_content(get_path(&format!("../templates/{}", path)))
+fn read_file(path: String) -> Response<String> {
+    match read_file_content(get_path(&format!("../templates/{}", path))) {
+        Ok(data) => create_data(data),
+        Err(err) => create_error(format!("Read file failed: [{:?}].", err)),
+    }
 }
 
 #[tauri::command]
-fn write_file(path: &str, content: &str) -> String {
+fn write_file(path: &str, content: &str) -> Response<String> {
     match fs::write(get_path(&format!("../templates/{}", path)), content) {
-        Ok(_) => { format!("ok") }
-        Err(err) => format!("Read filed [{}]", err),
+        Ok(_) => create_data("Write file successful!".to_string()),
+        Err(err) => create_error(format!("Write file failed: [{:?}].", err)),
     }
 }
 

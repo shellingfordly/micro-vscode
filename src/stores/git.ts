@@ -1,15 +1,14 @@
-import JSON5 from "json5";
 import { defineStore } from "pinia";
 import { useProjectStore } from "./project";
-import { invoke } from "@tauri-apps/api/core";
-import { ChangedFile } from "~/types";
+import { ChangedFile, GitLogInfo } from "~/types";
+import { createInvoke } from "~/utils/api";
 
 export const useGitStore = defineStore("useGitStore", () => {
   const projectStore = useProjectStore();
   const changedFiles = ref<ChangedFile[]>([]);
   const commitMessage = ref("");
   const loading = ref(false);
-  const logList = ref<string[]>([]);
+  const logList = ref<GitLogInfo[]>([]);
 
   watch(() => projectStore.selectProjectName, updateChangedFiles, {
     immediate: true,
@@ -19,41 +18,43 @@ export const useGitStore = defineStore("useGitStore", () => {
     const name = projectStore.selectProjectName;
     if (!name) return;
 
-    const data: string[] = await invoke("git_status", { name });
-    changedFiles.value = handleChangeFiles(data, name);
+    const result = await createInvoke("git_status", { name });
+    if (result.status == "ok") {
+      changedFiles.value = handleChangeFiles(result.data, name);
+    }
   }
 
   async function discardChanges(path: string) {
     const name = projectStore.selectProjectName;
     if (!name) return false;
 
-    const data = await invoke("git_discard_changes", { name, path });
-    return data === "OK";
+    const { status } = await createInvoke("git_discard_changes", {
+      name,
+      path,
+    });
+    return status === "ok";
   }
 
   async function gitCommit() {
     if (!projectStore.selectProjectName || !commitMessage.value) return false;
 
     loading.value = true;
-    const data = await invoke("git_commit", {
+    const { status } = await createInvoke("git_commit", {
       name: projectStore.selectProjectName,
       message: commitMessage.value,
     });
     loading.value = false;
 
-    return data === "ok";
+    return status === "ok";
   }
 
   async function gitLog() {
-    const data: string[] = await invoke("git_log", {
+    const { status, data } = await createInvoke<GitLogInfo[]>("git_log", {
       name: projectStore.selectProjectName,
     });
-    console.log(data);
-    // "CommitItem { id: \"19cf0723ccb14fb77bea4de40d0690de…\", message: \"chore: init\\n\", time: \"1708665647\" }
-    logList.value = data.map((str) => {
-      return JSON5.parse(str.replace("CommitItem", "").trim());
-    });
-    console.log(logList.value);
+    if (status === "ok") {
+      logList.value = data;
+    }
   }
 
   return {

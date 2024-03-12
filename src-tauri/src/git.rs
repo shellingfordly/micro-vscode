@@ -12,26 +12,33 @@ use git2::{
     Error,
 };
 use std::path::Path;
+use serde::{ Serialize, Deserialize };
 
-pub fn clone(repo_url: &str, local_path: &str) -> bool {
+pub fn clone(repo_url: &str, local_path: &str) -> Result<String, Error> {
     match Repository::clone(repo_url, local_path) {
-        Ok(_repo) => {
-            println!("[git_clone] Repository cloned successfully");
-            return true;
+        Ok(_) => {
+            let success_message = format!(
+                "Repository cloned successfully. repo_url: {}, local_path: {}",
+                repo_url,
+                local_path
+            );
+            println!("[git_clone] {}", success_message);
+
+            Ok(success_message)
         }
         Err(err) => {
             eprintln!("[git_clone] Error cloning repository: {}", err);
-            return false;
+            Err(err)
         }
     }
 }
 
-pub fn pull(local_path: &str) {
+pub fn pull(local_path: &str) -> Result<String, Error> {
     let repo: Repository = match Repository::open(local_path) {
         Ok(repo) => repo,
         Err(err) => {
             eprintln!("[git_pull] Error: {}", err);
-            return;
+            return Err(err);
         }
     };
     let remote_name: &str = "origin";
@@ -47,9 +54,10 @@ pub fn pull(local_path: &str) {
     remote
         .fetch::<&str>(&[], Some(&mut fetch_options), None)
         .expect("[git_pull] Failed to fetch from remote");
+    Ok("Successfully pulled from remote.".to_string())
 }
 
-pub fn commit(local_path: &str, message: &str) {
+pub fn commit(local_path: &str, message: &str) -> Result<String, Error> {
     // 打开本地仓库
     let repo: Repository = Repository::open(local_path).expect(
         "[git_commit] Failed to open repository"
@@ -106,9 +114,11 @@ pub fn commit(local_path: &str, message: &str) {
         .expect("[git_commit] Failed to create commit");
 
     println!("[git_commit] New commit created: {}", commit_id);
+
+    Ok(format!("Successfully created commit: {}.", commit_id))
 }
 
-pub fn push(local_path: &str) {
+pub fn push(local_path: &str) -> Result<String, Error> {
     let repo: Repository = Repository::open(local_path).expect(
         "[git_push] Failed to open repository"
     );
@@ -140,9 +150,11 @@ pub fn push(local_path: &str) {
         })
         .ok()
         .map(|_| println!("[git_push] Push successful!"));
+
+    Ok("Successfully push.".to_string())
 }
 
-pub fn git_status(local_path: &str) -> Vec<String> {
+pub fn git_status(local_path: &str) -> Result<Vec<String>, Error> {
     // 打开当前工作目录下的 Git 仓库
     let repo = Repository::open(local_path).expect("[git_status] Failed to open repository");
 
@@ -179,10 +191,10 @@ pub fn git_status(local_path: &str) -> Vec<String> {
     }
 
     // 返回包含改动文件路径和状态信息的 Vec
-    changed_files
+    Ok(changed_files)
 }
 
-pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<(), git2::Error> {
+pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<String, Error> {
     // 打开仓库
     let repo = Repository::open(repo_path).expect(
         "[git_discard_changes] Failed to open repository"
@@ -199,13 +211,14 @@ pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<(), git2:
 
     repo.checkout_index(None, Some(&mut checkout_builder))?;
 
-    println!("[git_discard_changes] Discarded changes for {} successfully.", message);
+    let result = format!("Discarded changes for {} successfully.", message);
+    println!("[git_discard_changes] {}", result);
 
-    Ok(())
+    Ok(result)
 }
 
-#[derive(Debug)]
-struct CommitItem {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CommitItem {
     id: String,
     name: String,
     email: String,
@@ -213,7 +226,7 @@ struct CommitItem {
     time: String,
 }
 
-pub fn git_log(repo_path: &str) -> Result<Vec<String>, Error> {
+pub fn git_log(repo_path: &str) -> Result<Vec<CommitItem>, Error> {
     // 打开 Git 仓库
     let repo = Repository::open(repo_path).expect("[git_log] Failed to open repository");
     let mut commits = Vec::new();
@@ -230,14 +243,14 @@ pub fn git_log(repo_path: &str) -> Result<Vec<String>, Error> {
         let message = commit.message().unwrap_or("");
         let commit_time = commit.time().seconds();
 
-        let commit_info = &(CommitItem {
+        let commit_info = CommitItem {
             id: commit_id.to_string(),
             name: author.name().unwrap_or("").to_string(),
             email: author.email().unwrap_or("").to_string(),
             message: message.to_string(),
             time: commit_time.to_string(),
-        });
-        commits.push(format!("{:?}", commit_info));
+        };
+        commits.push(commit_info);
     }
 
     Ok(commits)

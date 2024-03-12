@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { invoke } from "@tauri-apps/api/core";
 import { useProjectStore } from "~/stores/project";
+import { createInvoke } from "~/utils/api";
 
 const emit = defineEmits(["change", "clone", "commit"]);
 const showModal = reactive({
@@ -29,10 +29,10 @@ async function onUpdateValue(key: string) {
 
 async function onPull() {
   if (projectStore.selectProjectName) {
-    const data = await invoke("git_pull", {
+    const { status } = await createInvoke("git_pull", {
       name: projectStore.selectProjectName,
     });
-    if (data === "ok") {
+    if (status === "ok") {
       message.success(`git pull successful!`);
     }
   }
@@ -40,10 +40,10 @@ async function onPull() {
 
 async function onPush() {
   if (projectStore.selectProjectName) {
-    const data = await invoke("git_push", {
+    const { status } = await createInvoke("git_push", {
       name: projectStore.selectProjectName,
     });
-    if (data === "ok") {
+    if (status === "ok") {
       message.success(`git push successful!`);
     }
   }
@@ -51,13 +51,13 @@ async function onPush() {
 
 async function onClone() {
   loading.value = true;
-  const data = await invoke("git_clone", { url: url.value });
-  if (data === "ok") {
+  const { status } = await createInvoke("git_clone", { url: url.value });
+  if (status === "ok") {
     showModal.clone = false;
     message.success(`git clone successful!`);
   }
 
-  emit("clone", data === "ok");
+  emit("clone", status === "ok");
   loading.value = false;
 }
 
@@ -65,17 +65,17 @@ async function onCommit() {
   if (!projectStore.selectProjectName || !commitMsg.value) return;
 
   loading.value = true;
-  const data = await invoke("git_commit", {
+  const { status } = await createInvoke("git_commit", {
     name: projectStore.selectProjectName,
     message: commitMsg.value,
   });
 
-  if (data === "ok") {
+  if (status === "ok") {
     showModal.commit = false;
     message.success(`git commit successful!`);
   }
 
-  emit("commit", data === "ok");
+  emit("commit", status === "ok");
 
   loading.value = false;
 }
