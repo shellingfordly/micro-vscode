@@ -154,7 +154,15 @@ pub fn push(local_path: &str) -> Result<String, Error> {
     Ok("Successfully push.".to_string())
 }
 
-pub fn git_status(local_path: &str) -> Result<Vec<String>, Error> {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ChangedFile {
+    name: String,
+    path: String,
+    status: String,
+    stage: String,
+}
+
+pub fn git_status(local_path: &str) -> Result<Vec<ChangedFile>, Error> {
     // 打开当前工作目录下的 Git 仓库
     let repo = Repository::open(local_path).expect("[git_status] Failed to open repository");
 
@@ -177,16 +185,45 @@ pub fn git_status(local_path: &str) -> Result<Vec<String>, Error> {
     // 遍历并将改动的文件路径和状态信息添加到 Vec 中
     for entry in statuses.iter() {
         if let Some(file_path) = entry.path() {
-            let status_str = match entry.status() {
-                Status::WT_NEW | Status::INDEX_NEW => "Untracked",
+            let mut stage = "unstage";
+            let status = match entry.status() {
+                Status::WT_NEW => "Untracked",
+                Status::INDEX_NEW => {
+                    stage = "staged";
+                    "Untracked"
+                }
                 Status::CONFLICTED => "Conflicted",
-                Status::WT_MODIFIED | Status::INDEX_MODIFIED => "Modified",
-                Status::WT_RENAMED | Status::INDEX_RENAMED => "Rename",
-                Status::WT_DELETED | Status::INDEX_DELETED => "Deleted",
-                Status::WT_TYPECHANGE | Status::INDEX_TYPECHANGE => "Typechange",
+                Status::WT_MODIFIED => "Modified",
+                Status::INDEX_MODIFIED => {
+                    stage = "staged";
+                    "Modified"
+                }
+                Status::WT_RENAMED => "Rename",
+                Status::INDEX_RENAMED => {
+                    stage = "staged";
+                    "Rename"
+                }
+                Status::WT_DELETED => "Deleted",
+                Status::INDEX_DELETED => {
+                    stage = "staged";
+                    "Deleted"
+                }
+                Status::WT_TYPECHANGE => "Typechange",
+                Status::INDEX_TYPECHANGE => {
+                    stage = "staged";
+                    "Typechange"
+                }
                 _ => "Unknown",
             };
-            changed_files.push(format!("{}###{}", status_str, file_path));
+
+            let name = Path::new(file_path).file_name().unwrap().to_str().unwrap().to_string();
+            let changed_file = ChangedFile {
+                path: file_path.to_string(),
+                status: status.to_string(),
+                stage: stage.to_string(),
+                name,
+            };
+            changed_files.push(changed_file);
         }
     }
 
@@ -254,4 +291,28 @@ pub fn git_log(repo_path: &str) -> Result<Vec<CommitItem>, Error> {
     }
 
     Ok(commits)
+}
+
+pub fn git_add(repo_path: &str, file_paths: Vec<&str>) -> Result<Vec<String>, git2::Error> {
+    // 打开仓库
+    let repo = Repository::open(repo_path)?;
+
+    // 获取仓库的索引
+    let mut index = repo.index()?;
+
+    let mut files = Vec::new();
+    // 遍历要添加的文件路径，并将它们添加到索引中
+    for file_path in file_paths {
+        files.push(file_path.to_string());
+        println!("file_path: {}", file_path);
+
+        // 添加文件到索引
+        let path = Path::new(file_path);
+        index.add_path(path)?;
+    }
+
+    // 将索引写入磁盘
+    index.write()?;
+
+    Ok(files)
 }

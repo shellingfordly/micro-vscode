@@ -1,12 +1,11 @@
 import { defineStore } from "pinia";
 import { useProjectStore } from "./project";
-import { ChangedFile, GitLogInfo } from "~/types";
+import { ChangedFile, GitLogInfo, GitStageType } from "~/types";
 import { createInvoke } from "~/utils/api";
 
 export const useGitStore = defineStore("useGitStore", () => {
   const projectStore = useProjectStore();
-  const changedFileMap = reactive<Map<string, ChangedFile>>(new Map());
-  const addChangeFileMap = reactive<Map<string, ChangedFile>>(new Map());
+  const changedFiles = ref<ChangedFile[]>([]);
   const commitMessage = ref("");
   const loading = ref(false);
   const logList = ref<GitLogInfo[]>([]);
@@ -15,13 +14,20 @@ export const useGitStore = defineStore("useGitStore", () => {
     immediate: true,
   });
 
+  function getChangeFilesByStageType(stage: GitStageType) {
+    return changedFiles.value.filter((f) => stage === f.stage);
+  }
+
   async function updateChangedFiles() {
     const name = projectStore.selectProjectName;
     if (!name) return;
 
-    const result = await createInvoke("git_status", { name });
+    const result = await createInvoke<ChangedFile[]>("git_status", { name });
     if (result.status == "ok") {
-      setChangeFileMap(changedFileMap, result.data, name);
+      changedFiles.value = result.data.map((item) => ({
+        ...item,
+        fullPath: name + "/" + item.path,
+      }));
     }
   }
 
@@ -36,11 +42,13 @@ export const useGitStore = defineStore("useGitStore", () => {
     return status === "ok";
   }
 
-  function gitAdd(files: ChangedFile[]) {
-    files.forEach((file) => {
-      addChangeFileMap.set(file.path, file);
-      changedFileMap.delete(file.path);
+  async function gitAdd(files: ChangedFile[]) {
+    const { status, data } = await createInvoke("git_add", {
+      name: projectStore.selectProjectName,
+      files: files.map((f) => f.path),
     });
+
+    console.log("git add", status, data);
   }
 
   async function gitCommit() {
@@ -67,8 +75,7 @@ export const useGitStore = defineStore("useGitStore", () => {
   }
 
   return {
-    changedFiles: changedFileMap,
-    addChangeFileMap,
+    changedFiles,
     commitMessage,
     loading,
     logList,
@@ -77,23 +84,6 @@ export const useGitStore = defineStore("useGitStore", () => {
     gitCommit,
     discardChanges,
     updateChangedFiles,
+    getChangeFilesByStageType,
   };
 });
-
-export function setChangeFileMap(
-  map: Map<string, ChangedFile>,
-  data: string[],
-  rootName: string
-) {
-  data.forEach((str) => {
-    const [status, path] = str.split("###");
-    const name = path.split("/").pop();
-    const file = {
-      status,
-      path,
-      rootPath: rootName + "/" + path,
-      name,
-    } as ChangedFile;
-    map.set(path, file);
-  });
-}

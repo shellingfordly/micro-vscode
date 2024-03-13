@@ -9,11 +9,14 @@ export type MenuItem = MenuOption & {
 
 export type MenuType = "file" | "dir";
 
+export type GitStageType = "staged" | "unstage";
+
 export interface ChangedFile {
-  status: GitStatus;
-  path: string;
-  rootPath: string;
-  name: string;
+  status: GitStatus; // 修改状态
+  stage: GitStageType; // 是否添加到暂存区
+  path: string; // 相对路径
+  fullPath: string; // 绝对路径
+  name: string; // 文件名
 }
 
 export interface GitLogInfo {

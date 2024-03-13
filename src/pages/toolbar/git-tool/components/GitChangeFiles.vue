@@ -2,12 +2,19 @@
 import { useGitStore } from "~/stores/git";
 import { GitStatus } from "~/constants/enums";
 import { useProjectStore } from "~/stores/project";
-import type { ChangedFile } from "~/types";
+import type { ChangedFile, GitStageType } from "~/types";
+
+const props = defineProps<{
+  stage: GitStageType;
+}>();
 
 const projectStore = useProjectStore();
 const message = useMessage();
 const gitStore = useGitStore();
 const dialog = useDialog();
+const changedFiles = computed(() =>
+  gitStore.getChangeFilesByStageType(props.stage)
+);
 
 function onOpenFile(file: ChangedFile) {
   if (file.status == GitStatus.Deleted) {
@@ -15,8 +22,8 @@ function onOpenFile(file: ChangedFile) {
     return;
   }
 
-  projectStore.getFileContent(file.rootPath);
-  projectStore.addFileTab(file.rootPath);
+  projectStore.getFileContent(file.fullPath);
+  projectStore.addFileTab(file.fullPath);
 }
 
 async function onDiscardChanges(path: string) {
@@ -38,9 +45,8 @@ async function onDiscardChanges(path: string) {
 <template>
   <ul>
     <li
-      v-for="[key, file] in gitStore.changedFiles"
+      v-for="file in changedFiles"
       :class="['file', 'file_' + file.status.toLocaleLowerCase()]"
-      :key="key"
     >
       <div class="info">
         <span i="vscode-icons-file-type-vue" />
@@ -59,7 +65,16 @@ async function onDiscardChanges(path: string) {
           title="Discard changes"
           @click="onDiscardChanges(file.path)"
         />
-        <span class="op-hover hover:op100 i-carbon-add" title="Stage Changes" />
+        <span
+          v-if="file.stage"
+          class="op-hover hover:op100 i-carbon-add"
+          title="Stage Changes"
+        />
+        <span
+          v-else
+          class="op-hover hover:op100 i-ic-baseline-minus"
+          title="Stage Changes"
+        />
         <span class="status" :title="file.status">
           {{ file.status.charAt(0) }}
         </span>

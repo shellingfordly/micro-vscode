@@ -4,7 +4,7 @@ mod path;
 mod project;
 mod utils;
 use std::fs;
-use git::CommitItem;
+use git::{ CommitItem, ChangedFile };
 use file::read_file_content;
 use path::{ check_path_and_create, get_path, get_path_str };
 use project::{ get_project_all_files, get_project_list };
@@ -63,6 +63,16 @@ fn git_commit(name: &str, message: &str) -> Response<String> {
 }
 
 #[tauri::command]
+fn git_add(name: &str, files: Vec<&str>) -> Response<Vec<String>> {
+    let path = get_path_str(&format!("../templates/{}", name));
+
+    match git::git_add(&path, files) {
+        Ok(data) => create_data(data),
+        Err(err) => create_data(Vec::new()),
+    }
+}
+
+#[tauri::command]
 fn git_push(name: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
 
@@ -83,7 +93,7 @@ fn git_discard_changes(name: &str, path: &str) -> Response<String> {
 }
 
 #[tauri::command]
-fn git_status(name: &str) -> Response<Vec<String>> {
+fn git_status(name: &str) -> Response<Vec<ChangedFile>> {
     let path = get_path_str(&format!("../templates/{}", name));
     match git::git_status(&path) {
         Ok(data) => create_data(data),
@@ -142,6 +152,7 @@ pub fn run() {
             tauri::generate_handler![
                 git_clone,
                 git_pull,
+                git_add,
                 git_status,
                 git_commit,
                 git_push,

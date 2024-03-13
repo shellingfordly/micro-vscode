@@ -2,6 +2,7 @@
 import { useGitStore } from "~/stores/git";
 import GitChangeFiles from "./components/GitChangeFiles.vue";
 import GitCommitLogs from "./components/GitCommitLogs.vue";
+import { ChangedFile } from "~/types";
 
 const gitStore = useGitStore();
 const message = useMessage();
@@ -29,7 +30,16 @@ async function onDiscardAllChanges(event: Event) {
 async function onStageAllChanges(event: Event) {
   event.stopPropagation();
 
-  console.log(gitStore.logList);
+  const files: ChangedFile[] = gitStore.getChangeFilesByStageType("unstage");
+
+  if (files.length) {
+    await gitStore.gitAdd(files);
+    gitStore.updateChangedFiles();
+  }
+}
+
+async function onUnstageAllChanges(event: Event) {
+  event.stopPropagation();
 }
 
 async function onClickGit() {
@@ -54,6 +64,19 @@ async function onClickGit() {
         <n-collapse-item name="1">
           <template #header>
             <div class="flex-between-center w-full">
+              <div>Staged Changes</div>
+              <span
+                class="op-hover i-ic-baseline-minus"
+                title="Unstage All changes"
+                @click="onUnstageAllChanges"
+              />
+            </div>
+          </template>
+          <GitChangeFiles stage="staged" />
+        </n-collapse-item>
+        <n-collapse-item name="2">
+          <template #header>
+            <div class="flex-between-center w-full">
               <div>Changes</div>
               <div class="space-x-1">
                 <span
@@ -69,9 +92,9 @@ async function onClickGit() {
               </div>
             </div>
           </template>
-          <GitChangeFiles />
+          <GitChangeFiles stage="unstage" />
         </n-collapse-item>
-        <n-collapse-item name="2" title="Commits">
+        <n-collapse-item name="3" title="Commits">
           <GitCommitLogs />
         </n-collapse-item>
       </n-collapse>
