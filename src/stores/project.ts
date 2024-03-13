@@ -1,4 +1,3 @@
-import JSON5 from "json5";
 import { defineStore } from "pinia";
 import type { MenuItem } from "~/types";
 import type { MenuOption } from "naive-ui";

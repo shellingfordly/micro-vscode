@@ -5,6 +5,7 @@ import { internalIpV4 } from "internal-ip";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
+import UnoCSS from "unocss/vite";
 
 const mobile = !!/android|ios/.exec(process.env.TAURI_ENV_PLATFORM);
 
@@ -15,6 +16,7 @@ export default defineConfig(async () => ({
   },
   plugins: [
     vue(),
+    UnoCSS(),
     AutoImport({
       dts: "./src/auto-imports.d.ts",
       dirs: ["./src/hooks"],

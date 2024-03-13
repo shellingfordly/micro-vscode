@@ -14,7 +14,7 @@ async function onSaveFile() {
 </script>
 
 <template>
-  <n-layout style="height: 100%">
+  <n-layout h-full>
     <FileTabs />
     <n-layout style="height: calc(100% - 47px)">
       <Editor

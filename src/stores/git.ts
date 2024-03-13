@@ -57,6 +57,7 @@ export const useGitStore = defineStore("useGitStore", () => {
   }
 
   async function gitLog() {
+    if (!projectStore.selectProjectName) return;
     const { status, data } = await createInvoke<GitLogInfo[]>("git_log", {
       name: projectStore.selectProjectName,
     });

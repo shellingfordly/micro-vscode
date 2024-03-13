@@ -6,8 +6,8 @@ const isDark = useDark();
 
 const themeIcon = computed(() =>
   isDark.value
-    ? "material-symbols:light-mode-outline"
-    : "material-symbols:nightlight-outline"
+    ? "material-symbols-light-mode-outline"
+    : "material-symbols-nightlight-outline"
 );
 
 function onChangeTheme() {
@@ -38,27 +38,17 @@ async function onSetGitUser() {
 }
 </script>
 <template>
-  <div class="header-tool">
-    <Icon
-      class="icon"
-      hover
-      :size="20"
-      icon="ic:outline-person"
-      @click="showModal = true"
-    />
-    <Icon
-      class="icon"
-      hover
-      :size="20"
-      :icon="themeIcon"
+  <div flex-center mr5 space-x-2>
+    <span class="op-hover i-ic-outline-person" @click="showModal = true" />
+    <span
+      class="op-hover hover:op100"
+      i="material-symbols-nightlight-outline dark:material-symbols-light-mode-outline"
       @click="onChangeTheme"
     />
-
     <n-modal
       v-model:show="showModal"
-      class="custom-card"
+      class="w-150"
       preset="card"
-      style="width: 500px"
       title="Git User"
       size="huge"
       :bordered="false"
@@ -87,15 +77,3 @@ async function onSetGitUser() {
     </n-modal>
   </div>
 </template>
-
-<style scoped lang="less">
-.header-tool {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-
-  .icon {
-    margin-right: 10px;
-  }
-}
-</style>

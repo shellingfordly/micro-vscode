@@ -65,16 +65,16 @@ function onSaveFile() {
 </script>
 <template>
   <n-layout-sider width="100%" style="height: 100%" :native-scrollbar="false">
-    <n-layout-header bordered class="tools">
-      <Icon hover title="New File" icon="icon-park-outline:file-addition-one" />
-      <Icon hover title="New Folder" icon="codicon:new-folder" />
-      <Icon
-        hover
+    <n-layout-header bordered class="flex-end-center p2 space-x-2">
+      <div bg-hover title="New File" i="icon-park-outline-file-addition-one" />
+      <div bg-hover title="New Folder" i="codicon-new-folder" />
+      <div
+        bg-hover
         title="Save All"
-        icon="codicon:save-all"
+        i="codicon-save-all"
         @click="onSaveFileAll"
       />
-      <Icon hover title="Save All" icon="codicon:save" @click="onSaveFile" />
+      <div bg-hover title="Save All" i="codicon-save" @click="onSaveFile" />
     </n-layout-header>
     <n-menu
       :collapsed-width="0"
@@ -87,15 +87,3 @@ function onSaveFile() {
     />
   </n-layout-sider>
 </template>
-
-<style scoped lang="less">
-.tools {
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px;
-
-  > iconify-icon {
-    margin-right: 10px;
-  }
-}
-</style>

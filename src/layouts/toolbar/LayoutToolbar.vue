@@ -14,23 +14,23 @@ const selectedTab = ref("file");
       type="line"
       animated
       placement="left"
-      style="width: 100%; height: 100%"
+      class="w-full h-full"
     >
       <n-tab-pane name="file">
         <template #tab>
-          <Icon :size="18" icon="material-symbols:file-copy-outline-rounded" />
+          <span i="material-symbols-file-copy-outline-rounded" />
         </template>
         <FileMenuTool />
       </n-tab-pane>
       <n-tab-pane name="search">
         <template #tab>
-          <Icon :size="18" icon="material-symbols:search" />
+          <span i="material-symbols-search" />
         </template>
         <SearchTool />
       </n-tab-pane>
       <n-tab-pane name="git" style="width: calc(100% - 51px)">
         <template #tab>
-          <Icon :size="18" icon="ion:ios-git-branch" />
+          <span i="ion-ios-git-branch" />
         </template>
         <GitTool />
       </n-tab-pane>

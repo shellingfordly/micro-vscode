@@ -88,26 +88,24 @@ async function onCommit() {
   />
   <n-modal
     v-model:show="showModal.clone"
-    class="custom-card"
+    class="w-150"
     preset="card"
-    style="width: 500px"
     title="git clone"
     size="huge"
     :bordered="false"
   >
-    <n-input v-model:value="url" style="margin-bottom: 10px" />
+    <n-input v-model:value="url" mb3 />
     <n-button :loading="loading" @click="onClone">clone</n-button>
   </n-modal>
   <n-modal
     v-model:show="showModal.commit"
-    class="custom-card"
+    w-150
     preset="card"
-    style="width: 500px"
     title="git commit"
     size="huge"
     :bordered="false"
   >
-    <n-input v-model:value="commitMsg" style="margin-bottom: 10px" />
+    <n-input v-model:value="commitMsg" mb3 />
     <n-button :loading="loading" @click="onCommit">Commit</n-button>
   </n-modal>
 </template>

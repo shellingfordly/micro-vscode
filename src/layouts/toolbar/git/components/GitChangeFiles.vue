@@ -36,32 +36,34 @@ async function onDiscardChanges(path: string) {
 }
 </script>
 <template>
-  <ul class="changes">
+  <ul>
     <li
       v-for="[key, file] in gitStore.changedFiles"
-      :class="['change-file', 'change-file_' + file.status.toLocaleLowerCase()]"
+      :class="['file', 'file_' + file.status.toLocaleLowerCase()]"
       :key="key"
     >
       <div class="info">
-        <Icon icon="vscode-icons:file-type-vue" />
-        <span class="name">{{ file.name }}</span>
-        <span class="path">{{ file.path }}</span>
+        <span i="vscode-icons-file-type-vue" />
+        <span class="ml2">{{ file.name }}</span>
+        <span class="ml2 op80">{{ file.path }}</span>
       </div>
-      <div class="tools">
-        <Icon
-          class="icon"
-          icon="material-symbols-light:file-open-outline"
+      <div class="flex-center space-x-1 w-auto">
+        <span
+          class="cursor-pointer op-60 hover:op100"
+          i="material-symbols-light-file-open-outline"
           title="open file"
           @click="onOpenFile(file)"
         />
-        <Icon
-          class="icon"
-          icon="codicon:discard"
+        <span
+          class="cursor-pointer op-60 hover:op100 i-codicon-discard"
           title="Discard changes"
           @click="onDiscardChanges(file.path)"
         />
-        <Icon class="icon" icon="carbon:add" title="Stage Changes" />
-        <span :title="file.status">
+        <span
+          class="cursor-pointer op-60 hover:op100 i-carbon-add"
+          title="Stage Changes"
+        />
+        <span class="status" :title="file.status">
           {{ file.status.charAt(0) }}
         </span>
       </div>
@@ -69,62 +71,37 @@ async function onDiscardChanges(path: string) {
   </ul>
 </template>
 <style scoped lang="less">
-.changes {
-  .change-file {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    width: 100%;
+.file {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  width: 100%;
 
-    &_modified {
-      .tools > span {
-        color: rgb(32, 82, 107);
-      }
-    }
+  &_modified .status {
+    color: rgb(49, 134, 176);
+  }
 
-    &.deleted {
-      .info > span {
-        text-decoration: line-through;
-      }
-      .tools > span {
-        color: rgb(123, 63, 63);
-      }
-    }
-
-    &.untracked {
-      .tools > span {
-        color: rgb(210, 185, 23);
-      }
-    }
-
+  &_deleted {
     .info {
-      width: calc(100% - 70px);
-      cursor: pointer;
-      opacity: 0.8;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-
-      &:hover {
-        opacity: 1;
-      }
-
-      span {
-        margin-left: 5px;
-      }
-
-      .path {
-        margin-left: 10px;
-        font-size: 10px;
-        opacity: 0.8;
-      }
+      text-decoration: line-through;
     }
+    .status {
+      color: rgb(123, 63, 63);
+    }
+  }
 
-    .tools {
-      span {
-        cursor: pointer;
-        margin-left: 5px;
-      }
+  &_untracked .status {
+    color: rgb(210, 185, 23);
+  }
+
+  .info {
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    opacity: 0.6;
+    &:hover {
+      opacity: 1;
     }
   }
 }
