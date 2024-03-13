@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import FileMenuTool from "./FileMenuTool.vue";
 import SearchTool from "./SearchTool.vue";
-import GitTool from "./git/GitTool.vue";
+import GitTool from "./git-tool/GitTool.vue";
 
 const selectedTab = ref("file");
 </script>
