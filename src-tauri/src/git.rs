@@ -1,4 +1,4 @@
-use crate::utils::get_user_value;
+use crate::{ file, utils::get_user_value };
 use git2::{
     Cred,
     FetchOptions,
@@ -305,7 +305,6 @@ pub fn git_add(repo_path: &str, file_paths: Vec<&str>) -> Result<Vec<String>, gi
     // 遍历要添加的文件路径，并将它们添加到索引中
     for file_path in file_paths {
         files.push(file_path.to_string());
-        println!("file_path: {}", file_path);
 
         // 添加文件到索引
         let path = Path::new(file_path);
@@ -318,19 +317,30 @@ pub fn git_add(repo_path: &str, file_paths: Vec<&str>) -> Result<Vec<String>, gi
     Ok(files)
 }
 
-pub fn git_reset_head(repo_path: &str) -> Result<String, Error> {
-    // 打开仓库
+pub fn git_reset_head(repo_path: &str, file_path: &str) -> Result<String, Error> {
     let repo = Repository::open(repo_path)?;
-
-    // 获取 HEAD 引用
     let head = repo.head()?;
+    let head_commit = head.peel_to_commit()?;
+    let mut index = repo.index()?;
+    let change_files = git_status(repo_path)?;
 
-    // 获取 HEAD 引用的目标提交
-    let target_commit = head.peel_to_commit()?;
-    let target_object = target_commit.as_object();
+    // 移除文件
+    if !file_path.is_empty() {
+        index.remove_path(Path::new(file_path))?;
+        index.write()?;
+    }
 
-    // 重置仓库的 HEAD 到目标提交
-    repo.reset(target_object, ResetType::Mixed, None)?;
+    repo.reset(head_commit.as_object(), ResetType::Mixed, None)?;
+
+    // 恢复不需要移除的并且staged的文件
+    if !file_path.is_empty() {
+        for file in change_files {
+            if file_path != file.path && file.stage == "staged" {
+                index.add_path(Path::new(&file.path))?;
+            }
+        }
+        index.write()?;
+    }
 
     Ok("Git reset head successful!".to_string())
 }

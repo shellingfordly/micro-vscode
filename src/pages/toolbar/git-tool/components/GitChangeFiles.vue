@@ -13,7 +13,7 @@ const message = useMessage();
 const gitStore = useGitStore();
 const dialog = useDialog();
 const changedFiles = computed(() =>
-  gitStore.getChangeFilesByStageType(props.stage)
+  gitStore.changedFiles.filter((f) => props.stage === f.stage)
 );
 
 function onOpenFile(file: ChangedFile) {
@@ -24,6 +24,16 @@ function onOpenFile(file: ChangedFile) {
 
   projectStore.getFileContent(file.fullPath);
   projectStore.addFileTab(file.fullPath);
+}
+
+async function onAddFile(file: ChangedFile) {
+  await gitStore.gitAdd([file]);
+  gitStore.updateChangedFiles();
+}
+
+async function onUnstageFile(file: ChangedFile) {
+  await gitStore.getResetHead(file.path);
+  gitStore.updateChangedFiles();
 }
 
 async function onDiscardChanges(path: string) {
@@ -66,14 +76,16 @@ async function onDiscardChanges(path: string) {
           @click="onDiscardChanges(file.path)"
         />
         <span
-          v-if="file.stage"
+          v-if="file.stage === 'unstage'"
           class="op-hover hover:op100 i-carbon-add"
           title="Stage Changes"
+          @click="onAddFile(file)"
         />
         <span
           v-else
           class="op-hover hover:op100 i-ic-baseline-minus"
           title="Stage Changes"
+          @click="onUnstageFile(file)"
         />
         <span class="status" :title="file.status">
           {{ file.status.charAt(0) }}

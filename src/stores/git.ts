@@ -62,12 +62,13 @@ export const useGitStore = defineStore("useGitStore", () => {
     }
   }
 
-  async function getResetHead() {
+  async function getResetHead(file = "") {
     const name = projectStore.selectProjectName;
     if (!name) return false;
 
     const { status } = await createInvoke("git_reset_head", {
       name,
+      file,
     });
     return status === "ok";
   }

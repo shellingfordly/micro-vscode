@@ -101,10 +101,10 @@ fn git_push(name: &str) -> Response<String> {
 }
 
 #[tauri::command]
-fn git_reset_head(name: &str) -> Response<String> {
+fn git_reset_head(name: &str, file: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
 
-    match git::git_reset_head(&path) {
+    match git::git_reset_head(&path, file) {
         Ok(data) => create_data(data),
         Err(err) => create_error(format!("Git push failed: [{:?}].", err)),
     }
