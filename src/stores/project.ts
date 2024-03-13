@@ -7,6 +7,11 @@ import { createInvoke } from "~/utils/api";
 const FileContentMap = new Map<string, string>();
 const FileContentChangeMap = new Map<string, string>();
 
+export function clearFileContentHistory(fullPath: string) {
+  FileContentMap.delete(fullPath);
+  FileContentChangeMap.delete(fullPath);
+}
+
 export const useProjectStore = defineStore("useProjectStore", () => {
   const selectProjectName = ref("");
   const projectNameList = ref<string[]>([]);
@@ -14,13 +19,11 @@ export const useProjectStore = defineStore("useProjectStore", () => {
   const projectMenuOptions = computed<MenuOption[]>(() =>
     handleProjectMenu(projectNameList.value)
   );
-  const fileInfo = reactive({
-    content: "",
-    path: "",
-  });
+  const fileInfo = reactive({ path: "", content: "" });
   const fileTabs = ref<{ label: string; value: string }[]>([]);
   const selectFileTab = ref("");
   const modifiedFiles = ref<Set<string>>(new Set());
+  const fileChangedCount = ref(0);
 
   watch(selectProjectName, async (name) => {
     const data = await getProjectFiles(name);
@@ -73,15 +76,18 @@ export const useProjectStore = defineStore("useProjectStore", () => {
 
   async function getFileContent(path: string) {
     let data = "";
+
     if (!FileContentMap.has(path) && !FileContentChangeMap.has(path)) {
       const result = await createInvoke<string>("read_file", {
         path,
       });
 
-      data = result.data;
       if (result.status === "ok") {
+        data = result.data;
         FileContentMap.set(path, result.data);
         FileContentChangeMap.set(path, result.data);
+      } else {
+        return;
       }
     } else {
       data = FileContentChangeMap.get(path) || FileContentMap.get(path) || "";
@@ -101,6 +107,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
       if (status === "ok") {
         FileContentMap.set(fileInfo.path, fileInfo.content);
         modifiedFiles.value.delete(fileInfo.path);
+        fileChangedCount.value++;
       }
     }
   }
@@ -171,6 +178,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     fileTabs,
     selectFileTab,
     modifiedFiles,
+    fileChangedCount,
     getProjectFiles,
     getProjectList,
     getFileContent,

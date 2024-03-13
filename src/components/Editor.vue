@@ -23,7 +23,7 @@ const colorMode = useColorMode();
 const models = new Map<string, monaco.editor.ITextModel>();
 
 const language = computed(() => {
-  const ext = props.filepath.split(".").pop();
+  const ext = props.filepath?.split(".").pop() || "";
   switch (ext) {
     case "js":
       return "javascript";

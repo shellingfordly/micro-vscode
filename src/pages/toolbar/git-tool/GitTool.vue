@@ -19,7 +19,7 @@ async function onDiscardAllChanges(event: Event) {
     negativeText: "Cancel",
     maskClosable: false,
     onPositiveClick: async () => {
-      const success = await gitStore.discardChanges("");
+      const success = await gitStore.discardChanges({} as any);
       if (success) {
         gitStore.updateChangedFiles();
       }

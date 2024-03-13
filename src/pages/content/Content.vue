@@ -2,9 +2,7 @@
 import { useProjectStore } from "~/stores/project";
 
 const projectStore = useProjectStore();
-const isShowEditor = computed(
-  () => projectStore.fileInfo.content && projectStore.fileInfo.path
-);
+const isShowEditor = computed(() => projectStore.fileInfo.path);
 
 onMounted(projectStore.getProjectList);
 

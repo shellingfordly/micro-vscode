@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { useProjectStore } from "./project";
+import { useProjectStore, clearFileContentHistory } from "./project";
 import { ChangedFile, GitLogInfo, GitStageType } from "~/types";
 import { createInvoke } from "~/utils/api";
 
@@ -10,9 +10,13 @@ export const useGitStore = defineStore("useGitStore", () => {
   const loading = ref(false);
   const logList = ref<GitLogInfo[]>([]);
 
-  watch(() => projectStore.selectProjectName, updateChangedFiles, {
-    immediate: true,
-  });
+  watch(
+    [() => projectStore.selectProjectName, () => projectStore.fileChangedCount],
+    updateChangedFiles,
+    {
+      immediate: true,
+    }
+  );
 
   function getChangeFilesByStageType(stage: GitStageType) {
     return changedFiles.value.filter((f) => stage === f.stage);
@@ -73,15 +77,29 @@ export const useGitStore = defineStore("useGitStore", () => {
     return status === "ok";
   }
 
-  async function discardChanges(path: string) {
+  async function discardChanges(file: ChangedFile) {
     const name = projectStore.selectProjectName;
     if (!name) return false;
 
     const { status } = await createInvoke("git_discard_changes", {
       name,
-      path,
+      path: file.path || "",
     });
-    return status === "ok";
+
+    var success = status === "ok";
+    if (success) {
+      clearFileContentHistory(file.fullPath);
+
+      const hasFileTab =
+        projectStore.fileTabs.findIndex(
+          (tab) => tab.value === file.fullPath
+        ) !== -1;
+      if (hasFileTab) {
+        projectStore.getFileContent(file.fullPath);
+      }
+    }
+
+    return success;
   }
 
   return {

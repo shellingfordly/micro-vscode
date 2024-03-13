@@ -36,15 +36,15 @@ async function onUnstageFile(file: ChangedFile) {
   gitStore.updateChangedFiles();
 }
 
-async function onDiscardChanges(path: string) {
+async function onDiscardChanges(file: ChangedFile) {
   dialog.warning({
     title: "Discard Changes",
-    content: "Are you sure you want to discard changes in " + path,
+    content: "Are you sure you want to discard changes in " + file.path,
     maskClosable: false,
     positiveText: "Discard Changes",
     negativeText: "Cancel",
     async onPositiveClick() {
-      const success = await gitStore.discardChanges(path);
+      const success = await gitStore.discardChanges(file);
       if (success) {
         gitStore.updateChangedFiles();
       }
@@ -73,7 +73,7 @@ async function onDiscardChanges(path: string) {
         <span
           class="op-hover hover:op100 i-codicon-discard"
           title="Discard changes"
-          @click="onDiscardChanges(file.path)"
+          @click="onDiscardChanges(file)"
         />
         <span
           v-if="file.stage === 'unstage'"
