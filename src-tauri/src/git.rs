@@ -9,6 +9,7 @@ use git2::{
     Status,
     StatusOptions,
     build::CheckoutBuilder,
+    ResetType,
     Error,
 };
 use std::path::Path;
@@ -315,4 +316,21 @@ pub fn git_add(repo_path: &str, file_paths: Vec<&str>) -> Result<Vec<String>, gi
     index.write()?;
 
     Ok(files)
+}
+
+pub fn git_reset_head(repo_path: &str) -> Result<String, Error> {
+    // 打开仓库
+    let repo = Repository::open(repo_path)?;
+
+    // 获取 HEAD 引用
+    let head = repo.head()?;
+
+    // 获取 HEAD 引用的目标提交
+    let target_commit = head.peel_to_commit()?;
+    let target_object = target_commit.as_object();
+
+    // 重置仓库的 HEAD 到目标提交
+    repo.reset(target_object, ResetType::Mixed, None)?;
+
+    Ok("Git reset head successful!".to_string())
 }

@@ -31,24 +31,12 @@ export const useGitStore = defineStore("useGitStore", () => {
     }
   }
 
-  async function discardChanges(path: string) {
-    const name = projectStore.selectProjectName;
-    if (!name) return false;
-
-    const { status } = await createInvoke("git_discard_changes", {
-      name,
-      path,
-    });
-    return status === "ok";
-  }
-
   async function gitAdd(files: ChangedFile[]) {
-    const { status, data } = await createInvoke("git_add", {
+    const { status } = await createInvoke("git_add", {
       name: projectStore.selectProjectName,
       files: files.map((f) => f.path),
     });
-
-    console.log("git add", status, data);
+    return status === "ok";
   }
 
   async function gitCommit() {
@@ -74,6 +62,27 @@ export const useGitStore = defineStore("useGitStore", () => {
     }
   }
 
+  async function getResetHead() {
+    const name = projectStore.selectProjectName;
+    if (!name) return false;
+
+    const { status } = await createInvoke("git_reset_head", {
+      name,
+    });
+    return status === "ok";
+  }
+
+  async function discardChanges(path: string) {
+    const name = projectStore.selectProjectName;
+    if (!name) return false;
+
+    const { status } = await createInvoke("git_discard_changes", {
+      name,
+      path,
+    });
+    return status === "ok";
+  }
+
   return {
     changedFiles,
     commitMessage,
@@ -82,6 +91,7 @@ export const useGitStore = defineStore("useGitStore", () => {
     gitAdd,
     gitLog,
     gitCommit,
+    getResetHead,
     discardChanges,
     updateChangedFiles,
     getChangeFilesByStageType,

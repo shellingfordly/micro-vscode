@@ -53,12 +53,11 @@ fn git_pull(name: &str) -> Response<String> {
 }
 
 #[tauri::command]
-fn git_commit(name: &str, message: &str) -> Response<String> {
+fn git_status(name: &str) -> Response<Vec<ChangedFile>> {
     let path = get_path_str(&format!("../templates/{}", name));
-
-    match git::commit(&path, message) {
+    match git::git_status(&path) {
         Ok(data) => create_data(data),
-        Err(err) => create_error(format!("Git commit failed: [{:?}].", err)),
+        Err(err) => create_data(vec![]),
     }
 }
 
@@ -73,10 +72,39 @@ fn git_add(name: &str, files: Vec<&str>) -> Response<Vec<String>> {
 }
 
 #[tauri::command]
+fn git_commit(name: &str, message: &str) -> Response<String> {
+    let path = get_path_str(&format!("../templates/{}", name));
+
+    match git::commit(&path, message) {
+        Ok(data) => create_data(data),
+        Err(err) => create_error(format!("Git commit failed: [{:?}].", err)),
+    }
+}
+
+#[tauri::command]
+fn git_log(name: &str) -> Response<Vec<CommitItem>> {
+    let repo_path = get_path_str(&format!("../templates/{}", name));
+    match git::git_log(&repo_path) {
+        Ok(data) => create_data(data),
+        Err(err) => create_data(vec![]),
+    }
+}
+
+#[tauri::command]
 fn git_push(name: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
 
     match git::push(&path) {
+        Ok(data) => create_data(data),
+        Err(err) => create_error(format!("Git push failed: [{:?}].", err)),
+    }
+}
+
+#[tauri::command]
+fn git_reset_head(name: &str) -> Response<String> {
+    let path = get_path_str(&format!("../templates/{}", name));
+
+    match git::git_reset_head(&path) {
         Ok(data) => create_data(data),
         Err(err) => create_error(format!("Git push failed: [{:?}].", err)),
     }
@@ -89,24 +117,6 @@ fn git_discard_changes(name: &str, path: &str) -> Response<String> {
     match git::git_discard_changes(&repo_path, path) {
         Ok(data) => create_data(data),
         Err(err) => create_error(format!("Git discard changes failed: [{:?}].", err)),
-    }
-}
-
-#[tauri::command]
-fn git_status(name: &str) -> Response<Vec<ChangedFile>> {
-    let path = get_path_str(&format!("../templates/{}", name));
-    match git::git_status(&path) {
-        Ok(data) => create_data(data),
-        Err(err) => create_data(vec![]),
-    }
-}
-
-#[tauri::command]
-fn git_log(name: &str) -> Response<Vec<CommitItem>> {
-    let repo_path = get_path_str(&format!("../templates/{}", name));
-    match git::git_log(&repo_path) {
-        Ok(data) => create_data(data),
-        Err(err) => create_data(vec![]),
     }
 }
 
@@ -152,11 +162,12 @@ pub fn run() {
             tauri::generate_handler![
                 git_clone,
                 git_pull,
-                git_add,
                 git_status,
+                git_add,
                 git_commit,
-                git_push,
                 git_log,
+                git_push,
+                git_reset_head,
                 git_discard_changes,
                 read_file,
                 write_file,

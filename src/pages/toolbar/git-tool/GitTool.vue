@@ -40,6 +40,9 @@ async function onStageAllChanges(event: Event) {
 
 async function onUnstageAllChanges(event: Event) {
   event.stopPropagation();
+
+  await gitStore.getResetHead();
+  gitStore.updateChangedFiles();
 }
 
 async function onClickGit() {
