@@ -7,19 +7,6 @@ const gitStore = useGitStore();
 const message = useMessage();
 const dialog = useDialog();
 
-const toolIcons = [
-  h("span", {
-    i: "codicon-discard",
-    title: "Discard All changes",
-    onClick: onDiscardAllChanges,
-  }),
-  h("span", {
-    i: "carbon-add",
-    title: "Stage All Changes",
-    onClick: onStageAllChanges,
-  }),
-];
-
 async function onDiscardAllChanges(event: Event) {
   event.stopPropagation();
 
@@ -63,16 +50,21 @@ async function onClickGit() {
           <span>提交</span>
         </n-space>
       </n-button>
-      <n-collapse default-expanded-names="1">
+      <n-collapse>
         <n-collapse-item name="1">
           <template #header>
             <div class="flex-between-center w-full">
               <div>Changes</div>
               <div class="space-x-1">
-                <component
-                  class="cursor-pointer op-60 hover:op100"
-                  :is="icon"
-                  v-for="icon in toolIcons"
+                <span
+                  class="op-hover i-codicon-discard"
+                  title="Discard All changes"
+                  @click="onDiscardAllChanges"
+                />
+                <span
+                  class="op-hover i-carbon-add"
+                  title="Stage All changes"
+                  @click="onStageAllChanges"
                 />
               </div>
             </div>

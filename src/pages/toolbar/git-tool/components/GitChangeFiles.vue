@@ -49,20 +49,17 @@ async function onDiscardChanges(path: string) {
       </div>
       <div class="flex-center space-x-1 w-auto">
         <span
-          class="cursor-pointer op-60 hover:op100"
+          class="op-hover hover:op100"
           i="material-symbols-light-file-open-outline"
           title="open file"
           @click="onOpenFile(file)"
         />
         <span
-          class="cursor-pointer op-60 hover:op100 i-codicon-discard"
+          class="op-hover hover:op100 i-codicon-discard"
           title="Discard changes"
           @click="onDiscardChanges(file.path)"
         />
-        <span
-          class="cursor-pointer op-60 hover:op100 i-carbon-add"
-          title="Stage Changes"
-        />
+        <span class="op-hover hover:op100 i-carbon-add" title="Stage Changes" />
         <span class="status" :title="file.status">
           {{ file.status.charAt(0) }}
         </span>
