@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { darkTheme, lightTheme } from "naive-ui";
 import { useProjectStore } from "../stores/project";
-import LayoutHeader from "./header/LayoutHeader.vue";
-import LayoutFooter from "./LayoutFooter.vue";
-import LayoutToolbar from "./toolbar/LayoutToolbar.vue";
-import LayoutContent from "./content/LayoutContent.vue";
+import LayoutHeader from "./header/Header.vue";
+import LayoutFooter from "./Footer.vue";
+import LayoutToolbar from "./toolbar/Toolbar.vue";
+import LayoutContent from "./content/Content.vue";
 
 const isDark = useDark();
 const theme = computed(() => (isDark.value ? darkTheme : lightTheme));
