@@ -244,7 +244,18 @@ pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<String, E
     let mut message = "all files";
     if !file_path.is_empty() {
         message = file_path;
-        checkout_builder.path(file_path);
+        match git_reset_head(repo_path, file_path) {
+            Ok(_) => {
+                checkout_builder.path(file_path);
+            }
+            Err(err) => {
+                eprintln!(
+                    "[git_discard_changes] git_reset_head file {} error: {:?}",
+                    file_path,
+                    err
+                );
+            }
+        }
     }
 
     repo.checkout_index(None, Some(&mut checkout_builder))?;
