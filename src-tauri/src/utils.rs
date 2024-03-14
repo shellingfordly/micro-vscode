@@ -1,7 +1,6 @@
 use crate::path::get_path_str;
 use serde::{ Deserialize, Serialize };
-use std::{ ffi::NulError, fs, ptr::NonNull };
-use serde_json::to_string;
+use std::fs;
 
 pub fn get_url_name(url: &str) -> String {
     let url = url.trim_end_matches(".git");
@@ -66,7 +65,15 @@ pub struct Response<T> {
     err: String,
 }
 
-pub fn create_data<T>(data: T) -> Response<T> {
+pub fn create_res<T>(data: T, err: String) -> Response<T> {
+    Response {
+        status: "ok".to_string(),
+        data,
+        err,
+    }
+}
+
+pub fn create_res_ok<T>(data: T) -> Response<T> {
     Response {
         status: "ok".to_string(),
         data,
@@ -74,7 +81,7 @@ pub fn create_data<T>(data: T) -> Response<T> {
     }
 }
 
-pub fn create_error(err: String) -> Response<String> {
+pub fn create_res_err(err: String) -> Response<String> {
     Response {
         status: "err".to_string(),
         data: "".to_string(),

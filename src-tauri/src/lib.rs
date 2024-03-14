@@ -8,15 +8,15 @@ use git::{ CommitItem, ChangedFile };
 use file::read_file_content;
 use path::{ check_path_and_create, get_path, get_path_str };
 use project::{ get_project_all_files, get_project_list };
-use utils::{ Response, get_url_name, create_data, create_error };
+use utils::{ Response, get_url_name, create_res_ok, create_res, create_res_err };
 
 #[tauri::command]
 fn git_set_user(data: &str) -> Response<String> {
     let path: String = get_path_str("../data/user.json");
 
     match fs::write(path, data) {
-        Ok(_) => create_data("Write successful!".to_string()),
-        Err(err) => create_error(format!("Write failed: [{:?}].", err)),
+        Ok(_) => create_res_ok("Write successful!".to_string()),
+        Err(err) => create_res_err(format!("Write failed: [{:?}].", err)),
     }
 }
 
@@ -25,8 +25,8 @@ fn git_get_user() -> Response<String> {
     let path = get_path_str("../data/user.json");
 
     match fs::read_to_string(path) {
-        Ok(content) => create_data(content),
-        Err(err) => create_error(format!("Get user info failed: [{:?}].", err)),
+        Ok(content) => create_res_ok(content),
+        Err(err) => create_res_err(format!("Get user info failed: [{:?}].", err)),
     }
 }
 
@@ -38,8 +38,8 @@ fn git_clone(url: &str) -> Response<String> {
     check_path_and_create(&path);
 
     match git::clone(url, &path) {
-        Ok(data) => create_data(data),
-        Err(err) => create_error(format!("Git clone failed: [{:?}].", err)),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res_err(format!("Git clone failed: [{:?}].", err)),
     }
 }
 
@@ -47,8 +47,8 @@ fn git_clone(url: &str) -> Response<String> {
 fn git_pull(name: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
     match git::pull(&path) {
-        Ok(data) => create_data(data),
-        Err(err) => create_error(format!("Git pull failed: [{:?}].", err)),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res_err(format!("Git pull failed: [{:?}].", err)),
     }
 }
 
@@ -56,8 +56,8 @@ fn git_pull(name: &str) -> Response<String> {
 fn git_status(name: &str) -> Response<Vec<ChangedFile>> {
     let path = get_path_str(&format!("../templates/{}", name));
     match git::git_status(&path) {
-        Ok(data) => create_data(data),
-        Err(err) => create_data(vec![]),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res(vec![], err.to_string()),
     }
 }
 
@@ -66,8 +66,8 @@ fn git_add(name: &str, files: Vec<&str>) -> Response<Vec<String>> {
     let path = get_path_str(&format!("../templates/{}", name));
 
     match git::git_add(&path, files) {
-        Ok(data) => create_data(data),
-        Err(err) => create_data(Vec::new()),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res(Vec::new(), err.to_string()),
     }
 }
 
@@ -76,8 +76,8 @@ fn git_commit(name: &str, message: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
 
     match git::commit(&path, message) {
-        Ok(data) => create_data(data),
-        Err(err) => create_error(format!("Git commit failed: [{:?}].", err)),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res_err(format!("Git commit failed: [{:?}].", err)),
     }
 }
 
@@ -85,8 +85,8 @@ fn git_commit(name: &str, message: &str) -> Response<String> {
 fn git_log(name: &str) -> Response<Vec<CommitItem>> {
     let repo_path = get_path_str(&format!("../templates/{}", name));
     match git::git_log(&repo_path) {
-        Ok(data) => create_data(data),
-        Err(err) => create_data(vec![]),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res(vec![], err.to_string()),
     }
 }
 
@@ -95,8 +95,8 @@ fn git_push(name: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
 
     match git::push(&path) {
-        Ok(data) => create_data(data),
-        Err(err) => create_error(format!("Git push failed: [{:?}].", err)),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res_err(format!("Git push failed: [{:?}].", err)),
     }
 }
 
@@ -105,8 +105,8 @@ fn git_reset_head(name: &str, file: &str) -> Response<String> {
     let path = get_path_str(&format!("../templates/{}", name));
 
     match git::git_reset_head(&path, file) {
-        Ok(data) => create_data(data),
-        Err(err) => create_error(format!("Git push failed: [{:?}].", err)),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res_err(format!("Git push failed: [{:?}].", err)),
     }
 }
 
@@ -115,40 +115,40 @@ fn git_discard_changes(name: &str, path: &str) -> Response<String> {
     let repo_path = get_path_str(&format!("../templates/{}", name));
 
     match git::git_discard_changes(&repo_path, path) {
-        Ok(data) => create_data(data),
-        Err(err) => create_error(format!("Git discard changes failed: [{:?}].", err)),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res_err(format!("Git discard changes failed: [{:?}].", err)),
     }
 }
 
 #[tauri::command]
 fn get_projects() -> Response<Vec<String>> {
     match get_project_list(get_path("../templates/")) {
-        Ok(data) => create_data(data),
-        Err(err) => create_data(vec![]),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res(vec![], err),
     }
 }
 
 #[tauri::command]
 fn get_project_files(name: String) -> Response<Vec<String>> {
     match get_project_all_files(get_path(&format!("../templates/{}", name))) {
-        Ok(data) => create_data(data),
-        Err(err) => create_data(vec![]),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res(vec![], err),
     }
 }
 
 #[tauri::command]
 fn read_file(path: String) -> Response<String> {
     match read_file_content(get_path(&format!("../templates/{}", path))) {
-        Ok(data) => create_data(data),
-        Err(err) => create_error(format!("Read file failed: [{:?}].", err)),
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res_err(format!("Read file failed: [{:?}].", err)),
     }
 }
 
 #[tauri::command]
 fn write_file(path: &str, content: &str) -> Response<String> {
     match fs::write(get_path(&format!("../templates/{}", path)), content) {
-        Ok(_) => create_data("Write file successful!".to_string()),
-        Err(err) => create_error(format!("Write file failed: [{:?}].", err)),
+        Ok(_) => create_res_ok("Write file successful!".to_string()),
+        Err(err) => create_res_err(format!("Write file failed: [{:?}].", err)),
     }
 }
 

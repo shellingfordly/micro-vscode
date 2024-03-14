@@ -1,4 +1,4 @@
-use crate::{ file, utils::get_user_value };
+use crate::{ utils::get_user_value };
 use git2::{
     Cred,
     FetchOptions,
