@@ -68,6 +68,10 @@ pnpm tauri build
 
 ![git_clone](./public/readme/git_clone.png)
 
+- git pull / git push
+
+![git_pull](./public/readme/git_pull.png)
+
 - git commit
 
 ![git_commit](./public/readme/git_commit.png)
