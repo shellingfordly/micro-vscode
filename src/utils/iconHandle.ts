@@ -91,6 +91,8 @@ const FOLDER_ICON: Record<string, string> = {
   builds: "folder-type-dist",
   release: "folder-type-dist",
   releases: "folder-type-dist",
+  locales: "folder-type-locale",
+  locale: "folder-type-locale",
 };
 
 export function CreateIconVNode(name: string) {

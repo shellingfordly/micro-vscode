@@ -4,12 +4,6 @@ import JSON5 from "json5";
 
 const isDark = useDark();
 
-const themeIcon = computed(() =>
-  isDark.value
-    ? "material-symbols-light-mode-outline"
-    : "material-symbols-nightlight-outline"
-);
-
 function onChangeTheme() {
   isDark.value = !isDark.value;
 }
@@ -70,7 +64,7 @@ async function onSetGitUser() {
             placeholder="Enter in github token"
           />
         </n-form-item>
-        <n-form-item style="display: flex; justify-content: flex-end">
+        <n-form-item style="display: flex; justify-content: flex-end;">
           <n-button attr-type="button" @click="onSetGitUser"> Set </n-button>
         </n-form-item>
       </n-form>

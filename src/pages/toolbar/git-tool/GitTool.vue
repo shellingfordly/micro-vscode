@@ -54,13 +54,13 @@ async function onClickGit() {
 }
 </script>
 <template>
-  <n-layout-sider width="100%" style="height: 100%" :native-scrollbar="false">
+  <n-layout-sider width="100%" style="height: 100%;" :native-scrollbar="false">
     <n-space class="p4" vertical>
       <n-input v-model:value="gitStore.commitMessage" placeholder="Message" />
       <n-button secondary block :loading="gitStore.loading" @click="onClickGit">
         <n-space flex-center>
           <span i="charm-tick" />
-          <span>提交</span>
+          <span>Commit</span>
         </n-space>
       </n-button>
       <n-collapse>
