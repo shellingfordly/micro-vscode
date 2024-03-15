@@ -1,40 +1,5 @@
-import { handleIcon } from "./iconHandle";
+import { handleIcon } from "./icon";
 import { MenuItem, MenuType } from "~/types";
-
-export function handleProjectMenu(projects: string[]) {
-  return [
-    {
-      label: "Git",
-      key: "git",
-      children: [
-        {
-          label: "clone",
-          key: "clone",
-        },
-        {
-          label: "pull",
-          key: "pull",
-        },
-        {
-          label: "commit",
-          key: "commit",
-        },
-        {
-          label: "push",
-          key: "push",
-        },
-      ],
-    },
-    {
-      label: "Project",
-      key: "project",
-      children: projects.map((label) => ({
-        label,
-        key: label,
-      })),
-    },
-  ];
-}
 
 export function createMenuItem({
   name,

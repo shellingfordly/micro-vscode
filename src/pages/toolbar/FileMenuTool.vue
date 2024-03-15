@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useProjectStore } from "~/stores/project";
-import { CreateIconVNode, getFolderIconName } from "~/utils/iconHandle";
+import { CreateIconVNode, getFolderIconName } from "~/lib/handle/icon";
 
 const projectStore = useProjectStore();
 const expandedKeys = ref<string[]>([]);
@@ -64,7 +64,7 @@ function onSaveFile() {
 }
 </script>
 <template>
-  <n-layout-sider width="100%" style="height: 100%" :native-scrollbar="false">
+  <n-layout-sider width="100%" style="height: 100%;" :native-scrollbar="false">
     <n-layout-header bordered class="flex-end-center p2 space-x-2">
       <div bg-hover title="New File" i="icon-park-outline-file-addition-one" />
       <div bg-hover title="New Folder" i="codicon-new-folder" />
@@ -80,10 +80,11 @@ function onSaveFile() {
       :collapsed-width="0"
       :collapsed-icon-size="22"
       :options="projectStore.fileMenuOptions"
-      style="height: calc(100% - 50px)"
+      style="height: calc(100% - 50px);"
       :expanded-keys="expandedKeys"
       @update:expanded-keys="onOpenFolder"
       @update:value="onOpenFile"
     />
   </n-layout-sider>
 </template>
+~/lib/utils/iconHandle

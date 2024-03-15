@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { useProjectStore, clearFileContentHistory } from "./project";
 import { ChangedFile, GitLogInfo, GitStageType } from "~/types";
-import { createInvoke } from "~/utils/api";
+import { createInvoke } from "~/lib/utils/api";
 
 export const useGitStore = defineStore("useGitStore", () => {
   const projectStore = useProjectStore();

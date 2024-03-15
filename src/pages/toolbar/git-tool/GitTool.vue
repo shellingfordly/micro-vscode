@@ -3,8 +3,10 @@ import { useGitStore } from "~/stores/git";
 import GitChangeFiles from "./components/GitChangeFiles.vue";
 import GitCommitLogs from "./components/GitCommitLogs.vue";
 import { ChangedFile } from "~/types";
+import { useProjectStore } from "~/stores/project";
 
 const gitStore = useGitStore();
+const projectStore = useProjectStore();
 const message = useMessage();
 const dialog = useDialog();
 
@@ -55,19 +57,55 @@ async function onClickGit() {
     gitStore.updateLogList();
   }
 }
+const options = [
+  {
+    label: "pull",
+    key: "pull",
+  },
+  {
+    label: "push",
+    key: "push",
+  },
+];
 </script>
 <template>
   <n-layout-sider width="100%" style="height: 100%;" :native-scrollbar="false">
-    <n-space class="p4" vertical>
-      <n-input v-model:value="gitStore.commitMessage" placeholder="Message" />
-      <n-button secondary block :loading="gitStore.loading" @click="onClickGit">
-        <n-space flex-center>
-          <span i="charm-tick" />
-          <span>Commit</span>
-        </n-space>
-      </n-button>
-      <n-collapse>
-        <n-collapse-item name="1">
+    <div class="p4">
+      <n-collapse :default-expanded-names="[1, 2, 3, 4]">
+        <n-collapse-item :name="1">
+          <template #header>
+            <div class="flex-between-center w-full">
+              <div>
+                {{ projectStore.selectProjectName || "Source Control" }}
+              </div>
+              <n-dropdown trigger="hover" :options="options">
+                <span
+                  class="op-hover i-ic-sharp-more-horiz"
+                  title="Unstage All changes"
+                />
+              </n-dropdown>
+            </div>
+          </template>
+
+          <n-space vertical>
+            <n-input
+              v-model:value="gitStore.commitMessage"
+              placeholder="Message"
+            />
+            <n-button
+              secondary
+              block
+              :loading="gitStore.loading"
+              @click="onClickGit"
+            >
+              <n-space flex-center>
+                <span i="charm-tick" />
+                <span>Commit</span>
+              </n-space>
+            </n-button>
+          </n-space>
+        </n-collapse-item>
+        <n-collapse-item :name="2">
           <template #header>
             <div class="flex-between-center w-full">
               <div>Staged Changes</div>
@@ -80,7 +118,7 @@ async function onClickGit() {
           </template>
           <GitChangeFiles stage="staged" />
         </n-collapse-item>
-        <n-collapse-item name="2">
+        <n-collapse-item :name="3">
           <template #header>
             <div class="flex-between-center w-full">
               <div>Changes</div>
@@ -100,10 +138,10 @@ async function onClickGit() {
           </template>
           <GitChangeFiles stage="unstage" />
         </n-collapse-item>
-        <n-collapse-item name="3" title="Commits">
+        <n-collapse-item :name="4" title="Commits">
           <GitCommitLogs />
         </n-collapse-item>
       </n-collapse>
-    </n-space>
+    </div>
   </n-layout-sider>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createInvoke } from "~/utils/api";
+import { createInvoke } from "~/lib/utils/api";
 import JSON5 from "json5";
 
 const isDark = useDark();
@@ -69,5 +69,5 @@ async function onSetGitUser() {
         </n-form-item>
       </n-form>
     </n-modal>
-  </div>
-</template>
+  </div> </template
+>~/lib/utils/api

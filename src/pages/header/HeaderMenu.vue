@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useProjectStore } from "~/stores/project";
-import { createInvoke } from "~/utils/api";
+import { createInvoke } from "~/lib/utils/api";
 
 const emit = defineEmits(["change", "clone", "commit"]);
 const showModal = reactive({
@@ -14,14 +14,8 @@ const commitMsg = ref("");
 const projectStore = useProjectStore();
 
 async function onUpdateValue(key: string) {
-  if (key === "clone") {
+  if (key === "git_clone") {
     showModal.clone = true;
-  } else if (key === "pull") {
-    onPull();
-  } else if (key === "commit") {
-    showModal.commit = true;
-  } else if (key === "push") {
-    onPush();
   } else {
     emit("change", key);
   }
@@ -107,5 +101,5 @@ async function onCommit() {
   >
     <n-input v-model:value="commitMsg" mb3 />
     <n-button :loading="loading" @click="onCommit">Commit</n-button>
-  </n-modal>
-</template>
+  </n-modal> </template
+>~/lib/utils/api

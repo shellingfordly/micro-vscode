@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import type { MenuItem } from "~/types";
 import type { MenuOption } from "naive-ui";
-import { handleProjectMenu, handleFileMenu } from "../utils/projectHandle";
-import { createInvoke } from "~/utils/api";
+import { handleFileMenu } from "~/lib/handle/file";
+import { createInvoke } from "~/lib/utils/api";
 
 const FileContentMap = new Map<string, string>();
 const FileContentChangeMap = new Map<string, string>();
@@ -16,9 +16,16 @@ export const useProjectStore = defineStore("useProjectStore", () => {
   const selectProjectName = ref("");
   const projectNameList = ref<string[]>([]);
   const fileMenuOptions = ref<MenuItem[]>([]);
-  const projectMenuOptions = computed<MenuOption[]>(() =>
-    handleProjectMenu(projectNameList.value)
-  );
+  const projectMenuOptions = computed<MenuOption[]>(() => [
+    {
+      label: "Project",
+      key: "project",
+      children: projectNameList.value.map((label) => ({
+        label,
+        key: label,
+      })),
+    },
+  ]);
   const fileInfo = reactive({ path: "", content: "" });
   const fileTabs = ref<{ label: string; value: string }[]>([]);
   const selectFileTab = ref("");
