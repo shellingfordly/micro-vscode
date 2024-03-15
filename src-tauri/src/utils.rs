@@ -66,8 +66,9 @@ pub struct Response<T> {
 }
 
 pub fn create_res<T>(data: T, err: String) -> Response<T> {
+    let status = if err.is_empty() { "ok" } else { "err" };
     Response {
-        status: "ok".to_string(),
+        status: status.to_string(),
         data,
         err,
     }
