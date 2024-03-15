@@ -2,7 +2,7 @@
 import { useProjectStore } from "~/stores/project";
 import { createInvoke } from "~/lib/utils/api";
 
-const emit = defineEmits(["change", "clone", "commit"]);
+const emit = defineEmits(["change"]);
 const showModal = reactive({
   clone: false,
   commit: false,
@@ -10,7 +10,6 @@ const showModal = reactive({
 const url = ref("");
 const loading = ref(false);
 const message = useMessage();
-const commitMsg = ref("");
 const projectStore = useProjectStore();
 
 async function onUpdateValue(key: string) {
@@ -21,28 +20,6 @@ async function onUpdateValue(key: string) {
   }
 }
 
-async function onPull() {
-  if (projectStore.selectProjectName) {
-    const { status } = await createInvoke("git_pull", {
-      name: projectStore.selectProjectName,
-    });
-    if (status === "ok") {
-      message.success(`git pull successful!`);
-    }
-  }
-}
-
-async function onPush() {
-  if (projectStore.selectProjectName) {
-    const { status } = await createInvoke("git_push", {
-      name: projectStore.selectProjectName,
-    });
-    if (status === "ok") {
-      message.success(`git push successful!`);
-    }
-  }
-}
-
 async function onClone() {
   loading.value = true;
   const { status } = await createInvoke("git_clone", { url: url.value });
@@ -50,27 +27,6 @@ async function onClone() {
     showModal.clone = false;
     message.success(`git clone successful!`);
   }
-
-  emit("clone", status === "ok");
-  loading.value = false;
-}
-
-async function onCommit() {
-  if (!projectStore.selectProjectName || !commitMsg.value) return;
-
-  loading.value = true;
-  const { status } = await createInvoke("git_commit", {
-    name: projectStore.selectProjectName,
-    message: commitMsg.value,
-  });
-
-  if (status === "ok") {
-    showModal.commit = false;
-    message.success(`git commit successful!`);
-  }
-
-  emit("commit", status === "ok");
-
   loading.value = false;
 }
 </script>
@@ -84,22 +40,11 @@ async function onCommit() {
     v-model:show="showModal.clone"
     class="w-150"
     preset="card"
-    title="git clone"
+    title="Git Clone"
     size="huge"
     :bordered="false"
   >
-    <n-input v-model:value="url" mb3 />
+    <n-input v-model:value="url" mb3 placeholder="Enter the git clone url" />
     <n-button :loading="loading" @click="onClone">clone</n-button>
   </n-modal>
-  <n-modal
-    v-model:show="showModal.commit"
-    w-150
-    preset="card"
-    title="git commit"
-    size="huge"
-    :bordered="false"
-  >
-    <n-input v-model:value="commitMsg" mb3 />
-    <n-button :loading="loading" @click="onCommit">Commit</n-button>
-  </n-modal> </template
->~/lib/utils/api
+</template>

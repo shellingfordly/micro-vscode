@@ -25,6 +25,10 @@ export const useProjectStore = defineStore("useProjectStore", () => {
         key: label,
       })),
     },
+    {
+      label: "Git Clone",
+      key: "git_clone",
+    },
   ]);
   const fileInfo = reactive({ path: "", content: "" });
   const fileTabs = ref<{ label: string; value: string }[]>([]);

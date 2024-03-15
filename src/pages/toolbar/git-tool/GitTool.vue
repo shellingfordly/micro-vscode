@@ -9,6 +9,16 @@ const gitStore = useGitStore();
 const projectStore = useProjectStore();
 const message = useMessage();
 const dialog = useDialog();
+const options = [
+  {
+    label: "pull",
+    key: "pull",
+  },
+  {
+    label: "push",
+    key: "push",
+  },
+];
 
 async function onDiscardAllChanges(event: Event) {
   event.stopPropagation();
@@ -51,22 +61,22 @@ async function onClickGit() {
   const success = await gitStore.onGitCommit();
 
   if (success) {
-    message.success(`git commit successful!`);
+    message.success(`Git commit successful!`);
     gitStore.commitMessage = "";
     gitStore.updateChangedFiles();
     gitStore.updateLogList();
   }
 }
-const options = [
-  {
-    label: "pull",
-    key: "pull",
-  },
-  {
-    label: "push",
-    key: "push",
-  },
-];
+
+async function onSelect(key: string) {
+  if (key === "pull") {
+    const success = await gitStore.onGitPull();
+    if (success) message.success(`Git pull successful!`);
+  } else if (key === "push") {
+    const success = await gitStore.onGitPush();
+    if (success) message.success(`Git push successful!`);
+  }
+}
 </script>
 <template>
   <n-layout-sider width="100%" style="height: 100%;" :native-scrollbar="false">
@@ -78,10 +88,15 @@ const options = [
               <div>
                 {{ projectStore.selectProjectName || "Source Control" }}
               </div>
-              <n-dropdown trigger="hover" :options="options">
+              <n-dropdown
+                v-if="projectStore.selectProjectName"
+                trigger="hover"
+                :options="options"
+                @select="onSelect"
+              >
                 <span
                   class="op-hover i-ic-sharp-more-horiz"
-                  title="Unstage All changes"
+                  title="More Actions"
                 />
               </n-dropdown>
             </div>

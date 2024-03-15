@@ -45,6 +45,11 @@ export const useGitStore = defineStore("useGitStore", () => {
     }
   }
 
+  async function onGitClone(url: string) {
+    const { status } = await createInvoke("git_clone", { url });
+    return status === "ok";
+  }
+
   async function onGitAdd(files: ChangedFile[]) {
     const { status } = await createInvoke("git_add", {
       name: projectStore.selectProjectName,
@@ -64,6 +69,28 @@ export const useGitStore = defineStore("useGitStore", () => {
     loading.value = false;
 
     return status === "ok";
+  }
+
+  async function onGitPull() {
+    if (projectStore.selectProjectName) {
+      const { status } = await createInvoke("git_pull", {
+        name: projectStore.selectProjectName,
+      });
+
+      return status === "ok";
+    }
+    return false;
+  }
+
+  async function onGitPush() {
+    if (projectStore.selectProjectName) {
+      const { status } = await createInvoke("git_push", {
+        name: projectStore.selectProjectName,
+      });
+      return status === "ok";
+    } else {
+      return false;
+    }
   }
 
   async function onGitResetHead(file = "") {
@@ -108,9 +135,12 @@ export const useGitStore = defineStore("useGitStore", () => {
     loading,
     logList,
     onGitAdd,
+    onGitPull,
+    onGitPush,
+    onGitClone,
     onGitCommit,
-    onDiscardChanges,
     onGitResetHead,
+    onDiscardChanges,
     updateLogList,
     updateChangedFiles,
     getChangeFilesByStageType,
