@@ -35,7 +35,17 @@ export const useGitStore = defineStore("useGitStore", () => {
     }
   }
 
-  async function gitAdd(files: ChangedFile[]) {
+  async function updateLogList() {
+    if (!projectStore.selectProjectName) return;
+    const { status, data } = await createInvoke<GitLogInfo[]>("git_log", {
+      name: projectStore.selectProjectName,
+    });
+    if (status === "ok") {
+      logList.value = data;
+    }
+  }
+
+  async function onGitAdd(files: ChangedFile[]) {
     const { status } = await createInvoke("git_add", {
       name: projectStore.selectProjectName,
       files: files.map((f) => f.path),
@@ -43,7 +53,7 @@ export const useGitStore = defineStore("useGitStore", () => {
     return status === "ok";
   }
 
-  async function gitCommit() {
+  async function onGitCommit() {
     if (!projectStore.selectProjectName || !commitMessage.value) return false;
 
     loading.value = true;
@@ -56,17 +66,7 @@ export const useGitStore = defineStore("useGitStore", () => {
     return status === "ok";
   }
 
-  async function gitLog() {
-    if (!projectStore.selectProjectName) return;
-    const { status, data } = await createInvoke<GitLogInfo[]>("git_log", {
-      name: projectStore.selectProjectName,
-    });
-    if (status === "ok") {
-      logList.value = data;
-    }
-  }
-
-  async function getResetHead(file = "") {
+  async function onGitResetHead(file = "") {
     const name = projectStore.selectProjectName;
     if (!name) return false;
 
@@ -77,7 +77,7 @@ export const useGitStore = defineStore("useGitStore", () => {
     return status === "ok";
   }
 
-  async function discardChanges(file: ChangedFile) {
+  async function onDiscardChanges(file: ChangedFile) {
     const name = projectStore.selectProjectName;
     if (!name) return false;
 
@@ -107,11 +107,11 @@ export const useGitStore = defineStore("useGitStore", () => {
     commitMessage,
     loading,
     logList,
-    gitAdd,
-    gitLog,
-    gitCommit,
-    getResetHead,
-    discardChanges,
+    onGitAdd,
+    onGitCommit,
+    onDiscardChanges,
+    onGitResetHead,
+    updateLogList,
     updateChangedFiles,
     getChangeFilesByStageType,
   };

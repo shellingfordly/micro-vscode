@@ -27,12 +27,12 @@ function onOpenFile(file: ChangedFile) {
 }
 
 async function onAddFile(file: ChangedFile) {
-  await gitStore.gitAdd([file]);
+  await gitStore.onGitAdd([file]);
   gitStore.updateChangedFiles();
 }
 
 async function onUnstageFile(file: ChangedFile) {
-  await gitStore.getResetHead(file.path);
+  await gitStore.onGitResetHead(file.path);
   gitStore.updateChangedFiles();
 }
 
@@ -44,7 +44,7 @@ async function onDiscardChanges(file: ChangedFile) {
     positiveText: "Discard Changes",
     negativeText: "Cancel",
     async onPositiveClick() {
-      const success = await gitStore.discardChanges(file);
+      const success = await gitStore.onDiscardChanges(file);
       if (success) {
         gitStore.updateChangedFiles();
       }

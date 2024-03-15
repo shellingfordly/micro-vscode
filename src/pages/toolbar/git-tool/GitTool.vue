@@ -19,7 +19,7 @@ async function onDiscardAllChanges(event: Event) {
     negativeText: "Cancel",
     maskClosable: false,
     onPositiveClick: async () => {
-      const success = await gitStore.discardChanges({} as any);
+      const success = await gitStore.onDiscardChanges({} as any);
       if (success) {
         gitStore.updateChangedFiles();
       }
@@ -33,7 +33,7 @@ async function onStageAllChanges(event: Event) {
   const files: ChangedFile[] = gitStore.getChangeFilesByStageType("unstage");
 
   if (files.length) {
-    await gitStore.gitAdd(files);
+    await gitStore.onGitAdd(files);
     gitStore.updateChangedFiles();
   }
 }
@@ -41,15 +41,18 @@ async function onStageAllChanges(event: Event) {
 async function onUnstageAllChanges(event: Event) {
   event.stopPropagation();
 
-  await gitStore.getResetHead();
+  await gitStore.onGitResetHead();
   gitStore.updateChangedFiles();
 }
 
 async function onClickGit() {
-  const success = await gitStore.gitCommit();
+  const success = await gitStore.onGitCommit();
 
   if (success) {
     message.success(`git commit successful!`);
+    gitStore.commitMessage = "";
+    gitStore.updateChangedFiles();
+    gitStore.updateLogList();
   }
 }
 </script>

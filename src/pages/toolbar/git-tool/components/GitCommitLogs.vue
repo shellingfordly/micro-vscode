@@ -7,7 +7,7 @@ const timeFormat = (time: string) =>
   dayjs(Number(time) * 1000).format("DD/MM/YY");
 
 onMounted(() => {
-  gitStore.gitLog();
+  gitStore.updateLogList();
 });
 </script>
 <template>
