@@ -89,6 +89,10 @@ pnpm tauri build
 ![discard_changes](./public/readme/discard_changes.png)
 ![discard_all_changes](./public/readme/discard_all_changes.png)
 
+- git diff
+
+![git_diff](./public/readme/git_diff.png)
+
 - editor file
 
 ![editor_file](./public/readme/editor_file.png)

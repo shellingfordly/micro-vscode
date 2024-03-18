@@ -87,4 +87,3 @@ function onSaveFile() {
     />
   </n-layout-sider>
 </template>
-~/lib/utils/iconHandle
