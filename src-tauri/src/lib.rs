@@ -121,6 +121,16 @@ fn git_discard_changes(name: &str, path: &str) -> Response<String> {
 }
 
 #[tauri::command]
+fn git_diff_commit(name: &str, commit_id: &str) -> Response<String> {
+    let repo_path = get_path_str(&format!("../templates/{}", name));
+
+    match git::git_diff_commit(&repo_path, commit_id) {
+        Ok(data) => create_res_ok(data),
+        Err(err) => create_res_err(format!("Git discard changes failed: [{:?}].", err)),
+    }
+}
+
+#[tauri::command]
 fn get_projects() -> Response<Vec<String>> {
     match get_project_list(get_path("../templates/")) {
         Ok(data) => create_res_ok(data),
@@ -169,6 +179,7 @@ pub fn run() {
                 git_push,
                 git_reset_head,
                 git_discard_changes,
+                git_diff_commit,
                 read_file,
                 write_file,
                 get_projects,

@@ -11,6 +11,8 @@ use git2::{
     build::CheckoutBuilder,
     ResetType,
     Error,
+    Oid,
+    DiffOptions,
 };
 use std::path::Path;
 use serde::{ Serialize, Deserialize };
@@ -354,4 +356,30 @@ pub fn git_reset_head(repo_path: &str, file_path: &str) -> Result<String, Error>
     }
 
     Ok("Git reset head successful!".to_string())
+}
+
+pub fn git_diff_commit(repo_path: &str, commit: &str) -> Result<String, Error> {
+    let repo = Repository::open(repo_path)?;
+
+    let commit_oid = Oid::from_str(commit)?;
+    let commit = repo.find_commit(commit_oid)?;
+
+    let tree = commit.tree()?;
+    let parent_commit = commit.parent(0)?;
+    let parent_tree = parent_commit.tree()?;
+    let mut diff_opts = DiffOptions::new();
+    let diff = repo.diff_tree_to_tree(Some(&parent_tree), Some(&tree), Some(&mut diff_opts))?;
+
+    // 输出差异
+    let mut diff_content = String::new();
+    diff.print(git2::DiffFormat::Patch, |delta, _hunk, line| {
+        let line_str = String::from_utf8_lossy(line.content()).to_string();
+        println!("{}", line_str);
+
+        diff_content.push_str(&line_str);
+        diff_content.push('\n'); // 添加换行符
+        true
+    })?;
+
+    Ok(diff_content)
 }
