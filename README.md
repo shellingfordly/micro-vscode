@@ -11,34 +11,36 @@ words and images are licensed under [CC BY-NC-SA 4.0](https://creativecommons.or
 
 ![project_light](./public/readme/project_light.png)
 
-## Todo List
+## TodoList
 
-### Functions
+## Features
 
 - [ ] read file system
 - [ ] new file
 - [ ] new folder
-- [ ] update git operation same width vscode
 - [ ] search
-  - [ ] search content
-  - [ ] search file by name
+  - search content
+  - search file by name
 - [ ] add i18n support
 - [ ] add more themes
-
-### Bug
-
-- [ ] build error
-
-## Features
-
-- Integrated the basic function of git
-  - git clone/pull/commit/push
-  - set git config username, email and token
-  - view changed files, open file, and discard changes
-- about project files
-  - view project file
-  - editor project file
-  - write project file
+- [x] Integrated the basic function of git
+  - git config - set user/email/github token
+  - git add/commit/pull/push/clone - need to set github token
+  - view changed files, open file
+  - discard changes and all changes
+  - git show commit
+- [x] Folder directory structure
+  - show directory tree
+    - file/folder icon
+    - used vscode-icons(Not all transplanted)
+    - implement opening/closing of folder
+  - show file switching tab
+    - whether to edit icon tips
+    - close file
+- [x] Monaco editor
+  - used monaco editor
+  - file editor/save/save all functions
+  - only supports code highlighting for html/js/json/ts/vue
 
 ## Development
 
