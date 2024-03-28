@@ -25,7 +25,7 @@ const FILE_ICON_PREFIX: Record<string, string> = {
 
 const FILE_ICON_SUFFIX: Record<string, string> = {
   // default file
-  default: "file-type-default-file",
+  default: "default-file",
   // file types
   js: "file-type-js",
   ts: "file-type-typescript",
@@ -44,55 +44,90 @@ const FILE_ICON_SUFFIX: Record<string, string> = {
   jpg: "file-type-image",
   gif: "file-type-image",
   webp: "file-type-image",
+  cs: "file-type-csharp",
+  sln: "file-type-sln",
+  csproj: "file-type-csproj",
+  xml: "file-type-xml",
+  editorconfig: "file-type-editorconfig",
+  txt: "file-type-text",
+  xlsx: "file-type-excel",
+  ps1: "file-type-powershell",
+  bat: "file-type-bat",
+  sql: "file-type-sql",
+  exe: "file-type-binary",
+  dll: "file-type-binary",
+  zip: "file-type-zip",
+  ttf: "file-type-font",
+  otf: "file-type-font",
+  woff: "file-type-font",
+  ttc: "file-type-font",
+  log: "file-type-log",
 };
 
 const FOLDER_ICON: Record<string, string> = {
   // default folder
   default: "default-folder",
+  // .
+  ".vs": "folder-type-vs",
+  ".idea": "folder-type-idea",
+  ".git": "folder-type-git",
+  ".vscode": "folder-type-vscode",
   // folder types
-  vscode: "folder-type-vscode",
-  util: "folder-type-tools",
-  utils: "folder-type-tools",
-  template: "folder-type-template",
-  templates: "folder-type-template",
-  layout: "folder-type-view",
-  layouts: "folder-type-view",
-  page: "folder-type-view",
-  pages: "folder-type-view",
-  view: "folder-type-view",
-  src: "folder-type-src",
-  hook: "folder-type-hook",
-  component: "folder-type-component",
-  components: "folder-type-component",
-  style: "folder-type-style",
-  styles: "folder-type-style",
+  app: "folder-type-app",
+  apps: "folder-type-app",
   asset: "folder-type-asset",
   assets: "folder-type-asset",
-  "src-tauri": "folder-type-tauri",
-  public: "folder-type-public",
-  node_modules: "folder-type-node",
+  bin: "folder-type-binary",
+  build: "folder-type-dist",
+  builds: "folder-type-dist",
+  common: "folder-type-common",
+  config: "older-type-config",
+  client: "folder-type-client",
+  configs: "older-type-config",
+  controller: "folder-type-controller",
+  controllers: "folder-type-controller",
+  component: "folder-type-component",
+  components: "folder-type-component",
   dist: "folder-type-dist",
   data: "folder-type-db",
+  github: "folder-type-github",
+  hook: "folder-type-hook",
+  log: "folder-type-log",
+  logs: "folder-type-log",
+  locale: "folder-type-locale",
+  locales: "folder-type-locale",
+  layout: "folder-type-view",
+  layouts: "folder-type-view",
+  library: "folder-type-library",
   model: "folder-type-model",
   models: "folder-type-model",
   module: "folder-type-module",
   modules: "folder-type-module",
-  server: "folder-type-server",
-  type: "folder-type-typings",
-  types: "folder-type-typings",
-  github: "folder-type-github",
   nuxt: "folder-type-nuxt",
-  app: "folder-type-app",
-  apps: "folder-type-app",
-  bin: "folder-type-binary",
-  ts: "folder-type-typescript",
-  typescript: "folder-type-typescript",
-  build: "folder-type-dist",
-  builds: "folder-type-dist",
+  node_modules: "folder-type-node",
+  page: "folder-type-view",
+  pages: "folder-type-view",
+  plugin: "folder-type-plugin",
+  plugins: "folder-type-plugin",
+  public: "folder-type-public",
   release: "folder-type-dist",
   releases: "folder-type-dist",
-  locales: "folder-type-locale",
-  locale: "folder-type-locale",
+  src: "folder-type-src",
+  style: "folder-type-style",
+  styles: "folder-type-style",
+  server: "folder-type-server",
+  "src-tauri": "folder-type-tauri",
+  ts: "folder-type-typescript",
+  typescript: "folder-type-typescript",
+  type: "folder-type-typings",
+  types: "folder-type-typings",
+  temp: "folder-type-temp",
+  template: "folder-type-template",
+  templates: "folder-type-template",
+  utils: "folder-type-tools",
+  util: "folder-type-tools",
+  view: "folder-type-view",
+  vscode: "folder-type-vscode",
 };
 
 export function CreateIconVNode(name: string) {
@@ -103,6 +138,7 @@ export function handleIcon(type: MenuType, fileName: string) {
   // 文件
   if (type === "file") {
     const iconName = getFileIconName(fileName);
+    console.log("iconName", iconName);
     return CreateIconVNode(iconName);
   }
   // 文件夹
@@ -139,7 +175,11 @@ export function getFileIconName(fileName: string) {
 }
 
 export function getFolderIconName(fileName: string) {
-  const name = (fileName?.split(".") || []).filter((v) => v).shift() || "";
+  const name = fileName.trim().toLowerCase();
+  // (fileName?.split(".") || [])
+  //   .filter((v) => v)
+  //   .map((v) => v.toLowerCase())
+  //   .shift() || "";
 
   const iconName = FOLDER_ICON[name];
   if (iconName) {
