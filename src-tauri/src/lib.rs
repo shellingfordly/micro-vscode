@@ -3,12 +3,12 @@ mod git;
 mod path;
 mod project;
 mod utils;
-use std::fs;
-use git::{ CommitItem, ChangedFile };
 use file::read_file_content;
-use path::{ check_path_and_create, get_path, get_path_str };
-use project::{ get_project_all_files, get_project_list };
-use utils::{ Response, get_url_name, create_res_ok, create_res, create_res_err };
+use git::{ChangedFile, CommitItem};
+use path::{check_path_and_create, get_path, get_path_str};
+use project::{get_project_all_files, get_project_list};
+use std::fs;
+use utils::{create_res, create_res_err, create_res_ok, get_url_name, Response};
 
 #[tauri::command]
 fn git_set_user(data: &str) -> Response<String> {
@@ -164,30 +164,27 @@ fn write_file(path: &str, content: &str) -> Response<String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder
-        ::default()
+    tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(
-            tauri::generate_handler![
-                git_clone,
-                git_pull,
-                git_status,
-                git_add,
-                git_commit,
-                git_log,
-                git_push,
-                git_reset_head,
-                git_discard_changes,
-                git_diff_commit,
-                read_file,
-                write_file,
-                get_projects,
-                get_project_files,
-                git_set_user,
-                git_get_user
-            ]
-        )
+        .invoke_handler(tauri::generate_handler![
+            git_clone,
+            git_pull,
+            git_status,
+            git_add,
+            git_commit,
+            git_log,
+            git_push,
+            git_reset_head,
+            git_discard_changes,
+            git_diff_commit,
+            read_file,
+            write_file,
+            get_projects,
+            get_project_files,
+            git_set_user,
+            git_get_user
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
