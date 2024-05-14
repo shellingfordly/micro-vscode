@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
@@ -28,6 +30,8 @@
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@actions/github": "^6.0.0",
+    "node-fetch": "^3.3.2",
     "@iconify/json": "^2.2.191",
     "@tauri-apps/cli": "^2.0.0-beta.0",
     "@types/node": "^20.11.24",
