@@ -8,6 +8,7 @@
     "window:allow-close",
     "window:allow-minimize",
     "window:allow-toggle-maximize",
+    "window:allow-internal-toggle-maximize",
     "window:allow-start-dragging"
   ]
 }
