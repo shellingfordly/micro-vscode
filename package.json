@@ -17,6 +17,7 @@
     "@shikijs/core": "^1.1.7",
     "@shikijs/monaco": "^1.1.7",
     "@tauri-apps/api": "^2.0.0-beta.0",
+    "@tauri-apps/plugin-dialog": "2.0.0-beta.3",
     "@tauri-apps/plugin-fs": "2.0.0-beta.1",
     "@tauri-apps/plugin-shell": "^2.0.0-beta.0",
     "@volar/monaco": "^2.1.0",
@@ -33,7 +34,6 @@
   },
   "devDependencies": {
     "@actions/github": "^6.0.0",
-    "node-fetch": "^3.3.2",
     "@iconify/json": "^2.2.191",
     "@tauri-apps/cli": "^2.0.0-beta.0",
     "@types/node": "^20.11.24",
@@ -41,6 +41,7 @@
     "internal-ip": "^7.0.0",
     "less": "^4.2.0",
     "naive-ui": "^2.38.1",
+    "node-fetch": "^3.3.2",
     "typescript": "^5.0.2",
     "unocss": "^0.58.5",
     "unplugin-auto-import": "^0.17.5",

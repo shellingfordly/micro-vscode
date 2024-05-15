@@ -17,6 +17,9 @@ importers:
       '@tauri-apps/api':
         specifier: ^2.0.0-beta.0
         version: 2.0.0-beta.2
+      '@tauri-apps/plugin-dialog':
+        specifier: 2.0.0-beta.3
+        version: 2.0.0-beta.3
       '@tauri-apps/plugin-fs':
         specifier: 2.0.0-beta.1
         version: 2.0.0-beta.1
@@ -616,6 +619,10 @@ packages:
   '@shikijs/monaco@1.1.7':
     resolution: {integrity: sha512-mtU0hTGlrfFqVV3Y31SvddoqiC3FLE69E+5cLNzd68DdsJFDhlWDCG759zLaaTRDnuOK/Veotf4DflTF70nhcg==}
 
+  '@tauri-apps/api@2.0.0-beta.11':
+    resolution: {integrity: sha512-wJRY+fBUm3KpqZDHMIz5HRv+1vlnvRJ/dFxiyY3NlINTx2qXqDou5qWYcP1CuZXsd39InWVPV3FAZvno/kGCkA==}
+    engines: {node: '>= 18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+
   '@tauri-apps/api@2.0.0-beta.2':
     resolution: {integrity: sha512-4r1r6kgttzIWxJ3HxkZQH+b7EiUtKhdUCPbi0KSalD+2T3j6klw+v8VyxhKwEdjM/eo60NE+J33v1E/Urq8puw==}
     engines: {node: '>= 18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
@@ -688,6 +695,9 @@ packages:
     resolution: {integrity: sha512-xLAL2DNNUJWqHBKvanc3V9bG9kkwtFwc40X/DrfgEKnkajEm79wqnkaT8LUnmbe0WZ8bzBRO1fLIgKlOH6GiCA==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-dialog@2.0.0-beta.3':
+    resolution: {integrity: sha512-B3KxLjFxCVB3AIYWN/xY9HM6tO7m4u6aQk1t0ZrBToXThowRU9f62527EO0oj0uNlyKlXx20up68NkpdlER0yg==}
 
   '@tauri-apps/plugin-fs@2.0.0-beta.1':
     resolution: {integrity: sha512-FGBzluMLMT4PGk7oJ8io/m+C2pd9kN5GrUDDayFKAd9D8/SaE8cqIJAhfq0VTfYGy1SeqFvP6gJFbdkS4PB8Jg==}
@@ -2222,6 +2232,8 @@ snapshots:
     dependencies:
       '@shikijs/core': 1.1.7
 
+  '@tauri-apps/api@2.0.0-beta.11': {}
+
   '@tauri-apps/api@2.0.0-beta.2': {}
 
   '@tauri-apps/cli-darwin-arm64@2.0.0-beta.3':
@@ -2266,6 +2278,10 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.0.0-beta.3
       '@tauri-apps/cli-win32-ia32-msvc': 2.0.0-beta.3
       '@tauri-apps/cli-win32-x64-msvc': 2.0.0-beta.3
+
+  '@tauri-apps/plugin-dialog@2.0.0-beta.3':
+    dependencies:
+      '@tauri-apps/api': 2.0.0-beta.11
 
   '@tauri-apps/plugin-fs@2.0.0-beta.1':
     dependencies:
