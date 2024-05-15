@@ -1,30 +1,14 @@
 use crate::utils::get_user_value;
 use git2::{
-    Cred,
-    FetchOptions,
-    PushOptions,
-    RemoteCallbacks,
-    Repository,
-    Signature,
-    Status,
-    StatusOptions,
-    build::CheckoutBuilder,
-    ResetType,
-    Error,
-    Oid,
-    DiffOptions,
+    build::CheckoutBuilder, Cred, DiffOptions, Error, FetchOptions, Oid, PushOptions, RemoteCallbacks, Repository, ResetType, Signature, Status, StatusOptions,
 };
+use serde::{Deserialize, Serialize};
 use std::path::Path;
-use serde::{ Serialize, Deserialize };
 
 pub fn clone(repo_url: &str, local_path: &str) -> Result<String, Error> {
     match Repository::clone(repo_url, local_path) {
         Ok(_) => {
-            let success_message = format!(
-                "Repository cloned successfully. repo_url: {}, local_path: {}",
-                repo_url,
-                local_path
-            );
+            let success_message = format!("Repository cloned successfully. repo_url: {}, local_path: {}", repo_url, local_path);
             println!("[git_clone] {}", success_message);
 
             Ok(success_message)
@@ -45,9 +29,7 @@ pub fn pull(local_path: &str) -> Result<String, Error> {
         }
     };
     let remote_name: &str = "origin";
-    let mut remote: git2::Remote = repo
-        .find_remote(remote_name)
-        .expect("[git_pull] Failed to find remote");
+    let mut remote: git2::Remote = repo.find_remote(remote_name).expect("[git_pull] Failed to find remote");
 
     let callbacks: RemoteCallbacks<'_> = RemoteCallbacks::new();
 
@@ -62,28 +44,18 @@ pub fn pull(local_path: &str) -> Result<String, Error> {
 
 pub fn commit(local_path: &str, message: &str) -> Result<String, Error> {
     // 打开本地仓库
-    let repo: Repository = Repository::open(local_path).expect(
-        "[git_commit] Failed to open repository"
-    );
+    let repo: Repository = Repository::open(local_path).expect("[git_commit] Failed to open repository");
     // 获取索引
     let mut index: git2::Index = repo.index().expect("[git_commit] Failed to open index");
 
     // 获取仓库状态
-    let statuses: git2::Statuses<'_> = repo
-        .statuses(None)
-        .expect("[git_commit] Failed to get statuses");
+    let statuses: git2::Statuses<'_> = repo.statuses(None).expect("[git_commit] Failed to get statuses");
 
     for entry in statuses.iter() {
         let entry_path = entry.path().expect("[git_commit] Failed to get entry path");
         match entry.status() {
-            | Status::WT_NEW
-            | Status::WT_MODIFIED
-            | Status::WT_DELETED
-            | Status::WT_RENAMED
-            | Status::WT_TYPECHANGE => {
-                index
-                    .add_path(Path::new(entry_path))
-                    .expect("[git_commit] Failed to add file to index");
+            Status::WT_NEW | Status::WT_MODIFIED | Status::WT_DELETED | Status::WT_RENAMED | Status::WT_TYPECHANGE => {
+                index.add_path(Path::new(entry_path)).expect("[git_commit] Failed to add file to index");
             }
             _ => {}
         }
@@ -93,26 +65,22 @@ pub fn commit(local_path: &str, message: &str) -> Result<String, Error> {
     index.write().expect("[git_commit] Failed to write index");
 
     // 创建提交
-    let head: git2::Object<'_> = repo
-        .revparse_single("HEAD")
-        .expect("[git_commit] Failed to get HEAD");
+    let head: git2::Object<'_> = repo.revparse_single("HEAD").expect("[git_commit] Failed to get HEAD");
     let tree_id: git2::Oid = index.write_tree().expect("[git_commit] Failed to write tree");
     let tree: git2::Tree<'_> = repo.find_tree(tree_id).expect("[git_commit] Failed to find tree");
 
     let username = get_user_value("username");
     let email = get_user_value("email");
 
-    let signature: Signature<'_> = Signature::now(&username, &email).expect(
-        "[git_commit] Failed to create signature"
-    );
+    let signature: Signature<'_> = Signature::now(&username, &email).expect("[git_commit] Failed to create signature");
     let commit_id: git2::Oid = repo
         .commit(
-            Some("HEAD"), // 更新 HEAD
-            &signature, // 提交者信息
-            &signature, // 提交者信息
-            message, // 提交信息
-            &tree, // 树对象
-            &[&head.as_commit().expect("[git_commit] HEAD is not a commit")] // 父提交对象
+            Some("HEAD"),                                                     // 更新 HEAD
+            &signature,                                                       // 提交者信息
+            &signature,                                                       // 提交者信息
+            message,                                                          // 提交信息
+            &tree,                                                            // 树对象
+            &[&head.as_commit().expect("[git_commit] HEAD is not a commit")], // 父提交对象
         )
         .expect("[git_commit] Failed to create commit");
 
@@ -122,14 +90,10 @@ pub fn commit(local_path: &str, message: &str) -> Result<String, Error> {
 }
 
 pub fn push(local_path: &str) -> Result<String, Error> {
-    let repo: Repository = Repository::open(local_path).expect(
-        "[git_push] Failed to open repository"
-    );
+    let repo: Repository = Repository::open(local_path).expect("[git_push] Failed to open repository");
     let remote_name: &str = "origin"; // 远程仓库的名称
 
-    let mut remote: git2::Remote<'_> = repo
-        .find_remote(remote_name)
-        .expect("[git_push] Failed to find remote");
+    let mut remote: git2::Remote<'_> = repo.find_remote(remote_name).expect("[git_push] Failed to find remote");
 
     let mut push_options: PushOptions<'_> = PushOptions::new();
 
@@ -178,9 +142,7 @@ pub fn git_status(local_path: &str) -> Result<Vec<ChangedFile>, Error> {
     status_opts.include_untracked(true);
 
     // 获取工作目录中的文件状态
-    let statuses = repo
-        .statuses(Some(&mut status_opts))
-        .expect("[git_status] Failed to get statuses");
+    let statuses = repo.statuses(Some(&mut status_opts)).expect("[git_status] Failed to get statuses");
 
     // 创建一个 Vec 以存储改动的文件路径和状态信息的元组
     let mut changed_files = Vec::new();
@@ -236,9 +198,7 @@ pub fn git_status(local_path: &str) -> Result<Vec<ChangedFile>, Error> {
 
 pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<String, Error> {
     // 打开仓库
-    let repo = Repository::open(repo_path).expect(
-        "[git_discard_changes] Failed to open repository"
-    );
+    let repo = Repository::open(repo_path).expect("[git_discard_changes] Failed to open repository");
 
     let mut checkout_builder = CheckoutBuilder::new();
     checkout_builder.force();
@@ -251,11 +211,7 @@ pub fn git_discard_changes(repo_path: &str, file_path: &str) -> Result<String, E
                 checkout_builder.path(file_path);
             }
             Err(err) => {
-                eprintln!(
-                    "[git_discard_changes] git_reset_head file {} error: {:?}",
-                    file_path,
-                    err
-                );
+                eprintln!("[git_discard_changes] git_reset_head file {} error: {:?}", file_path, err);
             }
         }
     }

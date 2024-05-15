@@ -1,5 +1,5 @@
 use std::fs;
-use std::{ env, path::PathBuf };
+use std::{env, path::PathBuf};
 
 pub fn get_path_str(path: &str) -> String {
     let path_buf = get_path(path);
