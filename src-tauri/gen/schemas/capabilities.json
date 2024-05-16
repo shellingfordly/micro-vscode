@@ -1,1 +1,1 @@
-{"main-capability":{"identifier":"main-capability","description":"Capability for the main window","local":true,"windows":["main"],"permissions":["window:default","window:allow-close","window:allow-minimize","window:allow-toggle-maximize","window:allow-start-dragging"]}}
+{"main-capability":{"identifier":"main-capability","description":"Capability for the main window","local":true,"windows":["main"],"permissions":["window:default","window:allow-close","window:allow-minimize","window:allow-toggle-maximize","window:allow-internal-toggle-maximize","window:allow-start-dragging"]}}
