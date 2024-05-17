@@ -1,88 +1,77 @@
-import { handleIcon } from "./icon";
-import { MenuItem, MenuType } from "~/types";
+import { handleIcon } from './icon'
+import { MenuItem, MenuType } from '~/types'
 
-export function createMenuItem({
-  name,
-  path,
-  key,
-}: {
-  name: string;
-  path: string;
-  key: string;
-}): MenuItem {
-  const type: MenuType = path.endsWith(name) ? "file" : "dir";
+export function createMenuItem({ name, path, key }: { name: string; path: string; key: string }): MenuItem {
+  const type: MenuType = path.endsWith(name) ? 'file' : 'dir'
   return {
     label: name,
     key,
     type,
     open: false,
     icon: handleIcon(type, name),
-  };
+  }
 }
 
 export function handleFileMenu(_paths: string[], rootName: string): MenuItem[] {
   const rootNode: MenuItem = createMenuItem({
-    path: rootName + "/",
+    path: rootName + '/',
     name: rootName,
     key: rootName,
-  });
+  })
 
   const paths = _paths.map((v) => {
-    const index = v.match(rootName)?.index || 0;
-    return v.slice(index + rootName.length + 1);
-  });
-
+    const index = v.match(rootName)?.index || 0
+    return v.slice(index + rootName.length + 1)
+  })
   paths.forEach((path) => {
-    const parts = path.split("/");
-    let currentNode = rootNode;
+    const parts = path.split('\\')
+    let currentNode = rootNode
 
-    let key = rootName;
+    let key = rootName
     parts.forEach((name) => {
-      const existingChild = currentNode.children?.find(
-        (child) => child.label === name
-      ) as MenuItem;
+      const existingChild = currentNode.children?.find((child) => child.label === name) as MenuItem
 
       // key：拼接当前路径
-      key += "/" + name;
+      key += '/' + name
       if (!existingChild) {
-        const newChild = createMenuItem({ path, name, key });
+        const newChild = createMenuItem({ path, name, key })
         if (currentNode.children) {
-          currentNode.children?.push(newChild);
+          currentNode.children?.push(newChild)
         } else {
-          currentNode.children = [newChild];
+          currentNode.children = [newChild]
         }
-        currentNode = newChild;
+        currentNode = newChild
       } else {
-        currentNode = existingChild;
+        currentNode = existingChild
       }
-    });
-  });
+    })
+  })
 
   function sortMenu(data: MenuItem[]): MenuItem[] {
     const sort = (d: any[]) =>
       d.sort((a, b) => {
-        if (a.type === "dir" && b.type === "file") {
-          return -1;
-        } else if (a.type === "file" && b.type === "dir") {
-          return 1;
+        if (a.type === 'dir' && b.type === 'file') {
+          return -1
+        } else if (a.type === 'file' && b.type === 'dir') {
+          return 1
         }
-        return a.label.localeCompare(b.label);
-      });
+        return a.label.localeCompare(b.label)
+      })
 
     const sort_recursion = (d: any[]) => {
-      sort(d);
+      sort(d)
 
       d.forEach((item) => {
         if (item.children?.length) {
-          sort_recursion(item.children);
+          sort_recursion(item.children)
         }
-      });
-    };
+      })
+    }
 
-    sort_recursion(data);
+    sort_recursion(data)
 
-    return data;
+    return data
   }
 
-  return sortMenu([rootNode]);
+  return sortMenu([rootNode])
 }

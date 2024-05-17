@@ -1,29 +1,28 @@
 <script setup lang="ts">
-import { useGitStore } from "~/stores/git";
-import dayjs from "dayjs";
-import { createInvoke } from "~/lib/utils/api";
-import { useProjectStore } from "~/stores/project";
-import { GitLogInfo } from "~/types";
+import { useGitStore } from '~/stores/git'
+import dayjs from 'dayjs'
+import { createInvoke } from '~/lib/utils/api'
+import { useProjectStore } from '~/stores/project'
+import { GitLogInfo } from '~/types'
 
-const gitStore = useGitStore();
-const projectStore = useProjectStore();
-const timeFormat = (time: string) =>
-  dayjs(Number(time) * 1000).format("DD/MM/YY");
+const gitStore = useGitStore()
+const projectStore = useProjectStore()
+const timeFormat = (time: string) => dayjs(Number(time) * 1000).format('DD/MM/YY')
 
 onMounted(() => {
-  gitStore.updateLogList();
-});
+  gitStore.updateLogList()
+})
 
 async function onClickLog(log: GitLogInfo) {
-  const { data } = await createInvoke("git_diff_commit", {
+  const { data } = await createInvoke('git_diff_commit', {
     name: projectStore.selectProjectName,
     commitId: log.id,
-  });
-  const name = "Changes in " + log.id.slice(0, 7);
+  })
+  const name = 'Changes in ' + log.id.slice(0, 7)
 
-  projectStore.fileInfo.content = data;
-  projectStore.fileInfo.path = name;
-  projectStore.addFileTab(name);
+  projectStore.fileInfo.content = data
+  projectStore.fileInfo.path = name
+  projectStore.addFileTab(name)
 }
 </script>
 <template>
@@ -38,11 +37,11 @@ async function onClickLog(log: GitLogInfo) {
 </template>
 <style scoped lang="less">
 .log {
-  cursor: pointer;
-  opacity: 0.6;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.6;
+  cursor: pointer;
 
   &:hover {
     opacity: 1;

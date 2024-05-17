@@ -1,132 +1,125 @@
-import { defineStore } from "pinia";
-import { useProjectStore, clearFileContentHistory } from "./project";
-import { ChangedFile, GitLogInfo, GitStageType } from "~/types";
-import { createInvoke } from "~/lib/utils/api";
+import { defineStore } from 'pinia'
+import { useProjectStore, clearFileContentHistory } from './project'
+import { ChangedFile, GitLogInfo, GitStageType } from '~/types'
+import { createInvoke } from '~/lib/utils/api'
 
-export const useGitStore = defineStore("useGitStore", () => {
-  const projectStore = useProjectStore();
-  const changedFiles = ref<ChangedFile[]>([]);
-  const commitMessage = ref("");
-  const loading = ref(false);
-  const logList = ref<GitLogInfo[]>([]);
+export const useGitStore = defineStore('useGitStore', () => {
+  const projectStore = useProjectStore()
+  const changedFiles = ref<ChangedFile[]>([])
+  const commitMessage = ref('')
+  const loading = ref(false)
+  const logList = ref<GitLogInfo[]>([])
 
-  watch(
-    [() => projectStore.selectProjectName, () => projectStore.fileChangedCount],
-    updateChangedFiles,
-    {
-      immediate: true,
-    }
-  );
+  watch([() => projectStore.selectProjectName, () => projectStore.fileChangedCount], updateChangedFiles, {
+    immediate: true,
+  })
 
   function getChangeFilesByStageType(stage: GitStageType) {
-    return changedFiles.value.filter((f) => stage === f.stage);
+    return changedFiles.value.filter((f) => stage === f.stage)
   }
 
   async function updateChangedFiles() {
-    const name = projectStore.selectProjectName;
-    if (!name) return;
+    const name = projectStore.selectProjectName
+    if (!name) return
 
-    const result = await createInvoke<ChangedFile[]>("git_status", { name });
-    if (result.status == "ok") {
+    const result = await createInvoke<ChangedFile[]>('git_status', { name })
+    if (result.status == 'ok') {
       changedFiles.value = result.data.map((item) => ({
         ...item,
-        fullPath: name + "/" + item.path,
-      }));
+        fullPath: name + '/' + item.path,
+      }))
     }
   }
 
   async function updateLogList() {
-    if (!projectStore.selectProjectName) return;
-    const { status, data } = await createInvoke<GitLogInfo[]>("git_log", {
+    if (!projectStore.selectProjectName) return
+    const { status, data } = await createInvoke<GitLogInfo[]>('git_log', {
       name: projectStore.selectProjectName,
-    });
-    if (status === "ok") {
-      logList.value = data;
+    })
+    if (status === 'ok') {
+      logList.value = data
     }
   }
 
   async function onGitClone(url: string) {
-    const { status } = await createInvoke("git_clone", { url });
-    return status === "ok";
+    const { status } = await createInvoke('git_clone', { url })
+    return status === 'ok'
   }
 
   async function onGitAdd(files: ChangedFile[]) {
-    const { status } = await createInvoke("git_add", {
+    const { status } = await createInvoke('git_add', {
       name: projectStore.selectProjectName,
       files: files.map((f) => f.path),
-    });
-    return status === "ok";
+    })
+    return status === 'ok'
   }
 
   async function onGitCommit() {
-    if (!projectStore.selectProjectName || !commitMessage.value) return false;
+    if (!projectStore.selectProjectName || !commitMessage.value) return false
 
-    loading.value = true;
-    const { status } = await createInvoke("git_commit", {
+    loading.value = true
+    const { status } = await createInvoke('git_commit', {
       name: projectStore.selectProjectName,
       message: commitMessage.value,
-    });
-    loading.value = false;
+    })
+    loading.value = false
 
-    return status === "ok";
+    return status === 'ok'
   }
 
   async function onGitPull() {
     if (projectStore.selectProjectName) {
-      const { status } = await createInvoke("git_pull", {
+      const { status } = await createInvoke('git_pull', {
         name: projectStore.selectProjectName,
-      });
+      })
 
-      return status === "ok";
+      return status === 'ok'
     }
-    return false;
+    return false
   }
 
   async function onGitPush() {
     if (projectStore.selectProjectName) {
-      const { status } = await createInvoke("git_push", {
+      const { status } = await createInvoke('git_push', {
         name: projectStore.selectProjectName,
-      });
-      return status === "ok";
+      })
+      return status === 'ok'
     } else {
-      return false;
+      return false
     }
   }
 
-  async function onGitResetHead(file = "") {
-    const name = projectStore.selectProjectName;
-    if (!name) return false;
+  async function onGitResetHead(file = '') {
+    const name = projectStore.selectProjectName
+    if (!name) return false
 
-    const { status } = await createInvoke("git_reset_head", {
+    const { status } = await createInvoke('git_reset_head', {
       name,
       file,
-    });
-    return status === "ok";
+    })
+    return status === 'ok'
   }
 
   async function onDiscardChanges(file: ChangedFile) {
-    const name = projectStore.selectProjectName;
-    if (!name) return false;
+    const name = projectStore.selectProjectName
+    if (!name) return false
 
-    const { status } = await createInvoke("git_discard_changes", {
+    const { status } = await createInvoke('git_discard_changes', {
       name,
-      path: file.path || "",
-    });
+      path: file.path || '',
+    })
 
-    var success = status === "ok";
+    var success = status === 'ok'
     if (success) {
-      clearFileContentHistory(file.fullPath);
+      clearFileContentHistory(file.fullPath)
 
-      const hasFileTab =
-        projectStore.fileTabs.findIndex(
-          (tab) => tab.value === file.fullPath
-        ) !== -1;
+      const hasFileTab = projectStore.fileTabs.findIndex((tab) => tab.value === file.fullPath) !== -1
       if (hasFileTab) {
-        projectStore.getFileContent(file.fullPath);
+        projectStore.getFileContent(file.fullPath)
       }
     }
 
-    return success;
+    return success
   }
 
   return {
@@ -144,5 +137,5 @@ export const useGitStore = defineStore("useGitStore", () => {
     updateLogList,
     updateChangedFiles,
     getChangeFilesByStageType,
-  };
-});
+  }
+})

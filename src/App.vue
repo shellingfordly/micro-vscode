@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import MainPage from "./pages/Main.vue";
+import MainPage from './pages/Main.vue'
 </script>
 <template>
-  <MainPage />
+  <MainPage oncontextmenu="self.event.returnValue = false" onselectstart="return false" />
 </template>

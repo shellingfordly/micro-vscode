@@ -1,73 +1,67 @@
 <script setup lang="ts">
-import * as monaco from "monaco-editor-core/esm/vs/editor/editor.api";
-import { shikiToMonaco } from "@shikijs/monaco";
-import { initMonaco } from "../monaco/setup";
-import { getShiki } from "../monaco/shiki";
+import * as monaco from 'monaco-editor-core/esm/vs/editor/editor.api'
+import { shikiToMonaco } from '@shikijs/monaco'
+import { initMonaco } from '../monaco/setup'
+import { getShiki } from '../monaco/shiki'
 
 const props = defineProps<{
-  modelValue: string;
-  filepath: string;
-}>();
+  modelValue: string
+  filepath: string
+}>()
 
 const emit = defineEmits<{
-  (event: "update:modelValue", value: string): void;
-  (event: "change", value: string): void;
-  (event: "save", value: string): void;
-}>();
+  (event: 'update:modelValue', value: string): void
+  (event: 'change', value: string): void
+  (event: 'save', value: string): void
+}>()
 
-initMonaco();
+initMonaco()
 
-const el = ref<HTMLDivElement>();
+const el = ref<HTMLDivElement>()
 
-const colorMode = useColorMode();
-const models = new Map<string, monaco.editor.ITextModel>();
+const colorMode = useColorMode()
+const models = new Map<string, monaco.editor.ITextModel>()
 
 const language = computed(() => {
-  const ext = props.filepath?.split(".").pop() || "";
+  const ext = props.filepath?.split('.').pop() || ''
   switch (ext) {
-    case "js":
-      return "javascript";
-    case "ts":
-      return "typescript";
-    case "css":
-      return "css";
-    case "json":
-      return "json";
-    case "vue":
-      return "vue";
-    case "html":
-      return "html";
+    case 'js':
+      return 'javascript'
+    case 'ts':
+      return 'typescript'
+    case 'css':
+      return 'css'
+    case 'json':
+      return 'json'
+    case 'vue':
+      return 'vue'
+    case 'html':
+      return 'html'
     default:
-      return "plaintext";
+      return 'plaintext'
   }
-});
-const theme = computed(() =>
-  colorMode.value === "dark" ? "vitesse-dark" : "vitesse-light"
-);
+})
+const theme = computed(() => (colorMode.value === 'dark' ? 'vitesse-dark' : 'vitesse-light'))
 
 function getModel(filepath: string) {
-  let model: monaco.editor.ITextModel;
+  let model: monaco.editor.ITextModel
   if (!models.has(filepath)) {
-    model = monaco.editor.createModel(
-      props.modelValue,
-      language.value,
-      monaco.Uri.file(props.filepath)
-    );
-    models.set(filepath, model);
+    model = monaco.editor.createModel(props.modelValue, language.value, monaco.Uri.file(props.filepath))
+    models.set(filepath, model)
   } else {
-    model = models.get(filepath)!;
+    model = models.get(filepath)!
   }
-  model.setValue(props.modelValue);
-  return model;
+  model.setValue(props.modelValue)
+  return model
 }
 
 watch(
   () => el.value,
   async (value) => {
-    if (!value) return;
+    if (!value) return
 
-    const shiki = await getShiki();
-    shikiToMonaco(shiki, monaco);
+    const shiki = await getShiki()
+    shikiToMonaco(shiki, monaco)
 
     const editor = monaco.editor.create(value, {
       model: getModel(props.filepath),
@@ -81,7 +75,7 @@ watch(
       folding: false,
       lineDecorationsWidth: 10,
       lineNumbersMinChars: 3,
-      fontFamily: "DM Mono, monospace",
+      fontFamily: 'DM Mono, monospace',
       minimap: {
         enabled: false,
       },
@@ -90,40 +84,40 @@ watch(
       },
       overviewRulerLanes: 0,
       fixedOverflowWidgets: true,
-    });
+    })
 
     editor.onDidChangeModelContent(() => {
-      const value = editor.getValue();
-      emit("update:modelValue", value);
-      emit("change", value);
-    });
+      const value = editor.getValue()
+      emit('update:modelValue', value)
+      emit('change', value)
+    })
 
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      const value = editor.getValue();
-      emit("save", value);
-    });
+      const value = editor.getValue()
+      emit('save', value)
+    })
 
     watch(
       () => props.filepath,
       () => {
-        editor.setModel(getModel(props.filepath));
+        editor.setModel(getModel(props.filepath))
       }
-    );
+    )
 
     watch(
       () => props.modelValue,
       (value) => {
-        if (value === editor.getValue()) return;
-        const selections = editor.getSelections();
-        const model = getModel(props.filepath);
-        model.setValue(value);
-        if (selections) editor.setSelections(selections);
+        if (value === editor.getValue()) return
+        const selections = editor.getSelections()
+        const model = getModel(props.filepath)
+        model.setValue(value)
+        if (selections) editor.setSelections(selections)
       }
-    );
+    )
 
-    watch(theme, () => monaco.editor.setTheme(theme.value));
+    watch(theme, () => monaco.editor.setTheme(theme.value))
   }
-);
+)
 </script>
 
 <template>

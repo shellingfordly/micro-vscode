@@ -7,7 +7,7 @@ import {
   presetUno,
   presetWebFonts,
   transformerDirectives,
-  transformerVariantGroup
+  transformerVariantGroup,
 } from 'unocss'
 
 export default defineConfig({
@@ -17,7 +17,7 @@ export default defineConfig({
     ['flex-col-between', 'flex flex-col justify-between'],
     ['op-hover', 'cursor-pointer op60 hover:op100'],
     ['bg-hover', 'cursor-pointer hover:bg-sky'],
-    [/flex-(\w+)-(\w+)/, ([_, h, v]) => `flex justify-${h} items-${v}`]
+    [/flex-(\w+)-(\w+)/, ([_, h, v]) => `flex justify-${h} items-${v}`],
   ],
   theme: {},
   presets: [
@@ -28,11 +28,11 @@ export default defineConfig({
         display: 'inline-block',
         height: '1.2em',
         width: '1.2em',
-        'vertical-align': 'text-bottom'
-      }
+        'vertical-align': 'text-bottom',
+      },
     }),
     presetTypography(),
-    presetWebFonts()
+    presetWebFonts(),
   ],
-  transformers: [transformerDirectives(), transformerVariantGroup()]
+  transformers: [transformerDirectives(), transformerVariantGroup()],
 })

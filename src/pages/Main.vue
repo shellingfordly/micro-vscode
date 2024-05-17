@@ -21,14 +21,7 @@ onMounted(projectStore.getProjectList)
           <n-layout style="height: 100%">
             <LayoutHeader />
             <n-layout has-sider style="height: calc(100% - 108px)">
-              <n-split
-                direction="horizontal"
-                style="height: 100%"
-                :default-size="0.28"
-                :resize-trigger-size="2"
-                :max="0.75"
-                :min="0.28"
-              >
+              <n-split direction="horizontal" style="height: 100%" :default-size="0.28" :resize-trigger-size="2" :max="0.75" :min="0.28">
                 <template #1>
                   <LayoutToolbar />
                 </template>
