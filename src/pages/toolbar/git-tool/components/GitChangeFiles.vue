@@ -1,53 +1,53 @@
 <script setup lang="ts">
-import { useGitStore } from '~/stores/git'
-import { GitStatus } from '~/constants/enums'
-import { useProjectStore } from '~/stores/project'
-import type { ChangedFile, GitStageType } from '~/types'
+import { useGitStore } from "~/stores/git";
+import { GitStatus } from "~/constants/enums";
+import { useProjectStore } from "~/stores/project";
+import type { ChangedFile, GitStageType } from "~/types";
 
 const props = defineProps<{
-  stage: GitStageType
-}>()
+  stage: GitStageType;
+}>();
 
-const projectStore = useProjectStore()
-const message = useMessage()
-const gitStore = useGitStore()
-const dialog = useDialog()
-const changedFiles = computed(() => gitStore.changedFiles.filter((f) => props.stage === f.stage))
+const projectStore = useProjectStore();
+const message = useMessage();
+const gitStore = useGitStore();
+const dialog = useDialog();
+const changedFiles = computed(() => gitStore.changedFiles.filter((f) => props.stage === f.stage));
 
 function onOpenFile(file: ChangedFile) {
   if (file.status == GitStatus.Deleted) {
-    message.warning(`The file [${file.name}] deleted!`)
-    return
+    message.warning(`The file [${file.name}] deleted!`);
+    return;
   }
 
-  projectStore.getFileContent(file.fullPath)
-  projectStore.addFileTab(file.fullPath)
+  projectStore.getFileContent(file.fullPath);
+  projectStore.addFileTab(file.fullPath);
 }
 
 async function onAddFile(file: ChangedFile) {
-  await gitStore.onGitAdd([file])
-  gitStore.updateChangedFiles()
+  await gitStore.onGitAdd([file]);
+  gitStore.updateChangedFiles();
 }
 
 async function onUnstageFile(file: ChangedFile) {
-  await gitStore.onGitResetHead(file.path)
-  gitStore.updateChangedFiles()
+  await gitStore.onGitResetHead(file.path);
+  gitStore.updateChangedFiles();
 }
 
 async function onDiscardChanges(file: ChangedFile) {
   dialog.warning({
-    title: 'Discard Changes',
-    content: 'Are you sure you want to discard changes in ' + file.path,
+    title: "Discard Changes",
+    content: "Are you sure you want to discard changes in " + file.path,
     maskClosable: false,
-    positiveText: 'Discard Changes',
-    negativeText: 'Cancel',
+    positiveText: "Discard Changes",
+    negativeText: "Cancel",
     async onPositiveClick() {
-      const success = await gitStore.onDiscardChanges(file)
+      const success = await gitStore.onDiscardChanges(file);
       if (success) {
-        gitStore.updateChangedFiles()
+        gitStore.updateChangedFiles();
       }
     },
-  })
+  });
 }
 </script>
 <template>

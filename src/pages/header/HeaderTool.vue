@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { createInvoke } from '~/lib/utils/api'
-import JSON5 from 'json5'
+import { createInvoke } from "~/lib/utils/api";
+import JSON5 from "json5";
 
-const isDark = useDark()
+const isDark = useDark();
 
 function onChangeTheme() {
-  isDark.value = !isDark.value
+  isDark.value = !isDark.value;
 }
 
-const showModal = ref(false)
+const showModal = ref(false);
 const form = ref({
-  username: '',
-  email: '',
-  token: '',
-})
+  username: "",
+  email: "",
+  token: "",
+});
 
 onMounted(async () => {
-  const { status, data } = await createInvoke('git_get_user')
-  if (status === 'ok') {
-    form.value = JSON5.parse(data)
+  const { status, data } = await createInvoke("git_get_user");
+  if (status === "ok") {
+    form.value = JSON5.parse(data);
   }
-})
+});
 
 async function onSetGitUser() {
-  const { status } = await createInvoke('git_set_user', {
+  const { status } = await createInvoke("git_set_user", {
     data: JSON5.stringify(form.value),
-  })
-  if (status === 'ok') {
-    showModal.value = false
+  });
+  if (status === "ok") {
+    showModal.value = false;
   }
 }
 </script>

@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import { useProjectStore } from '../stores/project'
+import { useProjectStore } from "../stores/project";
 
-const projectStore = useProjectStore()
-const showModal = ref(false)
-const fileName = computed(() => projectStore.fileInfo.path.split('/').pop())
-const modifiedFiles = computed(() => projectStore.modifiedFiles)
+const projectStore = useProjectStore();
+const showModal = ref(false);
+const fileName = computed(() => projectStore.fileInfo.path.split("/").pop());
+const modifiedFiles = computed(() => projectStore.modifiedFiles);
 
-onMounted(projectStore.getProjectList)
+onMounted(projectStore.getProjectList);
 
 function onCloseFileTab(value: string) {
   if (projectStore.modifiedFiles.has(value)) {
-    showModal.value = true
-    return
+    showModal.value = true;
+    return;
   }
 
-  projectStore.closeFileTab(value)
+  projectStore.closeFileTab(value);
 }
 
 function onClickFileTab(path: string) {
-  projectStore.getFileContent(path)
+  projectStore.getFileContent(path);
 }
 
 async function onClickSaveFile() {
-  await projectStore.saveCurrentFile()
-  projectStore.closeFileTab(projectStore.fileInfo.path)
-  showModal.value = false
+  await projectStore.saveCurrentFile();
+  projectStore.closeFileTab(projectStore.fileInfo.path);
+  showModal.value = false;
 }
 
 function onClickNotSaveFile() {
-  projectStore.notSaveCurrentFile()
-  projectStore.closeFileTab(projectStore.fileInfo.path)
-  showModal.value = false
+  projectStore.notSaveCurrentFile();
+  projectStore.closeFileTab(projectStore.fileInfo.path);
+  showModal.value = false;
 }
 </script>
 <template>

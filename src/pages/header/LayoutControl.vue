@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Window } from '@tauri-apps/api/window'
-const appWindow = new Window('main')
+import { Window } from "@tauri-apps/api/window";
+const appWindow = new Window("main");
 </script>
 <template>
   <n-el tag="div" class="h-8" data-tauri-drag-region flex-end style="color: var(--primary-color); transition: 0.3s var(--cubic-bezier-ease-in-out)">

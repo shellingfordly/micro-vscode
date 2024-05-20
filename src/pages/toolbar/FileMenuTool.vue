@@ -1,63 +1,63 @@
 <script setup lang="ts">
-import { useProjectStore } from '~/stores/project'
-import { CreateIconVNode, getFolderIconName } from '~/lib/handle/icon'
+import { useProjectStore } from "~/stores/project";
+import { CreateIconVNode, getFolderIconName } from "~/lib/handle/icon";
 
-const projectStore = useProjectStore()
-const expandedKeys = ref<string[]>([])
+const projectStore = useProjectStore();
+const expandedKeys = ref<string[]>([]);
 
 watch(
   () => projectStore.selectProjectName,
   () => {
-    expandedKeys.value = []
+    expandedKeys.value = [];
   }
-)
+);
 
-onMounted(projectStore.getProjectList)
+onMounted(projectStore.getProjectList);
 
 async function onOpenFile(path: string) {
-  projectStore.getFileContent(path)
-  projectStore.addFileTab(path)
+  projectStore.getFileContent(path);
+  projectStore.addFileTab(path);
 }
 
-let lastExpandedKeys = new Set<string>()
+let lastExpandedKeys = new Set<string>();
 function onOpenFolder(keys: string[]) {
-  expandedKeys.value = [...keys]
+  expandedKeys.value = [...keys];
 
-  const key = [...keys].pop()
-  if (key) lastExpandedKeys.add(key)
+  const key = [...keys].pop();
+  if (key) lastExpandedKeys.add(key);
 
-  const root = projectStore.fileMenuOptions[0]
+  const root = projectStore.fileMenuOptions[0];
   for (const key of lastExpandedKeys) {
-    let item: any = root
-    if (!item) continue
+    let item: any = root;
+    if (!item) continue;
 
-    const l = key.split('/')
-    l.shift()
+    const l = key.split("/");
+    l.shift();
     l.forEach((s) => {
-      item = item?.children?.find((item: any) => item.label === s)
-    })
-    if (!item) continue
+      item = item?.children?.find((item: any) => item.label === s);
+    });
+    if (!item) continue;
 
-    let iconName = getFolderIconName(item.label)
+    let iconName = getFolderIconName(item.label);
     if (keys.includes(key) && !item.open) {
-      iconName += '-opened'
-      item.open = false
+      iconName += "-opened";
+      item.open = false;
     }
-    item.icon = CreateIconVNode(iconName)
+    item.icon = CreateIconVNode(iconName);
   }
 }
 
 function onSaveFileAll() {
   if (projectStore.modifiedFiles.size) {
-    projectStore.saveAllFile()
+    projectStore.saveAllFile();
   }
 }
 
 function onSaveFile() {
-  const filepath = !!projectStore.selectFileTab && projectStore.modifiedFiles.has(projectStore.selectFileTab)
+  const filepath = !!projectStore.selectFileTab && projectStore.modifiedFiles.has(projectStore.selectFileTab);
 
   if (filepath) {
-    projectStore.saveCurrentFile()
+    projectStore.saveCurrentFile();
   }
 }
 </script>

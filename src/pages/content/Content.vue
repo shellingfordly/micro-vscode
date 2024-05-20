@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useProjectStore } from '~/stores/project'
+import { useProjectStore } from "~/stores/project";
 
-const projectStore = useProjectStore()
-const isShowEditor = computed(() => projectStore.fileInfo.path)
+const projectStore = useProjectStore();
+const isShowEditor = computed(() => projectStore.fileInfo.path);
 
-onMounted(projectStore.getProjectList)
+onMounted(projectStore.getProjectList);
 
 async function onSaveFile() {
-  projectStore.saveCurrentFile()
+  projectStore.saveCurrentFile();
 }
 </script>
 

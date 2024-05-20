@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { useProjectStore } from '~/stores/project'
-import { createInvoke } from '~/lib/utils/api'
+import { useProjectStore } from "~/stores/project";
+import { createInvoke } from "~/lib/utils/api";
 
-const emit = defineEmits(['change'])
+const emit = defineEmits(["change"]);
 const showModal = reactive({
   clone: false,
   commit: false,
-})
-const url = ref('')
-const loading = ref(false)
-const message = useMessage()
-const projectStore = useProjectStore()
+});
+const url = ref("");
+const loading = ref(false);
+const message = useMessage();
+const projectStore = useProjectStore();
 
 async function onUpdateValue(key: string) {
-  if (key === 'git_clone') {
-    showModal.clone = true
+  if (key === "git_clone") {
+    showModal.clone = true;
   } else {
-    emit('change', key)
+    emit("change", key);
   }
 }
 
 async function onClone() {
-  loading.value = true
-  const { status } = await createInvoke('git_clone', { url: url.value })
-  if (status === 'ok') {
-    showModal.clone = false
-    message.success(`git clone successful!`)
+  loading.value = true;
+  const { status } = await createInvoke("git_clone", { url: url.value });
+  if (status === "ok") {
+    showModal.clone = false;
+    message.success(`git clone successful!`);
   }
-  loading.value = false
+  loading.value = false;
 }
 </script>
 <template>

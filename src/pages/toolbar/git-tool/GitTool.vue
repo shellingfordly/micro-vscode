@@ -1,79 +1,79 @@
 <script setup lang="ts">
-import { useGitStore } from '~/stores/git'
-import GitChangeFiles from './components/GitChangeFiles.vue'
-import GitCommitLogs from './components/GitCommitLogs.vue'
-import { ChangedFile } from '~/types'
-import { useProjectStore } from '~/stores/project'
+import { useGitStore } from "~/stores/git";
+import GitChangeFiles from "./components/GitChangeFiles.vue";
+import GitCommitLogs from "./components/GitCommitLogs.vue";
+import { ChangedFile } from "~/types";
+import { useProjectStore } from "~/stores/project";
 
-const gitStore = useGitStore()
-const projectStore = useProjectStore()
-const message = useMessage()
-const dialog = useDialog()
+const gitStore = useGitStore();
+const projectStore = useProjectStore();
+const message = useMessage();
+const dialog = useDialog();
 const options = [
   {
-    label: 'pull',
-    key: 'pull',
+    label: "pull",
+    key: "pull",
   },
   {
-    label: 'push',
-    key: 'push',
+    label: "push",
+    key: "push",
   },
-]
+];
 
 async function onDiscardAllChanges(event: Event) {
-  event.stopPropagation()
+  event.stopPropagation();
 
   dialog.warning({
-    title: 'Discard Changes',
-    content: 'This is IRREVERSIBLE, your current working set will be FOREVER LOST.',
-    positiveText: 'Discard All Files',
-    negativeText: 'Cancel',
+    title: "Discard Changes",
+    content: "This is IRREVERSIBLE, your current working set will be FOREVER LOST.",
+    positiveText: "Discard All Files",
+    negativeText: "Cancel",
     maskClosable: false,
     onPositiveClick: async () => {
-      const success = await gitStore.onDiscardChanges({} as any)
+      const success = await gitStore.onDiscardChanges({} as any);
       if (success) {
-        gitStore.updateChangedFiles()
+        gitStore.updateChangedFiles();
       }
     },
-  })
+  });
 }
 
 async function onStageAllChanges(event: Event) {
-  event.stopPropagation()
+  event.stopPropagation();
 
-  const files: ChangedFile[] = gitStore.getChangeFilesByStageType('unstage')
+  const files: ChangedFile[] = gitStore.getChangeFilesByStageType("unstage");
 
   if (files.length) {
-    await gitStore.onGitAdd(files)
-    gitStore.updateChangedFiles()
+    await gitStore.onGitAdd(files);
+    gitStore.updateChangedFiles();
   }
 }
 
 async function onUnstageAllChanges(event: Event) {
-  event.stopPropagation()
+  event.stopPropagation();
 
-  await gitStore.onGitResetHead()
-  gitStore.updateChangedFiles()
+  await gitStore.onGitResetHead();
+  gitStore.updateChangedFiles();
 }
 
 async function onClickGit() {
-  const success = await gitStore.onGitCommit()
+  const success = await gitStore.onGitCommit();
 
   if (success) {
-    message.success(`Git commit successful!`)
-    gitStore.commitMessage = ''
-    gitStore.updateChangedFiles()
-    gitStore.updateLogList()
+    message.success(`Git commit successful!`);
+    gitStore.commitMessage = "";
+    gitStore.updateChangedFiles();
+    gitStore.updateLogList();
   }
 }
 
 async function onSelect(key: string) {
-  if (key === 'pull') {
-    const success = await gitStore.onGitPull()
-    if (success) message.success(`Git pull successful!`)
-  } else if (key === 'push') {
-    const success = await gitStore.onGitPush()
-    if (success) message.success(`Git push successful!`)
+  if (key === "pull") {
+    const success = await gitStore.onGitPull();
+    if (success) message.success(`Git pull successful!`);
+  } else if (key === "push") {
+    const success = await gitStore.onGitPush();
+    if (success) message.success(`Git push successful!`);
   }
 }
 </script>
@@ -85,7 +85,7 @@ async function onSelect(key: string) {
           <template #header>
             <div class="flex-between-center w-full">
               <div>
-                {{ projectStore.selectProjectName || 'Source Control' }}
+                {{ projectStore.selectProjectName || "Source Control" }}
               </div>
               <n-dropdown v-if="projectStore.selectProjectName" trigger="hover" :options="options" @select="onSelect">
                 <span class="op-hover i-ic-sharp-more-horiz" title="More Actions" />

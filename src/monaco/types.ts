@@ -1,8 +1,8 @@
 export interface FileStat {
-  type: FileType
-  ctime: number
-  mtime: number
-  size: number
+  type: FileType;
+  ctime: number;
+  mtime: number;
+  size: number;
 }
 
 export declare enum FileType {

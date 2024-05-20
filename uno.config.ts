@@ -8,15 +8,15 @@ import {
   presetWebFonts,
   transformerDirectives,
   transformerVariantGroup,
-} from 'unocss'
+} from "unocss";
 
 export default defineConfig({
   shortcuts: [
-    ['flex-center', 'flex justify-center items-center'],
-    ['flex-end', 'flex justify-end items-center'],
-    ['flex-col-between', 'flex flex-col justify-between'],
-    ['op-hover', 'cursor-pointer op60 hover:op100'],
-    ['bg-hover', 'cursor-pointer hover:bg-sky'],
+    ["flex-center", "flex justify-center items-center"],
+    ["flex-end", "flex justify-end items-center"],
+    ["flex-col-between", "flex flex-col justify-between"],
+    ["op-hover", "cursor-pointer op60 hover:op100"],
+    ["bg-hover", "cursor-pointer hover:bg-sky"],
     [/flex-(\w+)-(\w+)/, ([_, h, v]) => `flex justify-${h} items-${v}`],
   ],
   theme: {},
@@ -25,14 +25,14 @@ export default defineConfig({
     presetAttributify(),
     presetIcons({
       extraProperties: {
-        display: 'inline-block',
-        height: '1.2em',
-        width: '1.2em',
-        'vertical-align': 'text-bottom',
+        display: "inline-block",
+        height: "1.2em",
+        width: "1.2em",
+        "vertical-align": "text-bottom",
       },
     }),
     presetTypography(),
     presetWebFonts(),
   ],
   transformers: [transformerDirectives(), transformerVariantGroup()],
-})
+});
