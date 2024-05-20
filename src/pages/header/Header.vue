@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useProjectStore } from '~/stores/project'
-import HeaderTool from './HeaderTool.vue'
-import HeaderMenu from './HeaderMenu.vue'
-import LayoutControl from './LayoutControl.vue'
-const projectStore = useProjectStore()
+import { useProjectStore } from "~/stores/project";
+import HeaderTool from "./HeaderTool.vue";
+import HeaderMenu from "./HeaderMenu.vue";
+import LayoutControl from "./LayoutControl.vue";
+const projectStore = useProjectStore();
 
-onMounted(projectStore.getProjectList)
+onMounted(projectStore.getProjectList);
 
 async function onChangeProject(projectName: string) {
-  projectStore.selectProjectName = projectName
+  projectStore.selectProjectName = projectName;
 }
 </script>
 <template>

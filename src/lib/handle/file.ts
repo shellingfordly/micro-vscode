@@ -1,15 +1,7 @@
 import { handleIcon } from "./icon";
 import { MenuItem, MenuType } from "~/types";
 
-export function createMenuItem({
-  name,
-  path,
-  key,
-}: {
-  name: string;
-  path: string;
-  key: string;
-}): MenuItem {
+export function createMenuItem({ name, path, key }: { name: string; path: string; key: string }): MenuItem {
   const type: MenuType = path.endsWith(name) ? "file" : "dir";
   return {
     label: name,
@@ -31,16 +23,13 @@ export function handleFileMenu(_paths: string[], rootName: string): MenuItem[] {
     const index = v.match(rootName)?.index || 0;
     return v.slice(index + rootName.length + 1);
   });
-
   paths.forEach((path) => {
-    const parts = path.split("/");
+    const parts = path.split("\\");
     let currentNode = rootNode;
 
     let key = rootName;
     parts.forEach((name) => {
-      const existingChild = currentNode.children?.find(
-        (child) => child.label === name
-      ) as MenuItem;
+      const existingChild = currentNode.children?.find((child) => child.label === name) as MenuItem;
 
       // key：拼接当前路径
       key += "/" + name;

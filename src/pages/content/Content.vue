@@ -15,13 +15,7 @@ async function onSaveFile() {
   <n-layout h-full>
     <FileTabs />
     <n-layout style="height: calc(100% - 47px)">
-      <Editor
-        v-show="isShowEditor"
-        v-model="projectStore.fileInfo.content"
-        :filepath="projectStore.fileInfo.path"
-        @save="onSaveFile"
-      />
+      <Editor v-show="isShowEditor" v-model="projectStore.fileInfo.content" :filepath="projectStore.fileInfo.path" @save="onSaveFile" />
     </n-layout>
   </n-layout>
 </template>
-<style scoped></style>

@@ -10,13 +10,9 @@ export const useGitStore = defineStore("useGitStore", () => {
   const loading = ref(false);
   const logList = ref<GitLogInfo[]>([]);
 
-  watch(
-    [() => projectStore.selectProjectName, () => projectStore.fileChangedCount],
-    updateChangedFiles,
-    {
-      immediate: true,
-    }
-  );
+  watch([() => projectStore.selectProjectName, () => projectStore.fileChangedCount], updateChangedFiles, {
+    immediate: true,
+  });
 
   function getChangeFilesByStageType(stage: GitStageType) {
     return changedFiles.value.filter((f) => stage === f.stage);
@@ -117,10 +113,7 @@ export const useGitStore = defineStore("useGitStore", () => {
     if (success) {
       clearFileContentHistory(file.fullPath);
 
-      const hasFileTab =
-        projectStore.fileTabs.findIndex(
-          (tab) => tab.value === file.fullPath
-        ) !== -1;
+      const hasFileTab = projectStore.fileTabs.findIndex((tab) => tab.value === file.fullPath) !== -1;
       if (hasFileTab) {
         projectStore.getFileContent(file.fullPath);
       }

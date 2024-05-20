@@ -24,12 +24,7 @@ export default defineConfig(async () => ({
         "vue",
         "@vueuse/core",
         {
-          "naive-ui": [
-            "useDialog",
-            "useMessage",
-            "useNotification",
-            "useLoadingBar",
-          ],
+          "naive-ui": ["useDialog", "useMessage", "useNotification", "useLoadingBar"],
         },
       ],
     }),
@@ -45,7 +40,7 @@ export default defineConfig(async () => ({
   clearScreen: false,
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
-    port: 1420,
+    port: 1520,
     strictPort: true,
     host: mobile ? "0.0.0.0" : false,
     hmr: mobile

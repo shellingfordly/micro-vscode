@@ -31,19 +31,8 @@ async function onClone() {
 }
 </script>
 <template>
-  <n-menu
-    mode="horizontal"
-    :options="projectStore.projectMenuOptions"
-    @update:value="onUpdateValue"
-  />
-  <n-modal
-    v-model:show="showModal.clone"
-    class="w-150"
-    preset="card"
-    title="Git Clone"
-    size="huge"
-    :bordered="false"
-  >
+  <n-menu mode="horizontal" :options="projectStore.projectMenuOptions" @update:value="onUpdateValue" />
+  <n-modal v-model:show="showModal.clone" class="w-150" preset="card" title="Git Clone" size="huge" :bordered="false">
     <n-input v-model:value="url" mb3 placeholder="Enter the git clone url" />
     <n-button :loading="loading" @click="onClone">clone</n-button>
   </n-modal>

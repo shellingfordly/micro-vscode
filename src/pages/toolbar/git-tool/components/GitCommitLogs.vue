@@ -7,8 +7,7 @@ import { GitLogInfo } from "~/types";
 
 const gitStore = useGitStore();
 const projectStore = useProjectStore();
-const timeFormat = (time: string) =>
-  dayjs(Number(time) * 1000).format("DD/MM/YY");
+const timeFormat = (time: string) => dayjs(Number(time) * 1000).format("DD/MM/YY");
 
 onMounted(() => {
   gitStore.updateLogList();
@@ -38,11 +37,11 @@ async function onClickLog(log: GitLogInfo) {
 </template>
 <style scoped lang="less">
 .log {
-  cursor: pointer;
-  opacity: 0.6;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.6;
+  cursor: pointer;
 
   &:hover {
     opacity: 1;

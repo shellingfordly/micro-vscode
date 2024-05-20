@@ -138,7 +138,6 @@ export function handleIcon(type: MenuType, fileName: string) {
   // 文件
   if (type === "file") {
     const iconName = getFileIconName(fileName);
-    console.log("iconName", iconName);
     return CreateIconVNode(iconName);
   }
   // 文件夹
@@ -149,9 +148,7 @@ export function handleIcon(type: MenuType, fileName: string) {
 }
 
 export function getFileIconName(fileName: string) {
-  const list = (fileName?.split(".") || [])
-    .filter((v) => v)
-    .map((v) => v.toLocaleLowerCase());
+  const list = (fileName?.split(".") || []).filter((v) => v).map((v) => v.toLocaleLowerCase());
 
   // 前缀
   const prefix = list.shift() || "";

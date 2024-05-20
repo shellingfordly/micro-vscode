@@ -37,22 +37,20 @@ const language = computed(() => {
       return "vue";
     case "html":
       return "html";
+    case "rs":
+      return "rust";
+    case "swift":
+      return "swift";
     default:
       return "plaintext";
   }
 });
-const theme = computed(() =>
-  colorMode.value === "dark" ? "vitesse-dark" : "vitesse-light"
-);
+const theme = computed(() => (colorMode.value === "dark" ? "vitesse-dark" : "vitesse-light"));
 
 function getModel(filepath: string) {
   let model: monaco.editor.ITextModel;
   if (!models.has(filepath)) {
-    model = monaco.editor.createModel(
-      props.modelValue,
-      language.value,
-      monaco.Uri.file(props.filepath)
-    );
+    model = monaco.editor.createModel(props.modelValue, language.value, monaco.Uri.file(props.filepath));
     models.set(filepath, model);
   } else {
     model = models.get(filepath)!;

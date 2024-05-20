@@ -7,21 +7,11 @@ const selectedTab = ref("file");
 </script>
 
 <template>
-  <n-layout has-sider style="display: flex; height: 100%;">
-    <n-tabs
-      v-model:value="selectedTab"
-      key="card-left"
-      type="line"
-      animated
-      placement="left"
-      class="w-full h-full"
-    >
+  <n-layout has-sider style="display: flex; height: 100%">
+    <n-tabs v-model:value="selectedTab" key="card-left" type="line" animated placement="left" class="w-full h-full">
       <n-tab-pane name="file">
         <template #tab>
-          <span
-            title="Explorer"
-            i="material-symbols-file-copy-outline-rounded"
-          />
+          <span title="Explorer" i="material-symbols-file-copy-outline-rounded" />
         </template>
         <FileMenuTool />
       </n-tab-pane>
@@ -31,7 +21,7 @@ const selectedTab = ref("file");
         </template>
         <SearchTool />
       </n-tab-pane>
-      <n-tab-pane name="git" style="width: calc(100% - 51px);">
+      <n-tab-pane name="git" style="width: calc(100% - 51px)">
         <template #tab>
           <span title="Source Control" i="ion-ios-git-branch" />
         </template>

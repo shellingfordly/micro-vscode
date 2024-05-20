@@ -12,9 +12,7 @@ const projectStore = useProjectStore();
 const message = useMessage();
 const gitStore = useGitStore();
 const dialog = useDialog();
-const changedFiles = computed(() =>
-  gitStore.changedFiles.filter((f) => props.stage === f.stage)
-);
+const changedFiles = computed(() => gitStore.changedFiles.filter((f) => props.stage === f.stage));
 
 function onOpenFile(file: ChangedFile) {
   if (file.status == GitStatus.Deleted) {
@@ -54,39 +52,17 @@ async function onDiscardChanges(file: ChangedFile) {
 </script>
 <template>
   <ul>
-    <li
-      v-for="file in changedFiles"
-      :class="['file', 'file_' + file.status.toLocaleLowerCase()]"
-    >
+    <li v-for="file in changedFiles" :class="['file', 'file_' + file.status.toLocaleLowerCase()]">
       <div class="info">
         <span i="vscode-icons-file-type-vue" />
         <span class="ml2">{{ file.name }}</span>
         <span class="ml2 op80">{{ file.path }}</span>
       </div>
       <div class="flex-center space-x-1 w-auto">
-        <span
-          class="op-hover hover:op100"
-          i="material-symbols-light-file-open-outline"
-          title="open file"
-          @click="onOpenFile(file)"
-        />
-        <span
-          class="op-hover hover:op100 i-codicon-discard"
-          title="Discard changes"
-          @click="onDiscardChanges(file)"
-        />
-        <span
-          v-if="file.stage === 'unstage'"
-          class="op-hover hover:op100 i-carbon-add"
-          title="Stage Changes"
-          @click="onAddFile(file)"
-        />
-        <span
-          v-else
-          class="op-hover hover:op100 i-ic-baseline-minus"
-          title="Stage Changes"
-          @click="onUnstageFile(file)"
-        />
+        <span class="op-hover hover:op100" i="material-symbols-light-file-open-outline" title="open file" @click="onOpenFile(file)" />
+        <span class="op-hover hover:op100 i-codicon-discard" title="Discard changes" @click="onDiscardChanges(file)" />
+        <span v-if="file.stage === 'unstage'" class="op-hover hover:op100 i-carbon-add" title="Stage Changes" @click="onAddFile(file)" />
+        <span v-else class="op-hover hover:op100 i-ic-baseline-minus" title="Stage Changes" @click="onUnstageFile(file)" />
         <span class="status" :title="file.status">
           {{ file.status.charAt(0) }}
         </span>
@@ -102,28 +78,30 @@ async function onDiscardChanges(file: ChangedFile) {
   width: 100%;
 
   &_modified .status {
-    color: rgb(49, 134, 176);
+    color: rgb(49 134 176);
   }
 
   &_deleted {
     .info {
       text-decoration: line-through;
     }
+
     .status {
-      color: rgb(123, 63, 63);
+      color: rgb(123 63 63);
     }
   }
 
   &_untracked .status {
-    color: rgb(210, 185, 23);
+    color: rgb(210 185 23);
   }
 
   .info {
-    cursor: pointer;
     overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
+    white-space: nowrap;
     opacity: 0.6;
+    cursor: pointer;
+
     &:hover {
       opacity: 1;
     }

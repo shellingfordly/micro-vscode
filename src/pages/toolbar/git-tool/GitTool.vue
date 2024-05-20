@@ -25,8 +25,7 @@ async function onDiscardAllChanges(event: Event) {
 
   dialog.warning({
     title: "Discard Changes",
-    content:
-      "This is IRREVERSIBLE, your current working set will be FOREVER LOST.",
+    content: "This is IRREVERSIBLE, your current working set will be FOREVER LOST.",
     positiveText: "Discard All Files",
     negativeText: "Cancel",
     maskClosable: false,
@@ -79,7 +78,7 @@ async function onSelect(key: string) {
 }
 </script>
 <template>
-  <n-layout-sider width="100%" style="height: 100%;" :native-scrollbar="false">
+  <n-layout-sider width="100%" style="height: 100%" :native-scrollbar="false">
     <div class="p4">
       <n-collapse :default-expanded-names="[1, 2, 3, 4]">
         <n-collapse-item :name="1">
@@ -88,31 +87,15 @@ async function onSelect(key: string) {
               <div>
                 {{ projectStore.selectProjectName || "Source Control" }}
               </div>
-              <n-dropdown
-                v-if="projectStore.selectProjectName"
-                trigger="hover"
-                :options="options"
-                @select="onSelect"
-              >
-                <span
-                  class="op-hover i-ic-sharp-more-horiz"
-                  title="More Actions"
-                />
+              <n-dropdown v-if="projectStore.selectProjectName" trigger="hover" :options="options" @select="onSelect">
+                <span class="op-hover i-ic-sharp-more-horiz" title="More Actions" />
               </n-dropdown>
             </div>
           </template>
 
           <n-space vertical>
-            <n-input
-              v-model:value="gitStore.commitMessage"
-              placeholder="Message"
-            />
-            <n-button
-              secondary
-              block
-              :loading="gitStore.loading"
-              @click="onClickGit"
-            >
+            <n-input v-model:value="gitStore.commitMessage" placeholder="Message" />
+            <n-button secondary block :loading="gitStore.loading" @click="onClickGit">
               <n-space flex-center>
                 <span i="charm-tick" />
                 <span>Commit</span>
@@ -124,11 +107,7 @@ async function onSelect(key: string) {
           <template #header>
             <div class="flex-between-center w-full">
               <div>Staged Changes</div>
-              <span
-                class="op-hover i-ic-baseline-minus"
-                title="Unstage All changes"
-                @click="onUnstageAllChanges"
-              />
+              <span class="op-hover i-ic-baseline-minus" title="Unstage All changes" @click="onUnstageAllChanges" />
             </div>
           </template>
           <GitChangeFiles stage="staged" />
@@ -138,16 +117,8 @@ async function onSelect(key: string) {
             <div class="flex-between-center w-full">
               <div>Changes</div>
               <div class="space-x-1">
-                <span
-                  class="op-hover i-codicon-discard"
-                  title="Discard All changes"
-                  @click="onDiscardAllChanges"
-                />
-                <span
-                  class="op-hover i-carbon-add"
-                  title="Stage All changes"
-                  @click="onStageAllChanges"
-                />
+                <span class="op-hover i-codicon-discard" title="Discard All changes" @click="onDiscardAllChanges" />
+                <span class="op-hover i-carbon-add" title="Stage All changes" @click="onStageAllChanges" />
               </div>
             </div>
           </template>

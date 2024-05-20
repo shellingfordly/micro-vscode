@@ -38,9 +38,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
 
   watch(selectProjectName, async (name) => {
     const data = await getProjectFiles(name);
-
     fileMenuOptions.value = handleFileMenu(data, name) as any[];
-
     // 清除旧文件
     fileTabs.value = [];
     clearFileContent();
@@ -143,18 +141,14 @@ export const useProjectStore = defineStore("useProjectStore", () => {
 
     Promise.all(list).then(() => {
       modifiedFiles.value.forEach((path) => {
-        if (FileContentChangeMap.has(path))
-          FileContentMap.set(path, FileContentChangeMap.get(path)!);
+        if (FileContentChangeMap.has(path)) FileContentMap.set(path, FileContentChangeMap.get(path)!);
       });
       modifiedFiles.value.clear();
     });
   }
 
   function addFileTab(value: string) {
-    if (
-      value &&
-      fileTabs.value.findIndex((item) => item.value === value) === -1
-    ) {
+    if (value && fileTabs.value.findIndex((item) => item.value === value) === -1) {
       const label = value.split("/").pop() || value;
       fileTabs.value.push({ label, value: value });
     }
@@ -169,8 +163,7 @@ export const useProjectStore = defineStore("useProjectStore", () => {
     fileTabs.value.splice(index, 1);
 
     // 当前显示的tab
-    const i =
-      fileTabs.value.length === 1 ? 0 : index > 0 ? index - 1 : index + 1;
+    const i = fileTabs.value.length === 1 ? 0 : index > 0 ? index - 1 : index + 1;
     const tab = fileTabs.value[i];
     if (tab) {
       selectFileTab.value = tab.value;
