@@ -6,7 +6,11 @@
   "scripts": {
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "commit": "git-cz",
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "commit": "git add . && git-cz",
     "eslint": "eslint src",
     "prettier": "prettier --write \"./**/*.{html,vue,ts,js,json,md}\"",
     "lint:style": "stylelint \"./**/*.{css,less,vue,html}\" --fix",

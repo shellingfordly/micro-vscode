@@ -15,7 +15,7 @@ dist-ssr
 src/auto-imports.d.ts
 src/components.d.ts
 data/**
-template/**
+templates/**
 src-tauri/gen
 
 # Editor directories and files

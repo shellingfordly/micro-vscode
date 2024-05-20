@@ -37,6 +37,10 @@ const language = computed(() => {
       return 'vue'
     case 'html':
       return 'html'
+    case 'rs':
+      return 'rust'
+    case 'swift':
+      return 'swift'
     default:
       return 'plaintext'
   }

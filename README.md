@@ -101,8 +101,7 @@ pnpm tauri build
 
 ## Format instructions
 
-1. 提交代码前先暂存（运行`git add`）
-2. 运行脚本命令 `pnpm commit`, 出现提交信息填写框, 填写提交信息, 然后提交
+1. 运行脚本命令 `pnpm commit`, 出现提交信息填写框, 填写提交信息, 然后提交
 
 格式化流程：
 
@@ -113,3 +112,13 @@ Hasky增加钩子（hooks）功能，在特定事件（如 commit、push）发�
 
 2. commit-msg钩子：
    在提交信息前运行，`commitlint`用于检查提交信息是否符合规范
+
+## Github release
+
+1. 运行脚本命令 `pnpm release`,自动检查`UPDATE_LOG.md`是否有版本更新信息。然后增加`package.json`的版本号。同时打 tag 标签（tag 标签是为了触发 github action 工作流）上传到Github
+
+2. github action 工作流
+   1. 生成软件自动更新的密钥(windows 密钥生成命令： `pnpm tauri signer generate -w $HOME/.tauri/myapp.key`)
+   2. tauri添加更新配置（详细文档说明`https://tauri.app/zh-cn/v1/guides/distribution/updater`）
+   3. github Settings > Secrets > Actions > New repository secret > 添加密钥
+   4. github action 工作流配置文件 `.github/workflows/release.yml`

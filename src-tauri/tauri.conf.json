@@ -4,7 +4,7 @@
   "identifier": "micro-vscode",
   "build": {
     "beforeDevCommand": "pnpm dev",
-    "devUrl": "http://localhost:1420",
+    "devUrl": "http://localhost:1520",
     "beforeBuildCommand": "pnpm build",
     "frontendDist": "../dist"
   },
@@ -26,5 +26,15 @@
     "active": true,
     "targets": "all",
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": ["https://github.com/shellingfordly/micro-vscode/blob/gh-pages/update.json"],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUwNDRGMjkwRjg2MDhCRDAKUldUUWkyRDRrUEpFNEQ4SmdwcU5PaXl6R2ZRUUNvUnhIaVkwVUltV0NMaEx6VTkrWVhpT0ZqeEEK",
+      "windows": {
+        "installMode": "quiet",
+        "installerArgs": ["/NS"]
+      }
+    }
   }
 }
