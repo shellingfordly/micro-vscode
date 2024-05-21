@@ -12,8 +12,8 @@
     "windows": [
       {
         "title": "micro-vscode",
-        "width": 800,
-        "height": 600,
+        "width": 1240,
+        "height": 766,
         "resizable": true,
         "decorations": false
       }
